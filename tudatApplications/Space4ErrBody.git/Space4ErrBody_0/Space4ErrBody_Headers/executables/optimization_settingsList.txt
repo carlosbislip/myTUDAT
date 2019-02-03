@@ -1,0 +1,5 @@
+Optimization Method
+Population Size
+Num. of Archipelagos
+Num. of Evolutions
+Seed Number

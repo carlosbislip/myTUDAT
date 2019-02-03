@@ -1,0 +1,10 @@
+Node Interval
+Angle of Attack
+Bank Angle
+Thrust Elevation Angle
+Thrust Azimuth Angle
+Throttle Setting
+Initial Velocity
+Maximum Velocity
+Maximum Height
+Additional Mass
