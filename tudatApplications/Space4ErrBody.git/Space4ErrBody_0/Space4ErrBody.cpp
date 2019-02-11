@@ -439,8 +439,8 @@ int main()
     std::map< int, std::string > momentCoefficientFiles_CS_ER;
 
     std::string BODYFLAP = "BodyFlap";
-    std::string ELEVON_L = "ElevonLeft";
-    std::string ELEVON_R = "ElevonRight";
+    //std::string ELEVON_L = "ElevonLeft";
+    //std::string ELEVON_R = "ElevonRight";
 
     // Define list of files for force coefficients.
     forceCoefficientFiles[ 0 ] = aeroCoeffFileList[ 0 ]; // Set drag coefficient file
@@ -456,7 +456,7 @@ int main()
     // Define list of files for moment coefficients for control surfaces ( Bodyflap )
     momentCoefficientFiles_CS_B[ 1 ] = aeroCoeffFileList[ 5 ];
 
-    // Define list of files for force coefficients for control surfaces ( Elevon - Left )
+    /*// Define list of files for force coefficients for control surfaces ( Elevon - Left )
     forceCoefficientFiles_CS_EL[ 0 ] = aeroCoeffFileList[ 6 ];
     forceCoefficientFiles_CS_EL[ 2 ] = aeroCoeffFileList[ 7 ];
 
@@ -481,7 +481,7 @@ int main()
     //                   boost::assign::list_of( angle_of_attack_dependent )( control_surface_deflection_dependent ) );
     //       std::map< std::string, std::shared_ptr< ControlSurfaceIncrementAerodynamicInterface >  > controlSurfaceList;
     //       controlSurfaceList[ "bodyflap" ] = controlSurfaceInterface;
-
+*/
     //! Define reference frame in which the loaded coefficients are defined.
     //! Have to get some more background info here to properly understand it.
     bool areCoefficientsInAerodynamicFrame = true;
@@ -490,7 +490,7 @@ int main()
 
     //! Load and parse coefficient files; create coefficient settings.
     std::shared_ptr< AerodynamicCoefficientSettings > aerodynamicCoefficientSettings =
-            readTabulatedAerodynamicCoefficientsFromFiles(
+            simulation_setup::readTabulatedAerodynamicCoefficientsFromFiles(
                 forceCoefficientFiles,
                 momentCoefficientFiles,
                 b_ref,
@@ -503,10 +503,11 @@ int main()
 
     // Add settings for control surface increments to main aerodynamic coefficients
     aerodynamicCoefficientSettings->setControlSurfaceSettings(
-                readTabulatedControlIncrementAerodynamicCoefficientsFromFiles(
+                simulation_setup::readTabulatedControlIncrementAerodynamicCoefficientsFromFiles(
                     forceCoefficientFiles_CS_B,
                     momentCoefficientFiles_CS_B,
                     controlSurfaceIndependentVariableNames), BODYFLAP );
+
     /*
      aerodynamicCoefficientSettings->setControlSurfaceSettings(
                  readTabulatedControlIncrementAerodynamicCoefficientsFromFiles(
@@ -943,7 +944,7 @@ int main()
                     centralBodyName ) );
     dep_varList.push_back(
                 std::make_shared< SingleDependentVariableSaveSettings >(
-                    increment_Cm_bodyflap,
+                    bodyflap_deflection,
                     vehicleName,
                     centralBodyName ) );
 

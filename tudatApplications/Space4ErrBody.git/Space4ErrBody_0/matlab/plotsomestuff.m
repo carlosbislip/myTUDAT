@@ -45,7 +45,7 @@ plotCompoundRelations( compilation, mainpath );
 %% Time History: Airspeed - per Evolution
 for p = 1:numel(compilation)
     
-    for k = 1:numel(compilation(p).evolutions)
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         fig_num = p*100 + 3466000 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
@@ -220,7 +220,7 @@ for p = 1:numel(compilation)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
         title(strcat('Normalized Specific Energy through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-        ylim([0 1])
+        ylim([0 1.2])
         max_tof = max([compilation(p).evolutions.max_tof]);
         xlim([0 max_tof])
         xlabel('Propagation Time (s)') % x-axis label
@@ -289,6 +289,86 @@ for p = 1:numel(compilation)
         close(fig_num);
     end
 end
+
+%% Time History: Equilibrium Glide Limit
+for p = 1:numel(compilation)
+    
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        fig_num = p*100 + 723000 + k*1;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Eq. Glide Limit through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        ylim(rad2deg([0 pi/2]))
+        max_tof = max([compilation(p).evolutions.max_tof]);
+        xlim([0 max_tof])
+        xlabel('Propagation Time (s)') % x-axis label
+        ylabel('Eq. Glide Limit (deg)') % y-axis label
+        set(gca,'YTick', 0:15:90);
+        set(gca,'XTick', 0:200:max_tof);
+        hold on
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                rad2deg(compilation(p).evolutions(k).trajectories(ii).individual.eq_glide_limit));
+        end
+        
+        %plot([0 max_tof],(25)*[1 1],'k','LineWidth',2)
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            mainpath,...
+            '/figures/eq_glide_limit_v_T_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        close(fig_num);
+    end
+end
+
+%% Time History: Increment in Cm due to Bodyflap
+for p = 1:numel(compilation)
+    
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        fig_num = p*100 + 723000 + k*1;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Increment in Cm due to Bodyflap through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        %ylim(rad2deg([0 pi/2]))
+        max_tof = max([compilation(p).evolutions.max_tof]);
+        xlim([0 max_tof])
+        xlabel('Propagation Time (s)') % x-axis label
+        ylabel('Increment in Cm due to Bodyflap (-)') % y-axis label
+       % set(gca,'YTick', 0:15:90);
+        set(gca,'XTick', 0:200:max_tof);
+        hold on
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                rad2deg(compilation(p).evolutions(k).trajectories(ii).individual.increment_Cm_bodyflap));
+        end
+        
+        %plot([0 max_tof],(25)*[1 1],'k','LineWidth',2)
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            mainpath,...
+            '/figures/increment_Cm_bodyflap_v_T_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        close(fig_num);
+    end
+end
+
+
 
 
 

@@ -30,7 +30,7 @@
 #include <boost/format.hpp>
 
 
-//#include <Tudat/SimulationSetup/tudatSimulationHeader.h>
+#include <Tudat/SimulationSetup/tudatSimulationHeader.h>
 #include <Tudat/Mathematics/RootFinders/secantRootFinder.h>
 #include <Tudat/Mathematics/BasicMathematics/mathematicalConstants.h>
 #include <Tudat/Astrodynamics/BasicAstrodynamics/unitConversions.h>
@@ -43,12 +43,8 @@
 #include <Tudat/Mathematics/Interpolators/oneDimensionalInterpolator.h>
 #include <Tudat/Mathematics/Interpolators/cubicSplineInterpolator.h>
 #include <Tudat/Astrodynamics/SystemModels/vehicleSystems.h>
-#include <Tudat/SimulationSetup/tudatSimulationHeader.h>
 
-//#include <Tudat/Astrodynamics/Aerodynamics/aerodynamics.h>
-//#include <Tudat/Astrodynamics/Aerodynamics/flightConditions.h>
-//#include <Tudat/Astrodynamics/Aerodynamics/aerodynamicGuidance.h>
-//#include <Tudat/Astrodynamics/Aerodynamics/aerodynamics.h>
+
 #include <Tudat/Astrodynamics/ReferenceFrames/aerodynamicAngleCalculator.h>
 
 namespace bislip {

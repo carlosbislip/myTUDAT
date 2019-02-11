@@ -3,7 +3,7 @@ function [  ] = plotTimeHistories_Mechanical( compilation, mainpath )
 %% Time History: Aero G-load - per Evolution
 for p = 1:numel(compilation)
     
-    for k = 1:numel(compilation(p).evolutions)
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         fig_num = p*100 + 3457000 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
@@ -88,7 +88,7 @@ end
 %% Time History: Thrust Acc. Magnitude - per Evolution
 for p = 1:numel(compilation)
     
-    for k = 1:numel(compilation(p).evolutions)
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         fig_num = p*100 + 3465100 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
@@ -132,7 +132,7 @@ end
 %% Time History: Dynamic Pressure - per Evolution
 for p = 1:numel(compilation)
     
-    for k = 1:numel(compilation(p).evolutions)
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         fig_num = p*100 + 654180 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])

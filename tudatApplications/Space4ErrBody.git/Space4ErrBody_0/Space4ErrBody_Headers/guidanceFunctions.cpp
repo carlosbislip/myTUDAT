@@ -59,6 +59,7 @@ double MyGuidance::getCurrentThrustMagnitude( )
     return bislip::Variables::computeThrustMagnitude(  bodyMap_, vehicleName_ );
 }
 
+/*
 double MyGuidance::getBodyflapCmIncrement( )
 {
     if( FlightConditions_ == nullptr )
@@ -81,11 +82,11 @@ double MyGuidance::getBodyflapCmIncrement( )
 
     return bislip::Variables::computeBodyFlapCmIncrement( bodyMap_, vehicleName_ );
 }
-
+*/
 double MyGuidance::getBodyFlapDeflection( )
 {
 
-    return bislip::Variables::computeBodyFlapDeflection( bislip::Variables::computeBodyFlapCmIncrement( bodyMap_, vehicleName_ ) );
+    return bislip::Variables::computeBodyFlapDeflection( bodyMap_, vehicleName_ );
 }
 
 bool MyGuidance::getReversal( const double &angularDistanceToGo_deg, const double &abs_chi_err_deg, const double &reversal_conditional )

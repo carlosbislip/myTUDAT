@@ -133,7 +133,7 @@ for p = 1:numel(compilation)
     xlim([-180 180])
     ylim([-90 90])
     
-    for k = 1:numel(compilation(p).evolutions)
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
             plot(...
                 compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...

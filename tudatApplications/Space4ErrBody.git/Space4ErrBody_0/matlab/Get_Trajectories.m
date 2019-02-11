@@ -1,4 +1,4 @@
-function [ evolutions ] = Get_Trajectories(evolutions,prop_path,depvar_path,interp_Ascent_path,interp_Descent_path,DV_mapped_Ascent_path,DV_mapped_Descent_path,v_i,gamma_i,pop_i,lon_i_rad,lat_f_deg,lon_f_deg, startEpoch)
+function [ evolutions ] = Get_Trajectories(evolutions,prop_path,depvar_path,interp_Ascent_path,interp_Descent_path,DV_mapped_Ascent_path,DV_mapped_Descent_path,v_i,gamma_i,pop_i,lon_i_rad,lat_f_deg,lon_f_deg,startEpoch)
 %UNTITLED7 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -227,7 +227,7 @@ for k = 1:(numel(pop_i) + 1)
         evolutions(k).trajectories(p).individual.distance_to_go          = rad2deg(depvar(:,39));
         evolutions(k).trajectories(p).individual.heading_to_target       = rad2deg(depvar(:,40));
         evolutions(k).trajectories(p).individual.heading_error           = rad2deg(depvar(:,41));
-        evolutions(k).trajectories(p).individual.q_dot_LE                = (depvar(:,42);
+        evolutions(k).trajectories(p).individual.q_dot_LE                = depvar(:,42);
         evolutions(k).trajectories(p).individual.body_thrust_x           = depvar(:,43);
         evolutions(k).trajectories(p).individual.body_thrust_y           = depvar(:,44);
         evolutions(k).trajectories(p).individual.body_thrust_z           = depvar(:,45);
@@ -236,7 +236,7 @@ for k = 1:(numel(pop_i) + 1)
         evolutions(k).trajectories(p).individual.local_gravity_2         = depvar(:,48);
         evolutions(k).trajectories(p).individual.eq_glide_limit          = depvar(:,49);
         evolutions(k).trajectories(p).individual.increment_Cm_bodyflap   = depvar(:,50);
-        evolutions(k).trajectories(p).individual.bodyflap_deflection     = depvar(:,51);
+%        evolutions(k).trajectories(p).individual.bodyflap_deflection     = depvar(:,51);
         
         
         evolutions(k).trajectories(p).individual.interp_E_mapped_Ascent               = interp_Ascent(:,1);

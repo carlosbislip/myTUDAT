@@ -584,13 +584,6 @@ double computeBodyFlapDeflection(
     //std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > controlSurfaceCoefficientInterface = std::dynamic_pointer_cast< tudat::aerodynamics::AerodynamicCoefficientInterface >(
     //          bodyMap.at( vehicleName )->getAerodynamicCoefficientInterface( ) );
 
-    //! Object to iteratively find the root of the equations C_m(alpha)=0, i.e. to determine the
-    //!  angle of attack for which the pitch moment is zero.
-    std::shared_ptr< tudat::root_finders::RootFinderCore< double > > rootfinder = std::make_shared< tudat::root_finders::SecantRootFinderCore< double > >(
-                std::bind(
-                    &tudat::root_finders::termination_conditions::RootAbsoluteToleranceTerminationCondition< double >::checkTerminationCondition,
-                    std::make_shared< tudat::root_finders::termination_conditions::RootAbsoluteToleranceTerminationCondition
-                    < double > >( 1.0E-15, 1000 ), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5 ), 0.5 );
 
     double angleOfAttack = tudat::unit_conversions::convertDegreesToRadians(
                 evaluateGuidanceInterpolator (
@@ -632,6 +625,15 @@ double computeBodyFlapDeflection(
 
     double bodyFlapDeflection = TUDAT_NAN;
 
+    //! Object to iteratively find the root of the equations C_m(alpha)=0, i.e. to determine the
+    //!  angle of attack for which the pitch moment is zero.
+    std::shared_ptr< tudat::root_finders::RootFinderCore< double > > rootfinder = std::make_shared< tudat::root_finders::SecantRootFinderCore< double > >(
+                std::bind(
+                    &tudat::root_finders::termination_conditions::RootAbsoluteToleranceTerminationCondition< double >::checkTerminationCondition,
+                    std::make_shared< tudat::root_finders::termination_conditions::RootAbsoluteToleranceTerminationCondition
+                    < double > >( 1.0E-15, 1000 ), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5 ), 0.5 );
+
+
     // Find root of pitch moment function
     try
     {
@@ -646,7 +648,7 @@ double computeBodyFlapDeflection(
 
     }
 
-    return controlSurfaceCoefficientInput[ "BodyFlap" ][ 2 ] - 0.00001;
+    return bodyFlapDeflection;
 
 }
 

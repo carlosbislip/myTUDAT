@@ -269,12 +269,12 @@ std::vector<double> Space4ErrBodyProblem::fitness( const std::vector< double > &
     //! Re-allocate decision vector values into workable vectors for Descent phase.
     for( unsigned int i = 0; i < nodesDescent; i++ )
     {
-        if ( i < ( nodesDescent - 1) ){ xn_interval_Descent( i ) = x[ ( N + 3 ) + i ]; }
-        alpha_deg_Descent( i ) = x[ ( N + 3 ) + i + 1 * nodesDescent - 1 ];
-        sigma_deg_Descent( i ) = x[ ( N + 3 ) + i + 2 * nodesDescent - 1 ];
-        eps_T_deg_Descent( i ) = x[ ( N + 3 ) + i + 3 * nodesDescent - 1 ];
-        phi_T_deg_Descent( i ) = x[ ( N + 3 ) + i + 4 * nodesDescent - 1 ];
-        throttle_Descent( i )  = x[ ( N + 3 ) + i + 5 * nodesDescent - 1 ];
+        if ( i < ( nodesDescent - 1) ){ xn_interval_Descent( i ) = x[ ( N + 4 ) + i ]; }
+        alpha_deg_Descent( i ) = x[ ( N + 4 ) + i + 1 * nodesDescent - 1 ];
+        sigma_deg_Descent( i ) = x[ ( N + 4 ) + i + 2 * nodesDescent - 1 ];
+        eps_T_deg_Descent( i ) = x[ ( N + 4 ) + i + 3 * nodesDescent - 1 ];
+        phi_T_deg_Descent( i ) = x[ ( N + 4 ) + i + 4 * nodesDescent - 1 ];
+        throttle_Descent( i )  = x[ ( N + 4 ) + i + 5 * nodesDescent - 1 ];
     }
 
     //! Declare and initialize number of parameters exclusive to Descent phase.
@@ -282,7 +282,7 @@ std::vector<double> Space4ErrBodyProblem::fitness( const std::vector< double > &
 
     //! Declare and initialize last parameter common to the entire trajectory.
     //!     Final velocity.
-    const double lowerLimitAirspeed = x[ N + NN + 3 ];
+    const double lowerLimitAirspeed = x[ N + NN + 4 ];
 
     //std::cout << "Create vector of node locations for ascent" << std::endl;
     //! Create vector of node locations for Ascent phase.
@@ -300,6 +300,9 @@ std::vector<double> Space4ErrBodyProblem::fitness( const std::vector< double > &
         xn_Descent( i + 1 )        = xn_Descent( i ) + xn_interval_Descent( i ) / xn_interval_Descent.sum();
     }
 
+   // std::cout << "xn_interval_Descent =  " << xn_interval_Descent << std::endl;
+   // std::cout << "throttle_Descent =  " << throttle_Descent << std::endl;
+   // std::cout << "lowerLimitAirspeed =  " << lowerLimitAirspeed << std::endl;
 
     // xn_Descent = xn_Descent.reverse().eval();
 

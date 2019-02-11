@@ -7,7 +7,7 @@ function [  ] = plotTimeHistories_EngineOps( compilation, mainpath )
 %% Time History: Throttle - per Evolution
 for p = 1:numel(compilation)
     
-    for k = 1:numel(compilation(p).evolutions)
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         fig_num = p*100 + 723000 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
@@ -24,7 +24,7 @@ for p = 1:numel(compilation)
         
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
             plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                compilation(p).evolutions(k).trajectories(ii).individual.throttle_setting);
+                compilation(p).evolutions(k).trajectories(ii).individual.evaluated_throttle_setting);
         end
         
         %plot([0 max_tof],(25)*[1 1],'k','LineWidth',2)
@@ -46,7 +46,7 @@ end
 %% Time History: Engine Status - per Evolution
 for p = 1:numel(compilation)
     
-    for k = 1:numel(compilation(p).evolutions)
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         fig_num = p*100 + 723000 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
@@ -88,7 +88,7 @@ end
 %% Time History: Thrust Elevation Angle - per Evolution
 for p = 1:numel(compilation)
     
-    for k = 1:numel(compilation(p).evolutions)
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         fig_num = p*100 + 723000 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
@@ -105,7 +105,7 @@ for p = 1:numel(compilation)
         
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
             plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                compilation(p).evolutions(k).trajectories(ii).individual.thrust_elevation_angle);
+                compilation(p).evolutions(k).trajectories(ii).individual.evaluated_thrust_elevation_angle);
         end
         
         %plot([0 max_tof],(25)*[1 1],'k','LineWidth',2)
@@ -127,7 +127,7 @@ end
 %% Time History: Thrust Azimuth Angle - per Evolution
 for p = 1:numel(compilation)
     
-    for k = 1:numel(compilation(p).evolutions)
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         fig_num = p*100 + 723000 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
@@ -144,7 +144,7 @@ for p = 1:numel(compilation)
         
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
             plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                compilation(p).evolutions(k).trajectories(ii).individual.thrust_azimuth_angle);
+                compilation(p).evolutions(k).trajectories(ii).individual.evaluated_thrust_azimuth_angle);
         end
         
         %plot([0 max_tof],(25)*[1 1],'k','LineWidth',2)
