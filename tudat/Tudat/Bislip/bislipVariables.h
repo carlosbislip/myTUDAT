@@ -3,6 +3,8 @@
 
 #include <Tudat/Bislip/bislipVehicleSystems.h>
 #include "Tudat/SimulationSetup/EnvironmentSetup/body.h"
+#include "Tudat/Mathematics/RootFinders/rootFinder.h"
+#include "Tudat/Mathematics/RootFinders/secantRootFinder.h"
 
 namespace bislip {
 
@@ -156,9 +158,18 @@ double computePenalty (
 
 double computeBodyFlapCmIncrement (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const Eigen::Vector6d &currentCoefficients );
+
+double computeBodyFlapDeflection(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName );
 
-double computeBodyFlapDeflection( const double &bodyFlapCmIncrement );
+double computeFullPitchMomentCoefficient(
+        const std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > &coefficientInterface,
+        const double &bodyFlapDeflection,
+        const std::vector< double > &aerodynamicCoefficientInput,
+        const std::map< std::string, std::vector< double > > &controlSurfaceCoefficientInput );
 
 //bool StopOrNot (const tudat::simulation_setup::NamedBodyMap& bodyMap,
 //                const std::string &vehicleName,

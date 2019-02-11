@@ -340,8 +340,10 @@ Eigen::Vector6d computeCurrentCoefficients (
 {
     std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions =
             std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >( bodyMap.at( vehicleName )->getFlightConditions( ) );
+
     std::shared_ptr< bislip::VehicleSystems > bislipSystems =
             std::dynamic_pointer_cast< bislip::VehicleSystems >( bodyMap.at( vehicleName )->getBislipSystems( ) );
+
     std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > coefficientInterface =
             std::dynamic_pointer_cast< tudat::aerodynamics::AerodynamicCoefficientInterface >( bodyMap.at( vehicleName )->getAerodynamicCoefficientInterface( ) );
 
@@ -352,12 +354,19 @@ Eigen::Vector6d computeCurrentCoefficients (
                     vehicleName ) );
 
     //! Define input to aerodynamic coefficients: take care of order of input (this depends on how the coefficients are created)!
-    std::vector< double > coefficient_input;
-    coefficient_input.push_back( angleOfAttack );
-    coefficient_input.push_back( flightConditions->getCurrentMachNumber() );
+    std::vector< double > aerodynamicCoefficientInput;
+    aerodynamicCoefficientInput.push_back( angleOfAttack );
+    aerodynamicCoefficientInput.push_back( flightConditions->getCurrentMachNumber() );
+
+    // Define values of independent variables of control surface aerodynamics
+    std::map< std::string, std::vector< double > > controlSurfaceCoefficientInput;
+    controlSurfaceCoefficientInput[ "BodyFlap" ] = aerodynamicCoefficientInput;
+    controlSurfaceCoefficientInput[ "BodyFlap" ].push_back( 0.0 );
+
+
 
     // Update and retrieve current aerodynamic coefficients
-    coefficientInterface->updateCurrentCoefficients( coefficient_input );
+    coefficientInterface->updateFullCurrentCoefficients( aerodynamicCoefficientInput, controlSurfaceCoefficientInput );
 
     return coefficientInterface->getCurrentAerodynamicCoefficients( );
 }
@@ -518,9 +527,9 @@ double computeEquilibriumGlideLimit (
     const double term3 = 2.0 * omega * currentAirspeed * c_delta * s_chi;
     const double term4 = gravs( 1 ) * c_gamma;
     const double term5 = gravs( 0 ) * s_gamma * c_chi;
-//const double argument =  phi - ( currentMass / c ) * ( term1 + term2 + term3 - term4 + term5 );
-    const double limit = std::asin( ( phi - ( currentMass / c ) * ( term1 + term2 + term3 - term4 + term5 ) ) );
-/*
+    //const double argument =  phi - ( currentMass / c ) * ( term1 + term2 + term3 - term4 + term5 );
+    const double limit = tudat::unit_conversions::convertRadiansToDegrees( std::asin( ( phi - ( currentMass / c ) * ( term1 + term2 + term3 - term4 + term5 ) ) ) );
+    /*
     std::cout << "CL: " << currentCoefficients[ 2 ] << std::endl;
     std::cout << "currentMass: " << currentMass << std::endl;
     std::cout << "currentAirspeed: " << currentAirspeed << std::endl;
@@ -539,13 +548,6 @@ double computeEquilibriumGlideLimit (
 */
 
     return limit;
-}
-
-double computeBodyFlapDeflection( const double &bodyFlapCmIncrement )
-{
-    double bodyflap = bodyFlapCmIncrement;
-
-    return bodyflap;
 }
 
 double computeBendingMoment (
@@ -567,15 +569,126 @@ double computeBendingMoment (
     return dynamicPressure * angleOfAttack;
 }
 
-double computeBodyFlapCmIncrement (
+double computeBodyFlapDeflection(
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName )
 {
     std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions = std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >(
                 bodyMap.at( vehicleName )->getFlightConditions( ) );
 
+    std::shared_ptr< bislip::VehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
+
     std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > coefficientInterface = std::dynamic_pointer_cast< tudat::aerodynamics::AerodynamicCoefficientInterface >(
                 bodyMap.at( vehicleName )->getAerodynamicCoefficientInterface( ) );
+
+    //std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > controlSurfaceCoefficientInterface = std::dynamic_pointer_cast< tudat::aerodynamics::AerodynamicCoefficientInterface >(
+    //          bodyMap.at( vehicleName )->getAerodynamicCoefficientInterface( ) );
+
+    //! Object to iteratively find the root of the equations C_m(alpha)=0, i.e. to determine the
+    //!  angle of attack for which the pitch moment is zero.
+    std::shared_ptr< tudat::root_finders::RootFinderCore< double > > rootfinder = std::make_shared< tudat::root_finders::SecantRootFinderCore< double > >(
+                std::bind(
+                    &tudat::root_finders::termination_conditions::RootAbsoluteToleranceTerminationCondition< double >::checkTerminationCondition,
+                    std::make_shared< tudat::root_finders::termination_conditions::RootAbsoluteToleranceTerminationCondition
+                    < double > >( 1.0E-15, 1000 ), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5 ), 0.5 );
+
+    double angleOfAttack = tudat::unit_conversions::convertDegreesToRadians(
+                evaluateGuidanceInterpolator (
+                    bislip::Parameters::Optimization::AngleOfAttack,
+                    bodyMap,
+                    vehicleName ) );
+
+    // double bodyFlapCmIncrement = 0;
+    // double CmIncrement = 0;
+
+    //! Define input to aerodynamic coefficients: take care of order of input (this depends on how the coefficients are created)!
+    std::vector< double > aerodynamicCoefficientInput;
+    aerodynamicCoefficientInput.push_back( angleOfAttack );
+    aerodynamicCoefficientInput.push_back( flightConditions->getCurrentMachNumber() );
+    //aerodynamicCoefficientInterface->updateFullCurrentCoefficients( aerodynamicCoefficientInput );
+
+    // Define values of independent variables of control surface aerodynamics
+    std::map< std::string, std::vector< double > > controlSurfaceCoefficientInput;
+    controlSurfaceCoefficientInput[ "BodyFlap" ] = aerodynamicCoefficientInput;
+    controlSurfaceCoefficientInput[ "BodyFlap" ].push_back( tudat::unit_conversions::convertDegreesToRadians( 0.0 ) );
+
+    // Eigen::Vector3d momentWithIncrement, momentWithoutIncrement;
+    //Eigen::Vector6d currentCoefficients;
+    // momentWithIncrement = aerodynamicCoefficientInterface->getCurrentMomentCoefficients( );
+
+
+
+    // Update and retrieve current aerodynamic coefficients
+    coefficientInterface->updateFullCurrentCoefficients( aerodynamicCoefficientInput, controlSurfaceCoefficientInput );
+    // momentWithoutIncrement = controlSurfaceCoefficientInterface->getCurrentMomentCoefficients( );
+    // bodyFlapCmIncrement = bislip::Variables::computeBodyFlapCmIncrement( bodyMap, vehicleName, controlSurfaceCoefficientInterface->getCurrentAerodynamicCoefficients() );
+    // CmIncrement = momentWithoutIncrement( 1 ) - momentWithIncrement( 1 );
+    //controlSurfaceCoefficientInput[ "BodyFlap" ][ 2 ] += 0.001;
+
+    // Determine function for which the root is to be determined.
+    std::function< double( const double ) > coefficientFunction =
+            std::bind( &bislip::Variables::computeFullPitchMomentCoefficient,
+                       coefficientInterface, std::placeholders::_1, aerodynamicCoefficientInput, controlSurfaceCoefficientInput );
+
+    double bodyFlapDeflection = TUDAT_NAN;
+
+    // Find root of pitch moment function
+    try
+    {
+        bodyFlapDeflection = rootfinder->execute(
+                    std::make_shared< tudat::basic_mathematics::FunctionProxy< double, double > >( coefficientFunction ),
+                    controlSurfaceCoefficientInput[ "BodyFlap" ][ 2 ] );
+    }
+    // Throw error if not converged
+    catch( std::runtime_error )
+    {
+        throw std::runtime_error( "Error when bodyflap deflection, root finder did not converge." );
+
+    }
+
+    return controlSurfaceCoefficientInput[ "BodyFlap" ][ 2 ] - 0.00001;
+
+}
+
+
+double computeFullPitchMomentCoefficient(
+        const std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > &coefficientInterface,
+        const double &bodyFlapDeflection,
+        const std::vector< double > &aerodynamicCoefficientInput,
+        const std::map< std::string, std::vector< double > > &controlSurfaceCoefficientInput )
+{
+    // Update coefficients to perturbed independent variables
+    std::map< std::string, std::vector< double > > perturbedControlSurfaceConditions =
+            controlSurfaceCoefficientInput;
+
+
+    perturbedControlSurfaceConditions[ "BodyFlap" ][ 2 ] = bodyFlapDeflection;
+
+    coefficientInterface->updateFullCurrentCoefficients( aerodynamicCoefficientInput, controlSurfaceCoefficientInput );
+
+    return coefficientInterface->getCurrentMomentCoefficients( )( 1 );
+
+
+}
+
+
+
+
+
+
+
+
+
+double computeBodyFlapCmIncrement (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const Eigen::Vector6d &currentCoefficients )
+{
+    std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions = std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >(
+                bodyMap.at( vehicleName )->getFlightConditions( ) );
+
+    //std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > coefficientInterface = std::dynamic_pointer_cast< tudat::aerodynamics::AerodynamicCoefficientInterface >(
+    //            bodyMap.at( vehicleName )->getAerodynamicCoefficientInterface( ) );
 
     std::shared_ptr< bislip::VehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
 
@@ -584,7 +697,7 @@ double computeBodyFlapCmIncrement (
     const Eigen::Vector3d aerodynamicReferenceCenter = bislipSystems->getMassReferenceCenter();
     const Eigen::Vector3d thrustReferenceCenter = bislipSystems->getThrustReferenceCenter();
 
-    const Eigen::Vector6d currentCoefficients = bislip::Variables::computeCurrentCoefficients( bodyMap, vehicleName );
+    //const Eigen::Vector6d currentCoefficients = bislip::Variables::computeCurrentCoefficients( bodyMap, vehicleName );
     const double currentThrustMagnitude = bislip::Variables::computeThrustMagnitude( bodyMap, vehicleName );
     const double currentDrag = currentDynamicPressure * referenceValues[ 0 ] * currentCoefficients[ 0 ];
     const double currentLift = currentDynamicPressure * referenceValues[ 0 ] * currentCoefficients[ 2 ];
