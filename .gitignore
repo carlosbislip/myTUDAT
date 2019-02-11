@@ -68,6 +68,7 @@ Tudat/External/SpiceInterface/Kernels/
 *.~?~
 *.save
 .DS_Store
+.git
 
 tudatApplications/Space4ErrBody.git/.git
 *.DS_Store
