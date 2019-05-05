@@ -10,6 +10,7 @@
 
 #include "Tudat/Astrodynamics/Aerodynamics/aerodynamics.h"
 #include "Tudat/SimulationSetup/PropagationSetup/propagationOutput.h"
+#include "Tudat/Bislip/bislipVariables.h"
 
 namespace tudat
 {
@@ -288,6 +289,7 @@ int getDependentVariableSize(
     case keplerian_state_dependent_variable:
         variableSize = 6;
         break;
+
     case spherical_harmonic_acceleration_terms_dependent_variable:
     {
         if( std::dynamic_pointer_cast< SphericalHarmonicAccelerationTermsDependentVariableSaveSettings >(
@@ -360,6 +362,21 @@ int getDependentVariableSize(
     case evaluated_bank_angle:
         variableSize = 1;
         break;
+    case commanded_throttle_setting:
+        variableSize = 1;
+        break;
+    case commanded_thrust_elevation_angle:
+        variableSize = 1;
+        break;
+    case commanded_thrust_azimuth_angle:
+        variableSize = 1;
+        break;
+    case commanded_angle_of_attack:
+        variableSize = 1;
+        break;
+    case commanded_bank_angle:
+        variableSize = 1;
+        break;
     case current_mass:
         variableSize = 1;
         break;
@@ -378,7 +395,7 @@ int getDependentVariableSize(
     case heading_error:
         variableSize = 1;
         break;
-    case heat_rate_leading_edge:
+    case heat_flux_tauber:
         variableSize = 1;
         break;
     case body_fixed_thrust_vector:
@@ -390,10 +407,85 @@ int getDependentVariableSize(
     case local_gravity:
         variableSize = 2;
         break;
-    case equilibrium_glide_limit:
+    case skip_suppression_limit:
         variableSize = 1;
         break;
-    case increment_Cm_bodyflap:
+    case bodyflap_deflection_moment_coefficient_increment:
+        variableSize = 1;
+        break;
+    case bodyflap_deflection_moment_coefficient_increment_dif:
+        variableSize = 1;
+        break;
+    case body_fixed_total_load_vector:
+        variableSize = 3;
+        break;
+    case body_fixed_total_g_load_vector:
+        variableSize = 3;
+        break;
+    case body_fixed_total_g_load_magnitude:
+        variableSize = 1;
+        break;
+    case body_fixed_aero_load_vector:
+        variableSize = 3;
+        break;
+    case bank_reversal_trigger:
+        variableSize = 1;
+        break;
+    case heat_flux_chapman:
+        variableSize = 1;
+        break;
+    case passenger_fixed_total_g_load_vector:
+        variableSize = 3;
+        break;
+    case current_lift_magnitude:
+        variableSize = 1;
+        break;
+    case current_heading_error_deadband:
+        variableSize = 1;
+        break;
+    case reversal_conditional:
+        variableSize = 1;
+        break;
+    case wall_temperature_chapman:
+        variableSize = 1;
+        break;
+    case wall_temperature_tauber_stagnation:
+        variableSize = 1;
+        break;
+    case wall_temperature_tauber_flatplate:
+        variableSize = 1;
+        break;
+    case heat_flux_tauber_stagnation:
+        variableSize = 1;
+        break;
+    case heat_flux_tauber_flatplate:
+        variableSize = 1;
+        break;
+    case temp_bank_angle:
+        variableSize = 1;
+        break;
+    case cumulative_angular_distance_travelled:
+        variableSize = 1;
+        break;
+    case groundtrack_difference:
+        variableSize = 1;
+        break;
+    case time_of_flight:
+        variableSize = 1;
+        break;
+    case flight_path_angle_rate:
+        variableSize = 1;
+        break;
+    case cumulative_cartesian_distance_travelled:
+        variableSize = 1;
+        break;
+    case thrust_force_magnitude:
+        variableSize = 1;
+        break;
+    case speed_of_sound:
+        variableSize = 1;
+        break;
+    case adiabatic_wall_temperature:
         variableSize = 1;
         break;
 

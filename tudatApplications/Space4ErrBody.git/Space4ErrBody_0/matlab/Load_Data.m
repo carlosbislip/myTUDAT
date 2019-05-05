@@ -50,54 +50,107 @@ switch option
         if exist(output,'file') == 2
             load(output)
         else
-            k = npop_files;
-            evolutions(k).evolution       = nan;
-            evolutions(k).trajectories.individual.t   = nan;
-            evolutions(k).trajectories.individual.time_vector = nan;
-            evolutions(k).trajectories.individual.x_R = nan;
-            evolutions(k).trajectories.individual.y_R = nan;
-            evolutions(k).trajectories.individual.z_R = nan;
-            evolutions(k).trajectories.individual.lat = nan;
-            evolutions(k).trajectories.individual.lon = nan;
-            evolutions(k).trajectories.individual.latitude_angle    = nan;
-            evolutions(k).trajectories.individual.longitude_angle   = nan;
-            evolutions(k).trajectories.individual.heading_angle     = nan;
-            evolutions(k).trajectories.individual.heading_required  = nan;
-            evolutions(k).trajectories.individual.heading_error     = nan;
-            evolutions(k).trajectories.individual.flight_path_angle = nan;
-            evolutions(k).trajectories.individual.angle_of_attack   = nan;
-            evolutions(k).trajectories.individual.angle_of_sideslip = nan;
-            evolutions(k).trajectories.individual.bank_angle        = nan;
-            evolutions(k).trajectories.individual.airspeed          = nan;
-            evolutions(k).trajectories.individual.altitude          = nan;
-            evolutions(k).trajectories.individual.height            = nan;
-            evolutions(k).trajectories.individual.mach              = nan;
-            evolutions(k).trajectories.individual.E                 = nan;
-            evolutions(k).trajectories.individual.E_hat             = nan;
-            evolutions(k).trajectories.individual.total_aero_g_load = nan;
-            evolutions(k).trajectories.individual.dynamic_pressure  = nan;
-            evolutions(k).trajectories.individual.heating_rate      = nan;
-            evolutions(k).trajectories.individual.mass              = nan;
-            evolutions(k).trajectories.individual.mass_rate         = nan;
-            evolutions(k).trajectories.individual.evaluated_throttle_setting          = nan;
-            evolutions(k).trajectories.individual.evaluated_thrust_elevation_angle      = nan;
-            evolutions(k).trajectories.individual.evaluated_thrust_azimuth_angle      = nan;
-            evolutions(k).trajectories.individual.evaluated_angle_of_attack      = nan;
-            evolutions(k).trajectories.individual.evaluated_bank_angle      = nan;
-            evolutions(k).trajectories.individual.engine_status     = nan;
-            evolutions(k).trajectories.individual.distance_traveled = nan;
-            evolutions(k).trajectories.individual.distance_to_go    = nan;
-            evolutions(k).trajectories.individual.heading_to_target = nan;
-            evolutions(k).trajectories.individual.heading_error     = nan;
-            evolutions(k).trajectories.individual.q_dot_LE          = nan;
-            evolutions(k).trajectories.individual.body_thrust_x          = nan;
-            evolutions(k).trajectories.individual.body_thrust_y          = nan;
-            evolutions(k).trajectories.individual.body_thrust_z          = nan;
-            evolutions(k).trajectories.individual.bending_moment          = nan;
-            evolutions(k).trajectories.individual.local_gravity_1          = nan;
-            evolutions(k).trajectories.individual.local_gravity_2          = nan;
-            evolutions(k).trajectories.individual.eq_glide_limit          = nan;
-            evolutions(k).trajectories.individual.increment_Cm_bodyflap          = nan;
+            if contains(pop_path, 'monteCarlo') == true
+                k = npop_files;
+            else
+                k = npop_files + 1;
+            end
+            evolutions(k).evolution                                                = nan;
+            evolutions(k).trajectories.individual.t                                = nan;
+            evolutions(k).trajectories.individual.x_R                              = nan;
+            evolutions(k).trajectories.individual.y_R                              = nan;
+            evolutions(k).trajectories.individual.z_R                              = nan;
+            evolutions(k).trajectories.individual.lat                              = nan;
+            evolutions(k).trajectories.individual.lon                              = nan;
+            evolutions(k).trajectories.individual.latitude_angle                   = nan;
+            evolutions(k).trajectories.individual.longitude_angle                  = nan;
+            evolutions(k).trajectories.individual.heading_angle                    = nan;
+            evolutions(k).trajectories.individual.heading_required                 = nan;
+            evolutions(k).trajectories.individual.heading_error                    = nan;
+            evolutions(k).trajectories.individual.flight_path_angle                = nan;
+            evolutions(k).trajectories.individual.angle_of_attack                  = nan;
+            evolutions(k).trajectories.individual.angle_of_sideslip                = nan;
+            evolutions(k).trajectories.individual.bank_angle                       = nan;
+            evolutions(k).trajectories.individual.airspeed                         = nan;
+            evolutions(k).trajectories.individual.altitude                         = nan;
+            evolutions(k).trajectories.individual.height                           = nan;
+            evolutions(k).trajectories.individual.mach                             = nan;
+            evolutions(k).trajectories.individual.E                                = nan;
+            evolutions(k).trajectories.individual.E_hat                            = nan;
+            evolutions(k).trajectories.individual.total_aero_g_load                = nan;
+            evolutions(k).trajectories.individual.dynamic_pressure                 = nan;
+            evolutions(k).trajectories.individual.heat_rate_TUDAT_nose             = nan;
+            evolutions(k).trajectories.individual.mass                             = nan;
+            
+            evolutions(k).trajectories.individual.mass_rate                        = nan;
+            evolutions(k).trajectories.individual.evaluated_throttle_setting       = nan;
+            evolutions(k).trajectories.individual.evaluated_thrust_elevation_angle = nan;
+            evolutions(k).trajectories.individual.evaluated_thrust_azimuth_angle   = nan;
+            evolutions(k).trajectories.individual.evaluated_angle_of_attack        = nan;
+            evolutions(k).trajectories.individual.evaluated_bank_angle             = nan;
+            
+            evolutions(k).trajectories.individual.commanded_throttle_setting       = nan;
+            evolutions(k).trajectories.individual.commanded_thrust_elevation_angle = nan;
+            evolutions(k).trajectories.individual.commanded_thrust_azimuth_angle   = nan;
+            evolutions(k).trajectories.individual.commanded_angle_of_attack        = nan;
+            evolutions(k).trajectories.individual.commanded_bank_angle             = nan;
+            evolutions(k).trajectories.individual.engine_status                    = nan;
+            evolutions(k).trajectories.individual.distance_traveled                = nan;
+            evolutions(k).trajectories.individual.distance_to_go                   = nan;
+            evolutions(k).trajectories.individual.heading_to_target                = nan;
+            evolutions(k).trajectories.individual.heading_error                    = nan;
+            evolutions(k).trajectories.individual.heat_flux_tauber_leadingedge     = nan;
+            evolutions(k).trajectories.individual.body_fixed_thrust_load_x         = nan;
+            evolutions(k).trajectories.individual.body_fixed_thrust_load_y         = nan;
+            evolutions(k).trajectories.individual.body_fixed_thrust_load_z         = nan;
+            evolutions(k).trajectories.individual.bending_moment                   = nan;
+            evolutions(k).trajectories.individual.local_gravity_1                  = nan;
+            evolutions(k).trajectories.individual.local_gravity_2                  = nan;
+            evolutions(k).trajectories.individual.skip_suppression_limit           = nan;
+            evolutions(k).trajectories.individual.bodyflap_deflection              = nan;
+            evolutions(k).trajectories.individual.increment_Cm_bodyflap            = nan;
+            evolutions(k).trajectories.individual.increment_Cm_bodyflap_dif        = nan;
+            evolutions(k).trajectories.individual.body_fixed_total_load_x          = nan;
+            evolutions(k).trajectories.individual.body_fixed_total_load_y          = nan;
+            evolutions(k).trajectories.individual.body_fixed_total_load_z          = nan;
+            evolutions(k).trajectories.individual.body_fixed_total_g_load_x        = nan;
+            evolutions(k).trajectories.individual.body_fixed_total_g_load_y        = nan;
+            evolutions(k).trajectories.individual.body_fixed_total_g_load_z        = nan;
+            evolutions(k).trajectories.individual.body_fixed_total_g_load_mag      = nan;
+            evolutions(k).trajectories.individual.body_fixed_aero_load_x           = nan;
+            evolutions(k).trajectories.individual.body_fixed_aero_load_y           = nan;
+            evolutions(k).trajectories.individual.body_fixed_aero_load_z           = nan;
+            evolutions(k).trajectories.individual.aero_force_coefficient_C_D       = nan;
+            evolutions(k).trajectories.individual.aero_force_coefficient_C_S       = nan;
+            evolutions(k).trajectories.individual.aero_force_coefficient_C_L       = nan;
+            evolutions(k).trajectories.individual.aero_moment_coefficient_C_l      = nan;
+            evolutions(k).trajectories.individual.aero_moment_coefficient_C_m      = nan;
+            evolutions(k).trajectories.individual.aero_moment_coefficient_C_n      = nan;
+            evolutions(k).trajectories.individual.heat_flux_chapman_nose           = nan;
+            evolutions(k).trajectories.individual.localDensity                     = nan;
+            evolutions(k).trajectories.individual.passenger_fixed_total_g_load_x   = nan;
+            evolutions(k).trajectories.individual.passenger_fixed_total_g_load_y   = nan;
+            evolutions(k).trajectories.individual.passenger_fixed_total_g_load_z   = nan;
+            evolutions(k).trajectories.individual.currentLiftForce                 = nan;
+            evolutions(k).trajectories.individual.headingErrorDeadband             = nan;
+            evolutions(k).trajectories.individual.tempBankAngle                    = nan;
+            evolutions(k).trajectories.individual.reversalConditional              = nan;
+            evolutions(k).trajectories.individual.bank_angle_reversal_trigger      = nan;
+            evolutions(k).trajectories.individual.wall_temperature_chapman             = nan;
+            evolutions(k).trajectories.individual.wall_temperature_tauber_stagnation   = nan;
+            evolutions(k).trajectories.individual.wall_temperature_tauber_flatplate    = nan;
+            evolutions(k).trajectories.individual.heat_flux_tauber_stagnation          = nan;
+            evolutions(k).trajectories.individual.heat_flux_tauber_flatplate           = nan;
+            evolutions(k).trajectories.individual.groundtrack_covered                  = nan;
+            evolutions(k).trajectories.individual.groundtrack_difference               = nan;
+            evolutions(k).trajectories.individual.time_of_flight                       = nan;
+            evolutions(k).trajectories.individual.flight_path_angle_rate               = nan;
+            evolutions(k).trajectories.individual.cumulative_distance_travelled        = nan;
+            evolutions(k).trajectories.individual.elevon_deflection                    = nan;
+            evolutions(k).trajectories.individual.thrustMagnitude                  = nan;
+            evolutions(k).trajectories.individual.speedOfSound                  = nan;
+            
+            
             
             
             evolutions(k).trajectories.individual.acc_aero_x        = nan;
@@ -144,25 +197,32 @@ switch option
             evolutions(k).trajectories.individual.DV_throttle_setting_Descent       = nan;
             
             
-            evolutions(k).max_tof             = nan;
-            evolutions(k).max_interp_E_mapped_Ascent = nan;
+            
+            evolutions(k).trajectories.individual.headingErrorDeadBand_distance    = nan;
+            evolutions(k).trajectories.individual.headingErrorDeadBand_LB          = nan;
+            evolutions(k).trajectories.individual.headingErrorDeadBand_UP          = nan;
+            
+            
+            evolutions(k).max_tof                     = nan;
+            evolutions(k).max_interp_E_mapped_Ascent  = nan;
             evolutions(k).max_interp_E_mapped_Descent = nan;
-            evolutions(k).individuals.v_i     = nan;
-            evolutions(k).individuals.gamma_i = nan;
-            evolutions(k).individuals.chi_i   = nan;
-            evolutions(k).fitness.dif_norm  = nan;
-            evolutions(k).fitness.dif_lat   = nan;
-            evolutions(k).fitness.dif_lon   = nan;
-            evolutions(k).fitness.dif_d_deg = nan;
-            evolutions(k).fitness.dif_h     = nan;
-            evolutions(k).fitness.tof       = nan;
-            evolutions(k).best(3).criteria  = nan;
-            evolutions(k).best(3).v_i       = nan;
-            evolutions(k).best(3).gamma_i   = nan;
-            evolutions(k).best(3).chi_i     = nan;
-            evolutions(k).best(3).dif_d_deg = nan;
-            evolutions(k).best(3).dif_h     = nan;
-            evolutions(k).best(3).tof       = nan;
+            evolutions(k).individuals.v_i             = nan;
+            evolutions(k).individuals.gamma_i         = nan;
+            evolutions(k).individuals.chi_i           = nan;
+            evolutions(k).fitness.dif_norm            = nan;
+            evolutions(k).fitness.dif_lat             = nan;
+            evolutions(k).fitness.dif_lon             = nan;
+            evolutions(k).fitness.dif_d_deg           = nan;
+            evolutions(k).fitness.dif_h               = nan;
+            evolutions(k).fitness.tof                 = nan;
+            evolutions(k).best(3).criteria            = nan;
+            evolutions(k).best(3).v_i                 = nan;
+            evolutions(k).best(3).gamma_i             = nan;
+            evolutions(k).best(3).chi_i               = nan;
+            evolutions(k).best(3).dif_d_deg           = nan;
+            evolutions(k).best(3).dif_h               = nan;
+            evolutions(k).best(3).tof                 = nan;
+            evolutions(k).best(3).max_tof             = nan;
             
         end
         

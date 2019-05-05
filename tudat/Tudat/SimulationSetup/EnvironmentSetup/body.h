@@ -1003,7 +1003,7 @@ public:
     {
         return vehicleSystems_;
     }
-    std::shared_ptr< bislip::VehicleSystems > getBislipSystems( )
+    std::shared_ptr< bislip::BislipVehicleSystems > getBislipSystems( )
     {
         return bislipSystems_;
     }
@@ -1017,7 +1017,7 @@ public:
     {
         vehicleSystems_ = vehicleSystems;
     }
-    void setBislipSystems( const std::shared_ptr< bislip::VehicleSystems > bislipSystems )
+    void setBislipSystems( const std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems )
     {
         bislipSystems_ = bislipSystems;
     }
@@ -1373,7 +1373,7 @@ private:
 
     //! Container object with hardware systems present on/in body (typically only non-nullptr for a vehicle).
     std::shared_ptr< system_models::VehicleSystems > vehicleSystems_;
-    std::shared_ptr< bislip::VehicleSystems > bislipSystems_;
+    std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems_;
 
 };
 

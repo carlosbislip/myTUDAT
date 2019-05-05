@@ -16,9 +16,11 @@ set(BISLIP_SOURCES
 # Set the header files.
 set(BISLIP_HEADERS
     "${SRCROOT}${BISLIPDIR}/bislipHeaders.h"
+    "${SRCROOT}${BISLIPDIR}/bislipUtilities.h"
     "${SRCROOT}${BISLIPDIR}/bislipVariables.h"
     "${SRCROOT}${BISLIPDIR}/bislipParameters.h"
     "${SRCROOT}${BISLIPDIR}/bislipVehicleSystems.h"
+    "${SRCROOT}${BISLIPDIR}/bislipProblemInput.h"
 
   )
 

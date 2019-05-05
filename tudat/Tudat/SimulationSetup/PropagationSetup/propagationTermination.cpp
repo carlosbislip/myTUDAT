@@ -9,6 +9,7 @@
  */
 
 #include "Tudat/SimulationSetup/PropagationSetup/propagationTermination.h"
+#include "Tudat/Bislip/bislipVariables.h"
 
 namespace tudat
 {

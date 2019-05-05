@@ -1,0 +1,7 @@
+Starting Epoch
+Max. Elapsed Time
+Propagation Step Size
+Guidance Step Size
+Debug Info
+Control Nodes - Ascent
+Control Nodes - Descent

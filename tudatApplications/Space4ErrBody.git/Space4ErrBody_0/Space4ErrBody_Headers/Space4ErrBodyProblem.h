@@ -65,8 +65,15 @@
 #include <Tudat/Astrodynamics/SystemModels/vehicleSystems.h>
 */
 #include "updateGuidance.h"
-#include "applicationOutput_tudat.h"
-#include "applicationOutput_pagmo.h"
+#include <Tudat/Bislip/bislipUtilities.h>
+#include <Tudat/Bislip/bislipProblemInput.h>
+
+#include <pagmo/pagmo.hpp>
+
+//#include "getPagmoAlgorithm.h"
+//#include "bislipUtilities.h"
+//#include "applicationOutput_tudat.h"
+//#include "applicationOutput_pagmo.h"
 
 
 using namespace pagmo;
@@ -79,31 +86,8 @@ struct Space4ErrBodyProblem {
     Space4ErrBodyProblem( ) { }
 
     //! Constructor.
-    Space4ErrBodyProblem( const std::vector< std::vector< double > > &bounds,
-                          const std::string &problem_name,
-                          const std::string &vehicleName,
-                          const std::vector< std::string > &parameterList_Ascent,
-                          const std::vector< double > &parameterBounds_Ascent,
-                          const std::vector< std::string > &parameterList_Descent,
-                          const std::vector< double > &parameterBounds_Descent,
-                          const std::vector< double > &vehicleParameterValues,
-                          const std::vector< std::string > &aeroCoeffFileList,
-                          const std::vector< double > &simulation_settingsValues,
-                          const std::vector< double > &initialConditionsValues,
-                          const std::vector< double > &terminationConditionsValues,
-                          const std::vector< double > &output_settingsValues,
-                          const std::string &outputSubFolder,
-                          const Eigen::Vector6d &initialState_spherical,
-                          const std::vector< std::string > &centralBodies,
-                          const std::vector< std::string > &bodiesToIntegrate,
-                          const std::map< bislip::Parameters::Optimization, std::pair < double, double > > &Bounds_Ascent,
-                          const std::map< bislip::Parameters::Optimization, std::pair < double, double > > &Bounds_Descent,
-                          const tudat::simulation_setup::NamedBodyMap& bodyMap,
-                          const tudat::basic_astrodynamics::AccelerationMap &accelerationsMap,
-                          const std::shared_ptr< tudat::ephemerides::RotationalEphemeris > &earthRotationalEphemeris,
-                          const std::shared_ptr< tudat::propagators::DependentVariableSaveSettings > &dependentVariablesToSave,
-                          const std::shared_ptr< tudat::propagators::PropagationTerminationSettings > &terminationSettings_Ascent,
-                          const std::shared_ptr< tudat::propagators::PropagationTerminationSettings > &terminationSettings_Descent);
+    Space4ErrBodyProblem( const std::shared_ptr< bislip::ProblemInput > &problemInput,
+                          const tudat::simulation_setup::NamedBodyMap& bodyMap );
 
     //! Calculate the fitness as a function of the parameter vector input_data
     std::vector< double > fitness( const std::vector< double >  &x ) const;
@@ -117,7 +101,8 @@ struct Space4ErrBodyProblem {
 
     std::vector< double >::size_type get_nobj() const
     {
-        return 4u;
+        //return 33u;
+        return 7u;
     }
     std::vector< double >::size_type get_nec() const
     {
@@ -128,39 +113,14 @@ struct Space4ErrBodyProblem {
     template < typename Archive >
     void serialize( Archive &ar )
     {
-        ar( problemBounds_ );
+        ar( problemInput_->getDecisionVectorBounds() );
     }
 
 private:
 
-    const std::vector< std::vector< double > > problemBounds_;
-    const std::string problem_name_;
-    const std::string vehicleName_;
-    const std::vector< std::string > parameterList_Ascent_;
-    const std::vector< double > parameterBounds_Ascent_;
-    const std::vector< std::string > parameterList_Descent_;
-    const std::vector< double > parameterBounds_Descent_;
-    const std::vector< double > vehicleParameterValues_;
-    const std::vector< std::string > aeroCoeffFileList_;
-    const std::vector< double > simulation_settingsValues_;
-    const std::vector< double > initialConditionsValues_;
-    const std::vector< double > terminationConditionsValues_;
-    const std::vector< double > output_settingsValues_;
-    const std::string outputSubFolder_;
-    const Eigen::Vector6d initialState_spherical_;
-  //  const std::vector< std::string > bodiesWithMassToPropagate_;
-    const std::vector< std::string > centralBodies_;
-    const std::vector< std::string > bodiesToIntegrate_;
-    const std::map< bislip::Parameters::Optimization, std::pair < double, double > > Bounds_Ascent_;
-    const std::map< bislip::Parameters::Optimization, std::pair < double, double > > Bounds_Descent_;
+    const std::shared_ptr< bislip::ProblemInput > problemInput_;
     const tudat::simulation_setup::NamedBodyMap bodyMap_;
-    const tudat::basic_astrodynamics::AccelerationMap accelerationsMap_;
-    const std::shared_ptr< tudat::ephemerides::RotationalEphemeris > earthRotationalEphemeris_;
-    const std::shared_ptr< tudat::propagators::DependentVariableSaveSettings > dependentVariablesToSave_;
-    const std::shared_ptr< tudat::propagators::PropagationTerminationSettings > terminationSettings_Ascent_;
-    const std::shared_ptr< tudat::propagators::PropagationTerminationSettings > terminationSettings_Descent_;
-   // const std::map< std::string, std::shared_ptr< tudat::basic_astrodynamics::MassRateModel > > massRateModels_;
-   // const std::shared_ptr< tudat::propagators::SingleArcPropagatorSettings< double > > massPropagatorSettings_Ascent_;
+
 };
 
 //PAGMO_REGISTER_PROBLEM(pagmo::Space4ErrBody)

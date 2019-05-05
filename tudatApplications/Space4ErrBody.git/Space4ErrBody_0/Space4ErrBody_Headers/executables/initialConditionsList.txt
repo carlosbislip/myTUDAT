@@ -1,5 +1,0 @@
-Latitude         [ deg ]
-Longitude        [ deg ]
-Height           [ m   ]
-Mach             [ -   ]
-Flight-path Angle[ deg ]

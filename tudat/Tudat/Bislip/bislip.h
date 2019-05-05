@@ -471,15 +471,15 @@ bislip::Parameters::Optimization passOptimizationParameter (
 
 std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > chooseGuidanceInterpolator (
         const bislip::Parameters::Optimization &parameter,
-        const std::shared_ptr< bislip::VehicleSystems > &bislipSystems);
+        const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems);
 
 std::pair < double, double > chooseGuidanceBounds (
         const bislip::Parameters::Optimization &parameter,
-        const std::shared_ptr< bislip::VehicleSystems > &bislipSystems);
+        const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems);
 
 double evaluateGuidanceInterpolator (
         const bislip::Parameters::Optimization &parameter,
-        const std::shared_ptr< bislip::VehicleSystems > &bislipSystems,
+        const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems,
         const double &height,
         const double &airspeed,
         const double &E_max);
@@ -487,19 +487,19 @@ double evaluateGuidanceInterpolator (
 Eigen::Vector6d computeCurrentCoefficients (
         const std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > &flightConditions,
         const std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > &coefficientInterface,
-        const std::shared_ptr< bislip::VehicleSystems > &bislipSystems);
+        const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems);
 
 Eigen::Vector3d computeBodyFixedThrustDirection (
         const std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > &flightConditions,
-        const std::shared_ptr< bislip::VehicleSystems > &bislipSystems);
+        const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems);
 
 double computeThrustMagnitude (
         const std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > &flightConditions,
-        const std::shared_ptr< bislip::VehicleSystems > &bislipSystems);
+        const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems);
 
 Eigen::Vector3d computeBodyFixedThrustVector (
         const std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > &flightConditions,
-        const std::shared_ptr< bislip::VehicleSystems > &bislipSystems);
+        const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems);
 
 bool determineEngineStatus (
         const double &currentMass,
@@ -513,7 +513,7 @@ Eigen::Vector2d computeLocalGravity (
 double computeEquilibriumGlideLimit (const tudat::simulation_setup::NamedBodyMap& bodyMap );
 //        const std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > &flightConditions,
   //      const std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > &coefficientInterface,
-    //    const std::shared_ptr< bislip::VehicleSystems > &bislipSystems,
+    //    const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems,
       //  const double &currentMass );
 
 double computeHeatingRate (
@@ -530,7 +530,7 @@ double computeStagnationHeatFlux (
 double computeFlatPlateHeatFlux (
         const std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > &flightConditions,
         const std::shared_ptr< tudat::system_models::VehicleSystems > &vehicleSystems,
-        const std::shared_ptr< bislip::VehicleSystems > &bislipSystems);
+        const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems);
 
 double computeStagnationHeat (
         const double &airdensity,
@@ -566,7 +566,7 @@ double computePenalty (
 double computeBodyflapCmIncrement (
         const std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > &flightConditions,
         const std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > &coefficientInterface,
-        const std::shared_ptr< bislip::VehicleSystems > &bislipSystems );
+        const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems );
 
 //bool StopOrNot (const tudat::simulation_setup::NamedBodyMap& bodyMap,
 //                const std::string &vehicleName,

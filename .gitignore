@@ -72,3 +72,23 @@ Tudat/External/SpiceInterface/Kernels/
 
 tudatApplications/Space4ErrBody.git/.git
 *.DS_Store
+/tudat/Tudat/External/SpiceInterface/Kernels/de-403-masses.tpc
+/tudat/Tudat/External/SpiceInterface/Kernels/de421.bsp
+/tudat/Tudat/External/SpiceInterface/Kernels/de430_jup310_small.bsp
+/tudat/Tudat/External/SpiceInterface/Kernels/de430_jup310_small.inp
+/tudat/Tudat/External/SpiceInterface/Kernels/de430_mar097_small.bsp
+/tudat/Tudat/External/SpiceInterface/Kernels/de430_mar097_small.inp
+/tudat/Tudat/External/SpiceInterface/Kernels/de430_small.bsp
+/tudat/Tudat/External/SpiceInterface/Kernels/de430_small.inp
+/tudat/Tudat/External/SpiceInterface/Kernels/earth_fixed.tf
+/tudat/Tudat/External/SpiceInterface/Kernels/earth_latest_high_prec.bpc
+/tudat/Tudat/External/SpiceInterface/Kernels/gm_de431.tpc
+/tudat/Tudat/External/SpiceInterface/Kernels/jup310_small.bsp
+/tudat/Tudat/External/SpiceInterface/Kernels/jup310_small.inp
+/tudat/Tudat/External/SpiceInterface/Kernels/mar097_small.bsp
+/tudat/Tudat/External/SpiceInterface/Kernels/mar097_small.inp
+/tudat/Tudat/External/SpiceInterface/Kernels/moon_080317.tf
+/tudat/Tudat/External/SpiceInterface/Kernels/moon_assoc_pa.tf
+/tudat/Tudat/External/SpiceInterface/Kernels/naif0012.tls
+/tudat/Tudat/External/SpiceInterface/Kernels/pck00009.tpc
+/tudat/Tudat/External/SpiceInterface/Kernels/pck00010.tpc

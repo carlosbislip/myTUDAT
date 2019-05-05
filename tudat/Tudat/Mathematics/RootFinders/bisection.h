@@ -99,11 +99,9 @@ public:
                    const DataType lowerBound = -1.0, const DataType upperBound = 1.0 ) :
         RootFinderCore< DataType >(
             std::bind(
-                &termination_conditions::RootRelativeToleranceTerminationCondition< DataType >::
-                checkTerminationCondition, std::make_shared<
-                termination_conditions::RootRelativeToleranceTerminationCondition< DataType > >(
-                    relativeXTolerance, maxIterations ), std::placeholders::_1, std::placeholders::_2,
-                std::placeholders::_3, std::placeholders::_4, std::placeholders::_5 ) ),
+                &termination_conditions::RootRelativeToleranceTerminationCondition< DataType >::checkTerminationCondition,
+                std::make_shared<termination_conditions::RootRelativeToleranceTerminationCondition< DataType > >(relativeXTolerance, maxIterations ),
+                std::placeholders::_1, std::placeholders::_2,std::placeholders::_3, std::placeholders::_4, std::placeholders::_5 ) ),
         lowerBound_( lowerBound ), upperBound_( upperBound )
     { }
 

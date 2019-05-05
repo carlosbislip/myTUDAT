@@ -1,0 +1,8 @@
+Node Interval
+Angle of Attack
+Bank Angle
+Thrust Elevation Angle
+Thrust Azimuth Angle
+Throttle Setting
+Final Velocity
+Skip Suppression

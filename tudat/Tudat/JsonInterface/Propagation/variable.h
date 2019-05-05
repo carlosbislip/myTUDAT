@@ -111,12 +111,45 @@ static std::map< PropagationDependentVariables, std::string > dependentVariableT
     { angular_distance_to_go, "angularDistanceToGo" },
     { heading_to_target, "headingToTarget" },
     { heading_error, "headingError" },
-    { heat_rate_leading_edge, "heatRateLeadingEdge" },
+    { heat_flux_tauber, "heatFluxTauber" },
     { body_fixed_thrust_vector, "bodyFixedThrustVector" },
     { bending_moment, "bendingMoment" },
     { local_gravity, "localGravity" },
-    { equilibrium_glide_limit, "equilibriumGlideLimit" }
-    { increment_Cm_bodyflap, "incrementCmBodyFlap" }
+    { skip_suppression_limit, "skipSuppressionLimit" },
+    { bodyflap_deflection_moment_coefficient_increment, "bodyFlapDeflectionMomentCoefficientIncrement" },
+    { bodyflap_deflection_moment_coefficient_increment_dif, "bodyFlapDeflectionMomentCoefficientIncrementDif" },
+    { body_fixed_total_load_vector, "bodyFixedTotalLoadVector" },
+    { body_fixed_total_g_load_vector, "bodyFixedTotal_g_LoadVector" },
+    { body_fixed_total_g_load_magnitude, "bodyFixedTotal_g_LoadMagnitude" },
+    { body_fixed_aero_load_vector, "bodyFixedAeroLoadVector" },
+    { bank_reversal_trigger, "bankReversalTrigger" },
+    { heat_flux_chapman, "heatFluxChapman" },
+    { passenger_fixed_total_g_load_vector, "passengerFixedTotal_g_LoadVector" },
+    { commanded_throttle_setting, "commandedThrottleSetting" },
+    { commanded_thrust_elevation_angle, "commandedThrustElevationAngle" },
+    { commanded_thrust_azimuth_angle, "commandedThrustAzimuthAngle" },
+    { commanded_angle_of_attack, "commandedAngleOfAttack" },
+    { commanded_bank_angle, "commandedBankAngle" },
+    { current_lift_magnitude, "currentLiftForce" },
+    { current_heading_error_deadband, "currentHeadingErrorDeadBand" },
+    { reversal_conditional, "reversalConditional" },
+    { wall_temperature_chapman, "wallTemperatureChapman" },
+    { wall_temperature_tauber_stagnation, "wallTemperatureTauberStagnation" },
+    { wall_temperature_tauber_flatplate, "wallTemperatureTauberFlatPlate" },
+    { heat_flux_tauber_stagnation, "heatFluxTauberStagnation" },
+    { heat_flux_tauber_flatplate, "heatFluxTauberFlatPlate" },
+    { temp_bank_angle, "tempBankAngle" },
+    { cumulative_angular_distance_travelled, "cumulativeAngularDistanceTravelled" },
+    { groundtrack_difference, "groundtrackDifference" },
+    { time_of_flight, "timeOfFlight" },
+    { flight_path_angle_rate, "flightPathAngleRate" },
+    { cumulative_cartesian_distance_travelled, "cumulativeCartesianDistanceTravelled" },
+    { thrust_force_magnitude, "thrustForceMagnitude" }
+
+
+
+
+
 };
 
 //! `PropagationDependentVariables` not supported by `json_interface`.

@@ -215,6 +215,21 @@ std::string getDependentVariableName( const PropagationDependentVariables propag
     case evaluated_bank_angle:
         variableName = "Evaluated bank angle ";
         break;
+    case commanded_throttle_setting:
+        variableName = "Commanded throttle setting ";
+        break;
+    case commanded_thrust_elevation_angle:
+        variableName = "Commanded thrust elevation angle ";
+        break;
+    case commanded_thrust_azimuth_angle:
+        variableName = "Commanded thrust azimuth angle ";
+        break;
+    case commanded_angle_of_attack:
+        variableName = "Commanded angle of attack ";
+        break;
+    case commanded_bank_angle:
+        variableName = "Commanded bank angle ";
+        break;
     case current_mass:
         variableName = "Current mass ";
         break;
@@ -233,8 +248,8 @@ std::string getDependentVariableName( const PropagationDependentVariables propag
     case heading_error:
         variableName = "Heading error ";
         break;
-    case heat_rate_leading_edge:
-        variableName = "Leading edge heate rate ";
+    case heat_flux_tauber:
+        variableName = "Heat Flux - Tauber ";
         break;
     case body_fixed_thrust_vector:
         variableName = "Body-fixed thrust vector ";
@@ -245,12 +260,88 @@ std::string getDependentVariableName( const PropagationDependentVariables propag
     case local_gravity:
         variableName = "Local gravity ";
         break;
-    case equilibrium_glide_limit:
-        variableName = "Equilibrium glide limit ";
+    case skip_suppression_limit:
+        variableName = "Skip suppression limit ";
         break;
-    case increment_Cm_bodyflap:
-        variableName = "Moment coefficient increment due to bodyflap ";
+    case bodyflap_deflection_moment_coefficient_increment:
+        variableName = "BodyFlap deflection moment coefficient increment";
         break;
+    case bodyflap_deflection_moment_coefficient_increment_dif:
+        variableName = "BodyFlap deflection moment coefficient increment - differenced";
+        break;
+    case body_fixed_total_load_vector:
+        variableName = "Body-fixed total load vector ";
+        break;
+    case body_fixed_total_g_load_vector:
+        variableName = "Body-fixed total g-load vector ";
+        break;
+    case body_fixed_total_g_load_magnitude:
+        variableName = "Body-fixed total g-load magnitude ";
+        break;
+    case body_fixed_aero_load_vector:
+        variableName = "Body-fixed aerodynamic load vector ";
+        break;
+    case bank_reversal_trigger:
+        variableName = "Bank reversal trigger ";
+        break;
+    case heat_flux_chapman:
+        variableName = "Heat Flux - Chapman ";
+        break;
+    case passenger_fixed_total_g_load_vector:
+        variableName = "Passenger-fixed total g-load vector ";
+        break;
+    case current_lift_magnitude:
+        variableName = "Current Lift Force ";
+        break;
+    case current_heading_error_deadband:
+        variableName = "Current Heading Error Deadband ";
+        break;
+    case reversal_conditional:
+        variableName = "Reversal Conditional ";
+        break;
+    case wall_temperature_chapman:
+        variableName = "Wall Temperature - Chapman  ";
+        break;
+    case wall_temperature_tauber_stagnation:
+        variableName = "Wall Temperature - Tauber - Stagnation ";
+        break;
+    case wall_temperature_tauber_flatplate:
+        variableName = "Wall Temperature - Tauber Flat Plate ";
+        break;
+    case heat_flux_tauber_stagnation:
+        variableName = "Heat Flux - Tauber - Stagnation ";
+        break;
+    case heat_flux_tauber_flatplate:
+        variableName = "Heat Flux - Tauber - Flat Plate ";
+        break;
+    case temp_bank_angle:
+        variableName = "Temporary Bank Angle ";
+        break;
+    case cumulative_angular_distance_travelled:
+        variableName = "Groundtrack Covered ";
+        break;
+    case groundtrack_difference:
+        variableName = "Groundtrack Difference ";
+        break;
+    case time_of_flight:
+        variableName = "Time of Flight ";
+        break;
+    case flight_path_angle_rate:
+        variableName = "Time of Flight ";
+        break;
+    case cumulative_cartesian_distance_travelled:
+        variableName = "Cumulative Distance Travelled ";
+        break;
+    case thrust_force_magnitude:
+        variableName = "Thrust Force Magnitude ";
+        break;
+    case speed_of_sound:
+        variableName = "Speed of Sound ";
+        break;
+    case adiabatic_wall_temperature:
+        variableName = "Adiabatic Wall Temperature ";
+        break;
+
 
     default:
         std::string errorMessage = "Error, dependent variable " +

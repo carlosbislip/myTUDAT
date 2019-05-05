@@ -56,6 +56,70 @@ OutputType evaluateReferenceFunction(
 {
     return functionToEvaluate( firstInput( ) );
 }
+template< typename OutputType, typename FirstInputType, typename SecondInputType >
+OutputType evaluateBivariateReferenceFunction(
+        const std::function< OutputType( const FirstInputType&, const SecondInputType& ) > functionToEvaluate,
+        const std::function< FirstInputType( ) > firstInput,
+        const std::function< SecondInputType( ) > secondInput )
+{
+    return functionToEvaluate( firstInput( ), secondInput( ) );
+}
+template< typename OutputType, typename FirstInputType, typename SecondInputType, typename ThirdInputType >
+OutputType evaluateTrivariateReferenceFunction(
+        const std::function< OutputType( const FirstInputType&, const SecondInputType&, const ThirdInputType& ) > functionToEvaluate,
+        const std::function< FirstInputType( ) > firstInput,
+        const std::function< SecondInputType( ) > secondInput,
+        const std::function< ThirdInputType( ) > thirdInput )
+{
+    return functionToEvaluate( firstInput( ), secondInput( ), thirdInput( ) );
+}
+template< typename OutputType, typename FirstInputType, typename SecondInputType, typename ThirdInputType >
+OutputType evaluateTrivariateMixedFunction1(
+        const std::function< OutputType( const FirstInputType, const SecondInputType&, const ThirdInputType& ) > functionToEvaluate,
+        const std::function< FirstInputType( ) > firstInput,
+        const std::function< SecondInputType( ) > secondInput,
+        const std::function< ThirdInputType( ) > thirdInput )
+{
+    return functionToEvaluate( firstInput( ), secondInput( ), thirdInput( ) );
+}
+template< typename OutputType, typename FirstInputType, typename SecondInputType, typename ThirdInputType, typename FourthInputType >
+OutputType evaluateTetravariateReferenceFunction(
+        const std::function< OutputType( const FirstInputType&, const SecondInputType&, const ThirdInputType&, const FourthInputType& ) > functionToEvaluate,
+        const std::function< FirstInputType( ) > firstInput,
+        const std::function< SecondInputType( ) > secondInput,
+        const std::function< ThirdInputType( ) > thirdInput,
+        const std::function< FourthInputType( ) > fourthInput )
+{
+    return functionToEvaluate( firstInput( ), secondInput( ), thirdInput( ), fourthInput( ) );
+}
+
+template< typename OutputType, typename FirstInputType, typename SecondInputType, typename ThirdInputType, typename FourthInputType, typename FifthInputType >
+OutputType evaluatePentavariateReferenceFunction(
+        const std::function< OutputType( const FirstInputType&, const SecondInputType&, const ThirdInputType&, const FourthInputType&, const FifthInputType& ) > functionToEvaluate,
+        const std::function< FirstInputType( ) > firstInput,
+        const std::function< SecondInputType( ) > secondInput,
+        const std::function< ThirdInputType( ) > thirdInput,
+        const std::function< FourthInputType( ) > fourthInput,
+        const std::function< FifthInputType( ) > fifthInput )
+{
+    return functionToEvaluate( firstInput( ), secondInput( ), thirdInput( ), fourthInput( ), fifthInput( ) );
+}
+
+template< typename OutputType, typename FirstInputType, typename SecondInputType, typename ThirdInputType, typename FourthInputType, typename FifthInputType, typename SixthInputType >
+OutputType evaluateHexavariateReferenceFunction(
+        const std::function< OutputType( const FirstInputType&, const SecondInputType&, const ThirdInputType&, const FourthInputType&, const FifthInputType&, const SixthInputType& ) > functionToEvaluate,
+        const std::function< FirstInputType( ) > firstInput,
+        const std::function< SecondInputType( ) > secondInput,
+        const std::function< ThirdInputType( ) > thirdInput,
+        const std::function< FourthInputType( ) > fourthInput,
+        const std::function< FifthInputType( ) > fifthInput,
+        const std::function< SixthInputType( ) > sixthInput )
+{
+    return functionToEvaluate( firstInput( ), secondInput( ), thirdInput( ), fourthInput( ), fifthInput( ), sixthInput( ) );
+}
+
+
+
 
 //! Function to evaluate a function with two input variables from function pointers
 /*!
@@ -77,8 +141,7 @@ OutputType evaluateBivariateFunction(
 */
 template< typename OutputType, typename FirstInputType, typename SecondInputType>
 OutputType evaluateBivariateFunction(
-        const std::function< OutputType( const FirstInputType, const SecondInputType ) >
-        functionToEvaluate,
+        const std::function< OutputType( const FirstInputType, const SecondInputType ) > functionToEvaluate,
         const std::function< FirstInputType( ) > firstInput,
         const std::function< SecondInputType( ) > secondInput )
 {
@@ -97,8 +160,7 @@ OutputType evaluateBivariateFunction(
  */
 template< typename OutputType, typename FirstInputType, typename SecondInputType, typename ThirdInputType >
 OutputType evaluateTrivariateFunction(
-        const std::function< OutputType( const FirstInputType, const SecondInputType, const ThirdInputType ) >
-        functionToEvaluate,
+        const std::function< OutputType( const FirstInputType, const SecondInputType, const ThirdInputType ) > functionToEvaluate,
         const std::function< FirstInputType( ) > firstInput,
         const std::function< SecondInputType( ) > secondInput,
         const std::function< ThirdInputType( ) > thirdInput )
@@ -107,8 +169,7 @@ OutputType evaluateTrivariateFunction(
 }
 template< typename OutputType, typename FirstInputType, typename SecondInputType, typename ThirdInputType, typename FourthInputType >
 OutputType evaluateTetravariateFunction(
-        const std::function< OutputType( const FirstInputType, const SecondInputType, const ThirdInputType, const FourthInputType ) >
-        functionToEvaluate,
+        const std::function< OutputType( const FirstInputType, const SecondInputType, const ThirdInputType, const FourthInputType ) > functionToEvaluate,
         const std::function< FirstInputType( ) > firstInput,
         const std::function< SecondInputType( ) > secondInput,
         const std::function< ThirdInputType( ) > thirdInput,
@@ -119,8 +180,7 @@ OutputType evaluateTetravariateFunction(
 
 template< typename OutputType, typename FirstInputType, typename SecondInputType, typename ThirdInputType, typename FourthInputType, typename FifthInputType >
 OutputType evaluatePentavariateFunction(
-        const std::function< OutputType( const FirstInputType, const SecondInputType, const ThirdInputType, const FourthInputType, const FifthInputType ) >
-        functionToEvaluate,
+        const std::function< OutputType( const FirstInputType, const SecondInputType, const ThirdInputType, const FourthInputType, const FifthInputType ) > functionToEvaluate,
         const std::function< FirstInputType( ) > firstInput,
         const std::function< SecondInputType( ) > secondInput,
         const std::function< ThirdInputType( ) > thirdInput,
@@ -132,8 +192,7 @@ OutputType evaluatePentavariateFunction(
 
 template< typename OutputType, typename FirstInputType, typename SecondInputType, typename ThirdInputType, typename FourthInputType, typename FifthInputType, typename SixthInputType >
 OutputType evaluateHexavariateFunction(
-        const std::function< OutputType( const FirstInputType, const SecondInputType, const ThirdInputType, const FourthInputType, const FifthInputType, const SixthInputType ) >
-        functionToEvaluate,
+        const std::function< OutputType( const FirstInputType, const SecondInputType, const ThirdInputType, const FourthInputType, const FifthInputType, const SixthInputType ) > functionToEvaluate,
         const std::function< FirstInputType( ) > firstInput,
         const std::function< SecondInputType( ) > secondInput,
         const std::function< ThirdInputType( ) > thirdInput,
@@ -990,16 +1049,51 @@ std::pair< std::function< Eigen::VectorXd( ) >, int > getVectorDependentVariable
             throw std::runtime_error( errorMessage );
         }
 
-        //  variableFunction = std::bind( &bislip::Variables::computeBodyFixedThrustVector,
-        //                                std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >( bodyMap.at( bodyWithProperty )->getFlightConditions( ) ),
-        //                                bodyMap.at( bodyWithProperty )->getBislipSystems( ) );
+        int debugInfo = bodyMap.at( bodyWithProperty )->getBislipSystems()->getDebugInfo();
+        if( debugInfo == 1 ){ std::cout << "Computing body-fixed thrust vector as a dependent variable" << std::endl; }
+
         variableFunction = std::bind( &bislip::Variables::computeBodyFixedThrustVector,
                                       bodyMap, bodyWithProperty );
+
+        if( debugInfo == 1 ){ std::cout << "Body-fixed thrust vector as a dependent variable has been calculated" << std::endl; }
+
         parameterSize = 3;
         break;
     }
+
+    case body_fixed_aero_load_vector:
+    {
+
+        if( bodyMap.at( bodyWithProperty )->getFlightConditions( )   == nullptr )
+        {
+            std::string errorMessage = "Error no atmospheric flight conditions available when requesting body-fixed thrust vector output of" +
+                    bodyWithProperty + "w.r.t." + secondaryBody;
+            throw std::runtime_error( errorMessage );
+        }
+
+        if( bodyMap.at( bodyWithProperty )->getVehicleSystems( ) == nullptr )
+        {
+            std::string errorMessage = "Error, no vehicle systems available when requesting body-fixed thrust vector output of " +
+                    bodyWithProperty + "w.r.t." + secondaryBody;
+            throw std::runtime_error( errorMessage );
+        }
+
+        int debugInfo = bodyMap.at( bodyWithProperty )->getBislipSystems()->getDebugInfo();
+        if( debugInfo == 1 ){ std::cout << "Computing body-fixed aerodynamic load vector as a dependent variable" << std::endl; }
+
+
+        variableFunction = std::bind( &bislip::Variables::computeBodyFixedAerodynamicLoad,
+                                      bodyMap, bodyWithProperty );
+
+        if( debugInfo == 1 ){ std::cout << "Body-fixed aerodynamic load vector as a dependent variable has been calculated" << std::endl; }
+
+        parameterSize = 3;
+        break;
+    }
+
     case local_gravity:
     {
+
         if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                     bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
         {
@@ -1034,7 +1128,56 @@ std::pair< std::function< Eigen::VectorXd( ) >, int > getVectorDependentVariable
         parameterSize = 2;
         break;
     }
+    case body_fixed_total_load_vector:
+    {
+        if( bodyMap.at( bodyWithProperty )->getFlightConditions( )   == nullptr )
+        {
+            std::string errorMessage = "Error no atmospheric flight conditions available when requesting body-fixed thrust vector output of" +
+                    bodyWithProperty + "w.r.t." + secondaryBody;
+            throw std::runtime_error( errorMessage );
+        }
 
+        if( bodyMap.at( bodyWithProperty )->getVehicleSystems( ) == nullptr )
+        {
+            std::string errorMessage = "Error, no vehicle systems available when requesting body-fixed thrust vector output of " +
+                    bodyWithProperty + "w.r.t." + secondaryBody;
+            throw std::runtime_error( errorMessage );
+        }
+
+        variableFunction = std::bind( &bislip::Variables::computeBodyFixedTotalLoad,
+                                      bodyMap, bodyWithProperty );
+        parameterSize = 3;
+        break;
+    }
+    case body_fixed_total_g_load_vector:
+    {
+
+        if( bodyMap.at( bodyWithProperty )->getFlightConditions( )   == nullptr )
+        {
+            std::string errorMessage = "Error no atmospheric flight conditions available when requesting body-fixed thrust vector output of" +
+                    bodyWithProperty + "w.r.t." + secondaryBody;
+            throw std::runtime_error( errorMessage );
+        }
+
+        if( bodyMap.at( bodyWithProperty )->getVehicleSystems( ) == nullptr )
+        {
+            std::string errorMessage = "Error, no vehicle systems available when requesting body-fixed thrust vector output of " +
+                    bodyWithProperty + "w.r.t." + secondaryBody;
+            throw std::runtime_error( errorMessage );
+        }
+
+        variableFunction = std::bind( &bislip::Variables::computeBodyFixedTotal_g_Load_Vector,
+                                      bodyMap, bodyWithProperty );
+        parameterSize = 3;
+        break;
+    }
+    case passenger_fixed_total_g_load_vector:
+    {
+
+        variableFunction = std::bind( &bislip::Variables::computePassengerFrameTotal_g_Load_Vector, bodyMap, bodyWithProperty );
+        parameterSize = 3;
+        break;
+    }
 
 #if( BUILD_WITH_ESTIMATION_TOOLS )
     case acceleration_partial_wrt_body_translational_state:
@@ -1392,9 +1535,15 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            variableFunction = std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
-                                          bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
-                                          bodyAerodynamicAngleVariableSaveSettings->angle_ );
+            std::function< double( ) > orientation_angle_rad = std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
+                                                                          bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
+                                                                          bodyAerodynamicAngleVariableSaveSettings->angle_ );
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, orientation_angle_rad );
+
             break;
         }
         case total_aerodynamic_g_load_variable:
@@ -1523,9 +1672,17 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            variableFunction = std::bind( &system_models::VehicleSystems::getCurrentControlSurfaceDeflection,
-                                          bodyMap.at( bodyWithProperty )->getVehicleSystems( ),
-                                          dependentVariableSettings->secondaryBody_ );
+            std::function< double( ) > deflectionAngle = std::bind( &system_models::VehicleSystems::getCurrentControlSurfaceDeflection,
+                                                                    bodyMap.at( bodyWithProperty )->getVehicleSystems( ),
+                                                                    dependentVariableSettings->secondaryBody_ );
+
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, deflectionAngle );
+
+
             break;
         }
         case total_mass_rate_dependent_variables:
@@ -1582,7 +1739,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            std::function< double( const double, const double ) > functionToEvaluate =
+            std::function< double( const double&, const double& ) > functionToEvaluate =
                     std::bind( &bislip::Variables::computeSpecificEnergy, std::placeholders::_1, std::placeholders::_2 );
 
             // Retrieve functions for airspeed and altitude.
@@ -1596,7 +1753,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                                std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                                    bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
 
-            variableFunction = std::bind( &evaluateBivariateFunction< double, double, double >,
+            variableFunction = std::bind( &evaluateBivariateReferenceFunction< double, double, double >,
                                           functionToEvaluate, firstInput, secondInput );
             break;
         }
@@ -1610,7 +1767,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            std::function< double( const double, const double, const double ) > functionToEvaluate =
+            std::function< double( const double&, const double&, const double& ) > functionToEvaluate =
                     std::bind( &bislip::Variables::computeNormalizedSpecificEnergy, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 );
 
             // Retrieve functions for airspeed and altitude.
@@ -1626,9 +1783,9 @@ std::function< double( ) > getDoubleDependentVariableFunction(
 
             // Retrieve functions for maximum Energy level.
             std::function< double( ) > thirdInput =
-                    std::bind( &bislip::VehicleSystems::getE_max, bodyMap.at( bodyWithProperty )->getBislipSystems());
+                    std::bind( &bislip::BislipVehicleSystems::getE_max, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
-            variableFunction = std::bind( &evaluateTrivariateFunction< double, double, double, double >,
+            variableFunction = std::bind( &evaluateTrivariateReferenceFunction< double, double, double, double >,
                                           functionToEvaluate, firstInput, secondInput, thirdInput );
             break;
         }
@@ -1637,53 +1794,23 @@ std::function< double( ) > getDoubleDependentVariableFunction(
             if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                         bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
             {
-                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting thrust elevation angle output of " +
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting throttle setting output of " +
                         bodyWithProperty;
                 throw std::runtime_error( errorMessage );
             }
-
-            //std::function< double( const bislip::Parameters::Optimization, const std::shared_ptr< bislip::VehicleSystems >, const double, const double, const double ) > functionToEvaluate =
-            //        std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,std::placeholders::_5 );
-
-            std::function< double( const bislip::Parameters::Optimization, const tudat::simulation_setup::NamedBodyMap&, const std::string ) > functionToEvaluate =
-                    std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 );
-
-            //! Retrieve function for parameter string
-            std::function< bislip::Parameters::Optimization( ) > firstInput =
-                    std::bind( &bislip::Variables::passOptimizationParameter,
-                               bislip::Parameters::Optimization::ThrottleSetting );
-
-            std::function< tudat::simulation_setup::NamedBodyMap&( ) > secondInput =
-                    std::bind( &bislip::Variables::passBodyMap, bodyMap );
-
-            //! Retrieve function for parameter string
-            std::function< std::string( ) > thirdInput =
-                    std::bind( &bislip::Variables::passString, bodyWithProperty );
-
-            //! Retrieve function for vehicle systems.
-            std::function< std::shared_ptr< bislip::VehicleSystems >( ) > secondInput2 =
-                    std::bind( &simulation_setup::Body::getBislipSystems, bodyMap.at( bodyWithProperty ) );
-
-            //! Retrieve functions for airspeed and altitude.
-            std::function< double( ) > thirdInput2 =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAltitude,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            std::function< double( ) > fourthInput =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAirspeed,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            //! Retrieve function for maximum Energy level.
-            std::function< double( ) > fifthInput =
-                    std::bind( &bislip::VehicleSystems::getE_max, bodyMap.at( bodyWithProperty )->getBislipSystems() );
-
-            //variableFunction = std::bind( &evaluatePentavariateFunction< double, bislip::Parameters::Optimization, std::shared_ptr< bislip::VehicleSystems >, double, double, double >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput, fifthInput );
-            //variableFunction = std::bind( &evaluateTrivariateFunction< double, bislip::Parameters::Optimization, tudat::simulation_setup::NamedBodyMap&, std::string >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput );
             variableFunction = std::bind( &bislip::Variables::evaluateGuidanceInterpolator, bislip::Parameters::Optimization::ThrottleSetting, bodyMap, bodyWithProperty );
+            break;
+        }
+        case commanded_throttle_setting:
+        {
+            if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                        bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
+            {
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting throttle setting output of " +
+                        bodyWithProperty;
+                throw std::runtime_error( errorMessage );
+            }
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getCurrentThrottleSetting, bodyMap.at( bodyWithProperty )->getBislipSystems() );
             break;
         }
         case evaluated_thrust_elevation_angle:
@@ -1695,49 +1822,31 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                         bodyWithProperty;
                 throw std::runtime_error( errorMessage );
             }
+            std::function< double( ) > evaluated_thrust_elevation_angle_deg = std::bind( &bislip::Variables::evaluateGuidanceInterpolator, bislip::Parameters::Optimization::ThrustElevationAngle, bodyMap, bodyWithProperty );
 
-            // std::function< double( const bislip::Parameters::Optimization, const std::shared_ptr< bislip::VehicleSystems >, const double, const double, const double ) > functionToEvaluate =
-            //         std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,std::placeholders::_5 );
+            //std::function< double( const double& ) > rad2deg_Def =
+            //        std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
 
-            std::function< double( const bislip::Parameters::Optimization, const tudat::simulation_setup::NamedBodyMap&, const std::string ) > functionToEvaluate =
-                    std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 );
+            //variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, evaluated_thrust_elevation_angle_rad );
+            variableFunction = evaluated_thrust_elevation_angle_deg;
 
-            //! Retrieve function for parameter string
-            std::function< bislip::Parameters::Optimization( ) > firstInput =
-                    std::bind( &bislip::Variables::passOptimizationParameter,
-                               bislip::Parameters::Optimization::ThrustElevationAngle );
+            break;
+        }
+        case commanded_thrust_elevation_angle:
+        {
+            if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                        bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
+            {
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting thrust elevation angle output of " +
+                        bodyWithProperty;
+                throw std::runtime_error( errorMessage );
+            }
+            std::function< double( ) > commanded_thrust_elevation_angle_rad = std::bind( &bislip::BislipVehicleSystems::getCurrentThrustElevationAngle, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
-            std::function< tudat::simulation_setup::NamedBodyMap&( ) > secondInput =
-                    std::bind( &bislip::Variables::passBodyMap, bodyMap );
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
 
-            //! Retrieve function for parameter string
-            std::function< std::string( ) > thirdInput =
-                    std::bind( &bislip::Variables::passString, bodyWithProperty );
-
-            //! Retrieve function for vehicle systems.
-            std::function< std::shared_ptr< bislip::VehicleSystems >( ) > secondInput2 =
-                    std::bind( &simulation_setup::Body::getBislipSystems, bodyMap.at( bodyWithProperty ) );
-
-            //! Retrieve functions for airspeed and altitude.
-            std::function< double( ) > thirdInput2 =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAltitude,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            std::function< double( ) > fourthInput =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAirspeed,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            //! Retrieve function for maximum Energy level.
-            std::function< double( ) > fifthInput =
-                    std::bind( &bislip::VehicleSystems::getE_max, bodyMap.at( bodyWithProperty )->getBislipSystems() );
-
-            //variableFunction = std::bind( &evaluatePentavariateFunction< double, bislip::Parameters::Optimization, std::shared_ptr< bislip::VehicleSystems >, double, double, double >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput, fifthInput );
-            //variableFunction = std::bind( &evaluateTrivariateFunction< double, bislip::Parameters::Optimization, tudat::simulation_setup::NamedBodyMap&, std::string >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput );
-            variableFunction = std::bind( &bislip::Variables::evaluateGuidanceInterpolator, bislip::Parameters::Optimization::ThrustElevationAngle, bodyMap, bodyWithProperty );
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, commanded_thrust_elevation_angle_rad );
             break;
         }
         case evaluated_thrust_azimuth_angle:
@@ -1745,54 +1854,34 @@ std::function< double( ) > getDoubleDependentVariableFunction(
             if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                         bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
             {
-                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting thrust elevation angle output of " +
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting thrust azimuth angle output of " +
                         bodyWithProperty;
                 throw std::runtime_error( errorMessage );
             }
+            std::function< double( ) > evaluated_thrust_azimuth_angle_deg = std::bind( &bislip::Variables::evaluateGuidanceInterpolator, bislip::Parameters::Optimization::ThrustAzimuthAngle, bodyMap, bodyWithProperty );
 
-            //std::function< double( const bislip::Parameters::Optimization, const std::shared_ptr< bislip::VehicleSystems >, const double, const double, const double ) > functionToEvaluate =
-            //        std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,std::placeholders::_5 );
+            //std::function< double( const double& ) > rad2deg_Def =
+            //       std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
 
-            std::function< double( const bislip::Parameters::Optimization, const tudat::simulation_setup::NamedBodyMap&, const std::string ) > functionToEvaluate =
-                    std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 );
+            //variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, evaluated_thrust_azimuth_angle_rad );
+            variableFunction = evaluated_thrust_azimuth_angle_deg;
+            break;
+        }
+        case commanded_thrust_azimuth_angle:
+        {
+            if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                        bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
+            {
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting thrust azimuth angle output of " +
+                        bodyWithProperty;
+                throw std::runtime_error( errorMessage );
+            }
+            std::function< double( ) > commanded_thrust_azimuth_angle_rad = std::bind( &bislip::BislipVehicleSystems::getCurrentThrustAzimuthAngle, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
-            //! Retrieve function for parameter string
-            std::function< bislip::Parameters::Optimization( ) > firstInput =
-                    std::bind( &bislip::Variables::passOptimizationParameter,
-                               bislip::Parameters::Optimization::ThrustAzimuthAngle );
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
 
-            std::function< tudat::simulation_setup::NamedBodyMap&( ) > secondInput =
-                    std::bind( &bislip::Variables::passBodyMap, bodyMap );
-
-            //! Retrieve function for parameter string
-            std::function< std::string( ) > thirdInput =
-                    std::bind( &bislip::Variables::passString, bodyWithProperty );
-
-            //! Retrieve function for vehicle systems.
-            std::function< std::shared_ptr< bislip::VehicleSystems >( ) > secondInput2 =
-                    std::bind( &simulation_setup::Body::getBislipSystems, bodyMap.at( bodyWithProperty ) );
-
-            //! Retrieve functions for airspeed and altitude.
-            std::function< double( ) > thirdInput2 =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAltitude,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            std::function< double( ) > fourthInput =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAirspeed,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            //! Retrieve function for maximum Energy level.
-            std::function< double( ) > fifthInput =
-                    std::bind( &bislip::VehicleSystems::getE_max, bodyMap.at( bodyWithProperty )->getBislipSystems() );
-
-            //variableFunction = std::bind( &evaluatePentavariateFunction< double, bislip::Parameters::Optimization, std::shared_ptr< bislip::VehicleSystems >, double, double, double >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput, fifthInput );
-            //variableFunction = std::bind( &evaluateTrivariateFunction< double, bislip::Parameters::Optimization, tudat::simulation_setup::NamedBodyMap&, std::string >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput );
-            variableFunction = std::bind( &bislip::Variables::evaluateGuidanceInterpolator, bislip::Parameters::Optimization::ThrustAzimuthAngle, bodyMap, bodyWithProperty );
-
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, commanded_thrust_azimuth_angle_rad );
             break;
         }
         case evaluated_angle_of_attack:
@@ -1800,55 +1889,34 @@ std::function< double( ) > getDoubleDependentVariableFunction(
             if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                         bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
             {
-                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting thrust elevation angle output of " +
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting angle of attack output of " +
                         bodyWithProperty;
                 throw std::runtime_error( errorMessage );
             }
+            std::function< double( ) > evaluated_angle_of_attack_deg = std::bind( &bislip::Variables::evaluateGuidanceInterpolator, bislip::Parameters::Optimization::AngleOfAttack, bodyMap, bodyWithProperty );
 
+            //std::function< double( const double& ) > rad2deg_Def =
+            //        std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
 
-            //std::function< double( const bislip::Parameters::Optimization, const std::shared_ptr< bislip::VehicleSystems >, const double, const double, const double ) > functionToEvaluate =
-            //        std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,std::placeholders::_5 );
+            //variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, evaluated_angle_of_attack_rad );
+            variableFunction = evaluated_angle_of_attack_deg;
+            break;
+        }
+        case commanded_angle_of_attack:
+        {
+            if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                        bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
+            {
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting angle of attack output of " +
+                        bodyWithProperty;
+                throw std::runtime_error( errorMessage );
+            }
+            std::function< double( ) > commanded_angle_of_attack_rad  = std::bind( &bislip::BislipVehicleSystems::getCurrentAngleOfAttack, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
-            std::function< double( const bislip::Parameters::Optimization, const tudat::simulation_setup::NamedBodyMap&, const std::string ) > functionToEvaluate =
-                    std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 );
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
 
-            //! Retrieve function for parameter string
-            std::function< bislip::Parameters::Optimization( ) > firstInput =
-                    std::bind( &bislip::Variables::passOptimizationParameter,
-                               bislip::Parameters::Optimization::AngleOfAttack );
-
-            std::function< tudat::simulation_setup::NamedBodyMap&( ) > secondInput =
-                    std::bind( &bislip::Variables::passBodyMap, bodyMap );
-
-            //! Retrieve function for parameter string
-            std::function< std::string( ) > thirdInput =
-                    std::bind( &bislip::Variables::passString, bodyWithProperty );
-
-            //! Retrieve function for vehicle systems.
-            std::function< std::shared_ptr< bislip::VehicleSystems >( ) > secondInput2 =
-                    std::bind( &simulation_setup::Body::getBislipSystems, bodyMap.at( bodyWithProperty ) );
-
-            //! Retrieve functions for airspeed and altitude.
-            std::function< double( ) > thirdInput2 =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAltitude,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            std::function< double( ) > fourthInput =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAirspeed,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            //! Retrieve function for maximum Energy level.
-            std::function< double( ) > fifthInput =
-                    std::bind( &bislip::VehicleSystems::getE_max, bodyMap.at( bodyWithProperty )->getBislipSystems() );
-
-            //variableFunction = std::bind( &evaluatePentavariateFunction< double, bislip::Parameters::Optimization, std::shared_ptr< bislip::VehicleSystems >, double, double, double >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput, fifthInput );
-            //variableFunction = std::bind( &evaluateTrivariateFunction< double, bislip::Parameters::Optimization, tudat::simulation_setup::NamedBodyMap&, std::string >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput );
-            variableFunction = std::bind( &bislip::Variables::evaluateGuidanceInterpolator, bislip::Parameters::Optimization::AngleOfAttack, bodyMap, bodyWithProperty );
-
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, commanded_angle_of_attack_rad );
             break;
         }
         case evaluated_bank_angle:
@@ -1856,54 +1924,36 @@ std::function< double( ) > getDoubleDependentVariableFunction(
             if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                         bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
             {
-                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting thrust elevation angle output of " +
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting bank elevation angle output of " +
+                        bodyWithProperty;
+                throw std::runtime_error( errorMessage );
+            }
+            std::function< double( ) > evaluated_bank_angle_deg = std::bind( &bislip::Variables::evaluateGuidanceInterpolator, bislip::Parameters::Optimization::BankAngle, bodyMap, bodyWithProperty );
+
+            //std::function< double( const double& ) > rad2deg_Def =
+            //      std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            //variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, evaluated_bank_angle_rad );
+            variableFunction = evaluated_bank_angle_deg;
+
+            break;
+        }
+        case commanded_bank_angle:
+        {
+            if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                        bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
+            {
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting bank angle output of " +
                         bodyWithProperty;
                 throw std::runtime_error( errorMessage );
             }
 
+            std::function< double( ) > commanded_bank_angle_rad = std::bind( &bislip::BislipVehicleSystems::getCurrentBankAngle, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
-            //std::function< double( const bislip::Parameters::Optimization, const std::shared_ptr< bislip::VehicleSystems >, const double, const double, const double ) > functionToEvaluate =
-            //        std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,std::placeholders::_5 );
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
 
-            std::function< double( const bislip::Parameters::Optimization, const tudat::simulation_setup::NamedBodyMap&, const std::string ) > functionToEvaluate =
-                    std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 );
-
-            //! Retrieve function for parameter string
-            std::function< bislip::Parameters::Optimization( ) > firstInput =
-                    std::bind( &bislip::Variables::passOptimizationParameter,
-                               bislip::Parameters::Optimization::BankAngle );
-
-            std::function< tudat::simulation_setup::NamedBodyMap&( ) > secondInput =
-                    std::bind( &bislip::Variables::passBodyMap, bodyMap );
-
-            //! Retrieve function for parameter string
-            std::function< std::string( ) > thirdInput =
-                    std::bind( &bislip::Variables::passString, bodyWithProperty );
-
-            //! Retrieve function for vehicle systems.
-            std::function< std::shared_ptr< bislip::VehicleSystems >( ) > secondInput2 =
-                    std::bind( &simulation_setup::Body::getBislipSystems, bodyMap.at( bodyWithProperty ) );
-
-            //! Retrieve functions for airspeed and altitude.
-            std::function< double( ) > thirdInput2 =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAltitude,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            std::function< double( ) > fourthInput =
-                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAirspeed,
-                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
-                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
-
-            //! Retrieve function for maximum Energy level.
-            std::function< double( ) > fifthInput =
-                    std::bind( &bislip::VehicleSystems::getE_max, bodyMap.at( bodyWithProperty )->getBislipSystems() );
-
-            //variableFunction = std::bind( &evaluatePentavariateFunction< double, bislip::Parameters::Optimization, std::shared_ptr< bislip::VehicleSystems >, double, double, double >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput, fifthInput );
-            //variableFunction = std::bind( &evaluateTrivariateFunction< double, bislip::Parameters::Optimization, tudat::simulation_setup::NamedBodyMap&, std::string >,
-            //                             functionToEvaluate, firstInput, secondInput, thirdInput );
-            variableFunction = std::bind( &bislip::Variables::evaluateGuidanceInterpolator, bislip::Parameters::Optimization::BankAngle, bodyMap, bodyWithProperty );
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, commanded_bank_angle_rad );
             break;
         }
         case current_mass:
@@ -1915,9 +1965,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                         bodyWithProperty + "w.r.t." + secondaryBody;
                 throw std::runtime_error( errorMessage );
             }
-
             variableFunction = std::bind( &simulation_setup::Body::getBodyMass, bodyMap.at( bodyWithProperty ) );
-
             break;
         }
         case engine_status:
@@ -1930,7 +1978,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            std::function< double( const double, const double ) > functionToEvaluate =
+            std::function< double( const double&, const double& ) > functionToEvaluate =
                     std::bind( &bislip::Variables::determineEngineStatus, std::placeholders::_1, std::placeholders::_2 );
 
             // Retrieve functions for current mass and landing mass.
@@ -1939,7 +1987,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
             std::function< double( ) > secondInput =
                     std::bind( &system_models::VehicleSystems::getDryMass, bodyMap.at( bodyWithProperty )->getVehicleSystems() );
 
-            variableFunction = std::bind( &evaluateBivariateFunction< double, double, double >,
+            variableFunction = std::bind( &evaluateBivariateReferenceFunction< double, double, double >,
                                           functionToEvaluate, firstInput, secondInput );
 
             break;
@@ -1954,14 +2002,14 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            std::function< double( const double, const double, const double, const double ) > functionToEvaluate =
+            std::function< double( const double&, const double&, const double&, const double& ) > functionToEvaluate =
                     std::bind( &bislip::Variables::computeAngularDistance, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4 );
 
             // Retrieve functions for initial coordinates.
             std::function< double( ) > firstInput =
-                    std::bind( &bislip::VehicleSystems::getInitialLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+                    std::bind( &bislip::BislipVehicleSystems::getInitialLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
             std::function< double( ) > secondInput =
-                    std::bind( &bislip::VehicleSystems::getInitialLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+                    std::bind( &bislip::BislipVehicleSystems::getInitialLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
             // Retrieve functions for current coordinates.
             std::function< double( ) > thirdInput =
@@ -1973,8 +2021,13 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                                bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
                                tudat::reference_frames::longitude_angle );
 
-            variableFunction = std::bind( &evaluateTetravariateFunction< double, double, double, double, double >,
-                                          functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput );
+            std::function< double( ) > angular_distance_traveled_rad = std::bind( &evaluateTetravariateReferenceFunction< double, double, double, double, double >,
+                                                                                  functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput );
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, angular_distance_traveled_rad );
 
             break;
         }
@@ -1988,7 +2041,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            std::function< double( const double, const double, const double, const double ) > functionToEvaluate =
+            std::function< double( const double&, const double&, const double&, const double& ) > functionToEvaluate =
                     std::bind( &bislip::Variables::computeAngularDistance, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4 );
 
             // Retrieve functions for current coordinates.
@@ -2003,12 +2056,17 @@ std::function< double( ) > getDoubleDependentVariableFunction(
 
             // Retrieve functions for target coordinates.
             std::function< double( ) > thirdInput =
-                    std::bind( &bislip::VehicleSystems::getTargetLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
             std::function< double( ) > fourthInput =
-                    std::bind( &bislip::VehicleSystems::getTargetLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
-            variableFunction = std::bind( &evaluateTetravariateFunction< double, double, double, double, double >,
-                                          functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput );
+            std::function< double( ) > angular_distance_to_go_rad = std::bind( &evaluateTetravariateReferenceFunction< double, double, double, double, double >,
+                                                                               functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput );
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, angular_distance_to_go_rad );
 
             break;
         }
@@ -2022,8 +2080,6 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            std::function< double( const double, const double, const double, const double ) > functionToEvaluate =
-                    std::bind( &bislip::Variables::computeHeadingToTarget, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4 );
 
             // Retrieve functions for current coordinates.
             std::function< double( ) > firstInput =
@@ -2037,12 +2093,22 @@ std::function< double( ) > getDoubleDependentVariableFunction(
 
             // Retrieve functions for target coordinates.
             std::function< double( ) > thirdInput =
-                    std::bind( &bislip::VehicleSystems::getTargetLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
             std::function< double( ) > fourthInput =
-                    std::bind( &bislip::VehicleSystems::getTargetLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
-            variableFunction = std::bind( &evaluateTetravariateFunction< double, double, double, double, double >,
-                                          functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput );
+
+            std::function< double( const double&, const double&, const double&, const double& ) > headingToTarget_radDef =
+                    std::bind( &bislip::Variables::computeHeadingToTarget, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4 );
+
+            std::function< double( ) > headingToTarget_rad = std::bind( &evaluateTetravariateReferenceFunction< double, double, double, double, double >,
+                                                                        headingToTarget_radDef, firstInput, secondInput, thirdInput, fourthInput );
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, headingToTarget_rad );
+
 
             break;
         }
@@ -2056,9 +2122,6 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            std::function< double( const double, const double, const double, const double, const double ) > functionToEvaluate =
-                    std::bind( &bislip::Variables::computeHeadingError, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5 );
-
             // Retrieve functions for current coordinates.
             std::function< double( ) > firstInput =
                     std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
@@ -2071,25 +2134,38 @@ std::function< double( ) > getDoubleDependentVariableFunction(
 
             // Retrieve functions for target coordinates.
             std::function< double( ) > thirdInput =
-                    std::bind( &bislip::VehicleSystems::getTargetLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
             std::function< double( ) > fourthInput =
-                    std::bind( &bislip::VehicleSystems::getTargetLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
             // Retrieve function for heading angle
-            std::function< double( ) > fifthInput =
+            std::function< double( ) > headingAngle_rad =
                     std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
                                bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
                                tudat::reference_frames::heading_angle );
 
-            variableFunction = std::bind( &evaluatePentavariateFunction< double, double, double, double, double, double >,
-                                          functionToEvaluate, firstInput, secondInput, thirdInput, fourthInput, fifthInput );
+            std::function< double( const double& ) > neg2pos_Def =
+                    std::bind( &bislip::Variables::convertNegativeAnglesToPositive, std::placeholders::_1 );
+
+            std::function< double( ) > headingAngle_radPos =
+                    std::bind( &evaluateReferenceFunction< double, double >, neg2pos_Def, headingAngle_rad );
+
+            std::function< double( const double&, const double&, const double&, const double&, const double& ) > headingError_radDef =
+                    std::bind( &bislip::Variables::computeHeadingError, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5 );
+
+            std::function< double( ) > headingError_rad = std::bind( &evaluatePentavariateReferenceFunction< double, double, double, double, double, double >,
+                                                                     headingError_radDef, firstInput, secondInput, thirdInput, fourthInput, headingAngle_radPos );
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, headingError_rad );
+
 
             break;
         }
-        case heat_rate_leading_edge:
+        case heat_flux_tauber:
         {
-
-
             if( bodyMap.at( bodyWithProperty )->getFlightConditions( ) == nullptr )
             {
                 std::string errorMessage = "Error no atmospheric flight conditions available when requesting leading edge heating output of" +
@@ -2103,12 +2179,13 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                         bodyWithProperty + "w.r.t." + secondaryBody;
                 throw std::runtime_error( errorMessage );
             }
-            std::shared_ptr< aerodynamics::AtmosphericFlightConditions > flightConditions =
-                    std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(bodyMap.at( bodyWithProperty )->getFlightConditions( ) );
-            std::shared_ptr< system_models::VehicleSystems > vehicleSystems =
-                    bodyMap.at( bodyWithProperty )->getVehicleSystems( );
-            std::shared_ptr< bislip::VehicleSystems > bislipSystems =
-                    bodyMap.at( bodyWithProperty )->getBislipSystems( );
+
+            std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions =
+                    std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >( bodyMap.at( bodyWithProperty )->getFlightConditions( ) );
+
+            std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( bodyWithProperty )->getBislipSystems( ) ;
+
+            std::shared_ptr< tudat::system_models::VehicleSystems > vehicleSystems = bodyMap.at( bodyWithProperty )->getVehicleSystems( ) ;
 
 
             if( !( vehicleSystems->getNoseRadius( ) == vehicleSystems->getNoseRadius( ) ) )
@@ -2125,21 +2202,38 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            std::function< double( const double, const double, const double ) > functionToEvaluate =
-                    std::bind( &bislip::Variables::computeHeatingRateTauber, std::placeholders::_1, std::placeholders::_2 , std::placeholders::_3 );
+            // std::function< double( const double, const double, const double ) > functionToEvaluate =
+            //       std::bind( &bislip::Variables::computeHeatingRateTauber, std::placeholders::_1, std::placeholders::_2 , std::placeholders::_3 );
 
             // Retrieve functions for Stagnation and Flat Plate heat fluxes.
             std::function< double( ) > firstInput =
-                    std::bind( &bislip::Variables::computeStagnationHeatFlux, flightConditions, vehicleSystems );
+                    std::bind( &bislip::Variables::computeStagnationHeatFlux, bodyMap, bodyWithProperty );
             std::function< double( ) > secondInput =
-                    std::bind( &bislip::Variables::computeFlatPlateHeatFlux, flightConditions, vehicleSystems, bislipSystems );
+                    std::bind( &bislip::Variables::computeFlatPlateHeatFlux, bodyMap, bodyWithProperty );
 
             // Retrieve functions for wing sweep angle
             std::function< double( ) > thirdInput =
-                    std::bind( &bislip::VehicleSystems::getWingSweepAngle, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+                    std::bind( &bislip::BislipVehicleSystems::getWingSweepAngle, bodyMap.at( bodyWithProperty )->getBislipSystems() );
 
-            variableFunction = std::bind( &evaluateTrivariateFunction< double, double, double, double >,
-                                          functionToEvaluate, firstInput, secondInput, thirdInput );
+            // variableFunction = std::bind( &evaluateTrivariateFunction< double, double, double, double >,
+            //                             functionToEvaluate, firstInput, secondInput, thirdInput );
+            //variableFunction = std::bind( &bislip::Variables::computeHeatingRateTauber, bodyMap, bodyWithProperty );
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getCurrentHeatFluxTauber, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+            break;
+        }
+        case heat_flux_chapman:
+        {
+          //  std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( bodyWithProperty )->getBislipSystems( ) ;
+
+
+            //bislipSystems->setWorkingRadius( bislipSystems->getNoseRadius( ) );
+
+
+            //variableFunction = std::bind( &bislip::Variables::computeStagnationHeatFlux, bodyMap, bodyWithProperty );
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getCurrentHeatFluxChapman, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+
 
             break;
         }
@@ -2153,14 +2247,14 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            std::shared_ptr< aerodynamics::AtmosphericFlightConditions > flightConditions =
-                    std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >( bodyMap.at( bodyWithProperty )->getFlightConditions( ) );
+            //std::shared_ptr< aerodynamics::AtmosphericFlightConditions > flightConditions =
+            //        std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >( bodyMap.at( bodyWithProperty )->getFlightConditions( ) );
 
             variableFunction = std::bind( &bislip::Variables::computeBendingMoment, bodyMap, bodyWithProperty );
 
             break;
         }
-        case equilibrium_glide_limit:
+        case skip_suppression_limit:
         {
             if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                         bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
@@ -2185,16 +2279,20 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                 throw std::runtime_error( errorMessage );
             }
 
-            variableFunction = std::bind( &bislip::Variables::computeEquilibriumGlideLimit, bodyMap, bodyWithProperty, secondaryBody );
+            std::function< double( ) > bankAngleLimit_rad = std::bind( &bislip::Variables::computeSkipSuppressionLimit, bodyMap, bodyWithProperty, secondaryBody );
 
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, bankAngleLimit_rad );
             break;
         }
-        case increment_Cm_bodyflap:
+        case bodyflap_deflection_moment_coefficient_increment:
         {
             if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                         bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
             {
-                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting equilibrium glide limit output of " +
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting bodyflap deflection moment coefficient increment output of " +
                         bodyWithProperty + "w.r.t." + secondaryBody;
                 throw std::runtime_error( errorMessage );
             }
@@ -2202,22 +2300,573 @@ std::function< double( ) > getDoubleDependentVariableFunction(
             if( std::dynamic_pointer_cast< aerodynamics::AerodynamicCoefficientInterface >(
                         bodyMap.at( bodyWithProperty )->getAerodynamicCoefficientInterface( ) )== nullptr )
             {
-                std::string errorMessage = "Error, no aerodynamic coefficient interface available when requesting equilibrium glide limit output of " +
+                std::string errorMessage = "Error, no aerodynamic coefficient interface available when requesting bodyflap deflection moment coefficient increment output of " +
                         bodyWithProperty + "w.r.t." + secondaryBody;
                 throw std::runtime_error( errorMessage );
             }
 
             if( bodyMap.at( bodyWithProperty )->getBislipSystems( )== nullptr )
             {
-                std::string errorMessage = "Error, no Bislip systems available when requesting equilibrium glide limit output of " +
+                std::string errorMessage = "Error, no Bislip systems available when requesting bodyflap deflection moment coefficient increment output of " +
                         bodyWithProperty + "w.r.t." + secondaryBody;
                 throw std::runtime_error( errorMessage );
             }
+
+            if( bodyMap.at( bodyWithProperty )->getVehicleSystems( ) == nullptr )
+            {
+                std::string errorMessage = "Error, no vehicle systems available when requesting bodyflap deflection moment coefficient increment output of " +
+                        bodyWithProperty + "with surface" + secondaryBody;
+                throw std::runtime_error( errorMessage );
+            }
+
+            /*
+            std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions =
+                    std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >( bodyMap.at( bodyWithProperty )->getFlightConditions( ) );
+
+            std::shared_ptr< tudat::system_models::VehicleSystems > vehicleSystems = bodyMap.at( bodyWithProperty )->getVehicleSystems( ) ;
+
+            std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > coefficientInterface =
+                    std::dynamic_pointer_cast< tudat::aerodynamics::AerodynamicCoefficientInterface >( bodyMap.at( bodyWithProperty )->getAerodynamicCoefficientInterface( ) );
+
+
+            std::function< double( const double&, const double& ) > functionToEvaluate =
+                    std::bind( &bislip::Variables::computeBodyFlapCmIncrementdif, std::placeholders::_1, std::placeholders::_2 );
+
+            double bodyFlapDeflection = bodyMap.at( bodyWithProperty )->getVehicleSystems( )->getCurrentControlSurfaceDeflection( "BodyFlap" );
+            double angleOfAttack = tudat::unit_conversions::convertDegreesToRadians( bislip::Variables::evaluateGuidanceInterpolator( bislip::Parameters::Optimization::AngleOfAttack, bodyMap, bodyWithProperty ) );
+
+            //! Define input to aerodynamic coefficients: take care of order of input (this depends on how the coefficients are created)!
+            std::vector< double > aerodynamicCoefficientInput;
+            aerodynamicCoefficientInput.push_back( angleOfAttack );
+            aerodynamicCoefficientInput.push_back( flightConditions->getCurrentMachNumber() );
+
+            // Retrieve functions for Stagnation and Flat Plate heat fluxes.
+            std::function< double( ) > firstInput =
+                    std::bind( &bislip::Variables::computeFullPitchMomentCoefficient, coefficientInterface, bodyFlapDeflection, aerodynamicCoefficientInput );
+            std::function< double( ) > secondInput =
+                    std::bind( &bislip::Variables::computePitchMomentCoefficient, coefficientInterface, aerodynamicCoefficientInput );
+
+            //variableFunction = std::bind( &evaluateBivariateReferenceFunction< double, double, double >,
+                //                          functionToEvaluate, firstInput, secondInput );
+            */
+            //variableFunction = std::bind( &bislip::Variables::computeBendingMoment, bodyMap, bodyWithProperty );
 
             variableFunction = std::bind( &bislip::Variables::computeBodyFlapCmIncrement, bodyMap, bodyWithProperty );
 
             break;
         }
+        case bodyflap_deflection_moment_coefficient_increment_dif:
+        {
+            if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                        bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
+            {
+                std::string errorMessage = "Error, no atmospheric flight conditions available when requesting bodyflap deflection moment coefficient increment output of " +
+                        bodyWithProperty + "w.r.t." + secondaryBody;
+                throw std::runtime_error( errorMessage );
+            }
+
+            if( std::dynamic_pointer_cast< aerodynamics::AerodynamicCoefficientInterface >(
+                        bodyMap.at( bodyWithProperty )->getAerodynamicCoefficientInterface( ) )== nullptr )
+            {
+                std::string errorMessage = "Error, no aerodynamic coefficient interface available when requesting bodyflap deflection moment coefficient increment output of " +
+                        bodyWithProperty + "w.r.t." + secondaryBody;
+                throw std::runtime_error( errorMessage );
+            }
+
+            if( bodyMap.at( bodyWithProperty )->getBislipSystems( )== nullptr )
+            {
+                std::string errorMessage = "Error, no Bislip systems available when requesting bodyflap deflection moment coefficient increment output of " +
+                        bodyWithProperty + "w.r.t." + secondaryBody;
+                throw std::runtime_error( errorMessage );
+            }
+
+            if( bodyMap.at( bodyWithProperty )->getVehicleSystems( ) == nullptr )
+            {
+                std::string errorMessage = "Error, no vehicle systems available when requesting bodyflap deflection moment coefficient increment output of " +
+                        bodyWithProperty + "with surface" + secondaryBody;
+                throw std::runtime_error( errorMessage );
+            }
+
+
+            std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions =
+                    std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >( bodyMap.at( bodyWithProperty )->getFlightConditions( ) );
+
+            std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( bodyWithProperty )->getBislipSystems( ) ;
+
+            std::shared_ptr< tudat::system_models::VehicleSystems > vehicleSystems = bodyMap.at( bodyWithProperty )->getVehicleSystems( ) ;
+
+            //std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > coefficientInterface =
+            //      std::dynamic_pointer_cast< tudat::aerodynamics::AerodynamicCoefficientInterface >( bodyMap.at( bodyWithProperty )->getAerodynamicCoefficientInterface( ) );
+
+            std::function< std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface >( ) > coefficientInterface =
+                    std::bind( &tudat::simulation_setup::Body::getAerodynamicCoefficientInterface, bodyMap.at( bodyWithProperty ) );
+
+
+            std::function< double( const double, const double ) > machNumberDef =
+                    std::bind( &aerodynamics::computeMachNumber, std::placeholders::_1, std::placeholders::_2 );
+
+            // Retrieve functions for airspeed and speed of sound.
+            std::function< double( ) > airSpeed =
+                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentAirspeed,
+                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
+            std::function< double( ) > speedOfSound =
+                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentSpeedOfSound,
+                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
+
+            std::function< double( ) > machNumber =
+                    std::bind( &evaluateBivariateFunction< double, double, double >,
+                               machNumberDef, airSpeed, speedOfSound );
+
+            std::function< double( ) > angleOfAttack =
+                    std::bind( &bislip::BislipVehicleSystems::getCurrentAngleOfAttack, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+            std::function< double( ) > bodyFlapDeflection =
+                    std::bind( &system_models::VehicleSystems::getCurrentControlSurfaceDeflection,
+                               bodyMap.at( bodyWithProperty )->getVehicleSystems( ),
+                               "BodyFlap" );
+
+            std::function< double( ) > elevonDeflection =
+                    std::bind( &system_models::VehicleSystems::getCurrentControlSurfaceDeflection,
+                               bodyMap.at( bodyWithProperty )->getVehicleSystems( ),
+                               "ElevonLeft" );
+
+            std::function< std::vector< double >( const double&, const double& ) > aerodynamicCoefficientInputDef =
+                    std::bind( &bislip::Variables::getAerodynamicCoefficientInput, std::placeholders::_1, std::placeholders::_2 );
+
+            //  std::function< std::vector< double >( const double&, const double&, const double& ) > controlSurfaceCoefficientInputDef =
+            //        std::bind( &bislip::Variables::getControlSurfaceCoefficientInput, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 );
+
+            std::function< std::vector< double >( ) > aerodynamicCoefficientInput =
+                    std::bind( &evaluateBivariateReferenceFunction< std::vector< double >, double, double >,
+                               aerodynamicCoefficientInputDef, angleOfAttack, machNumber );
+
+            // std::function< std::vector< double >( ) > controlSurfaceCoefficientInput =
+            //        std::bind( &evaluateTrivariateReferenceFunction< std::vector< double >, double, double, double >,
+            //                 controlSurfaceCoefficientInputDef, angleOfAttack, machNumber, bodyFlapDeflection );
+
+            std::function< double( const double&, const double& ) > functionToEvaluate =
+                    std::bind( &bislip::Variables::computeBodyFlapCmIncrementdif, std::placeholders::_1, std::placeholders::_2 );
+
+            std::function< double( const std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface >&, const double&, const double&, const std::vector< double >& ) > firstInputDef =
+                    std::bind( &bislip::Variables::computeFullPitchMomentCoefficient, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 , std::placeholders::_4 );
+
+            std::function< double( const std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface >&, const std::vector< double >& ) > secondInputDef =
+                    std::bind( &bislip::Variables::computePitchMomentCoefficient, std::placeholders::_1, std::placeholders::_2 );
+
+            // Retrieve functions for Stagnation and Flat Plate heat fluxes.
+            std::function< double( ) > firstInput =
+                    std::bind( &evaluateTetravariateReferenceFunction< double, std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface >, double, double, std::vector< double > >,
+                               firstInputDef, coefficientInterface, bodyFlapDeflection, elevonDeflection, aerodynamicCoefficientInput );
+
+            //std::bind( &bislip::Variables::computeFullPitchMomentCoefficient, coefficientInterface, bodyFlapDeflection, aerodynamicCoefficientInput );
+            std::function< double( ) > secondInput =
+                    std::bind( &evaluateBivariateReferenceFunction< double, std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface >, std::vector< double > >,
+                               secondInputDef, coefficientInterface, aerodynamicCoefficientInput );
+
+            variableFunction = std::bind( &evaluateBivariateReferenceFunction< double, double, double >,
+                                          functionToEvaluate, firstInput, secondInput );
+
+            break;
+        }
+        case body_fixed_total_g_load_magnitude:
+        {
+            variableFunction = std::bind( &bislip::Variables::computeBodyFixedTotal_g_Load_Magnitude, bodyMap, bodyWithProperty );
+            break;
+        }
+        case current_heading_error_deadband:
+        {
+            variableFunction = std::bind( &bislip::Variables::computeHeadingErrorDeadBand, bodyMap, bodyWithProperty );
+            break;
+        }
+        case temp_bank_angle:
+        {
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getTempBankAngle, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+            break;
+        }
+        case reversal_conditional:
+        {
+            /*
+            std::function< double( ) > newBankAngle = std::bind( &bislip::BislipVehicleSystems::getTempBankAngle, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+            //std::bind( &bislip::Variables::determineNewBankAngle, bodyMap, bodyWithProperty );
+
+             //bislipSystems->setTempBankAngle( newBankAngle )
+            //variableFunction = std::bind( &bislip::BislipVehicleSystems::getTempBankAngle, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+            std::function< double( ) > currentLatitude =
+                    std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
+                               bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
+                               tudat::reference_frames::latitude_angle );
+            std::function< double( ) > currentLongitude =
+                    std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
+                               bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
+                               tudat::reference_frames::longitude_angle );
+            std::function< double( ) > currentHeading =
+                    std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
+                               bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
+                               tudat::reference_frames::heading_angle );
+
+            std::function< double( ) > targatLat =
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+            std::function< double( ) > targatLon =
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            std::function< double( const double&, const double&, const double&, const double&, const double& ) > currentHeadingError_rad_Def =
+                    std::bind( &bislip::Variables::computeHeadingError, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_4 );
+
+            std::function< double( ) > currentHeadingError_rad =
+                    std::bind( &evaluatePentavariateReferenceFunction< double, double, double, double, double, double >,
+                               currentHeadingError_rad_Def, currentLatitude, currentLongitude, targatLat, targatLon, currentHeading );
+
+            std::function< double( ) > currentHeadingError_deg =
+                    std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, currentHeadingError_rad );
+
+            std::function< double( const double&, const double& ) > functionToEvaluate =
+                    std::bind( &bislip::Variables::determineReversalConditional, std::placeholders::_1, std::placeholders::_2 );
+
+            variableFunction = std::bind( &evaluateBivariateReferenceFunction< double, double, double >,
+                                          functionToEvaluate, newBankAngle, currentHeadingError_deg );
+*/
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getReversalConditional, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+            break;
+        }
+        case bank_reversal_trigger:
+        {
+            /*
+            std::function< double( ) > currentLatitude =
+                    std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
+                               bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
+                               tudat::reference_frames::latitude_angle );
+            std::function< double( ) > currentLongitude =
+                    std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
+                               bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
+                               tudat::reference_frames::longitude_angle );
+            std::function< double( ) > currentHeading =
+                    std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
+                               bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
+                               tudat::reference_frames::heading_angle );
+            std::function< double( ) > currentBankAngle =
+                    std::bind( &reference_frames::AerodynamicAngleCalculator::getAerodynamicAngle,
+                               bodyMap.at( bodyWithProperty )->getFlightConditions( )->getAerodynamicAngleCalculator( ),
+                               tudat::reference_frames::bank_angle );
+            std::function< double( ) > targatLat =
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLat, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+            std::function< double( ) > targatLon =
+                    std::bind( &bislip::BislipVehicleSystems::getTargetLon, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            std::function< double( const double& ) > absoluteValue_Def =
+                    std::bind( &bislip::Variables::determineAbsoluteValue, std::placeholders::_1 );
+
+            std::function< double( const double&, const double&, const double&, const double& ) > angularDistangeToGo_rad_Def =
+                    std::bind( &bislip::Variables::computeAngularDistance, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4 );
+
+            std::function< double( ) > angularDistangeToGo_rad =
+                    std::bind( &evaluateTetravariateReferenceFunction< double, double, double, double, double >,
+                               angularDistangeToGo_rad_Def, currentLatitude, currentLongitude, targatLat, targatLon );
+
+            std::function< double( ) > angularDistangeToGo_deg =
+                    std::bind( &evaluateReferenceFunction< double, double >,
+                               rad2deg_Def, angularDistangeToGo_rad );
+
+            std::function< double( const double&, const double&, const double&, const double&, const double& ) > currentHeadingError_rad_Def =
+                    std::bind( &bislip::Variables::computeHeadingError, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_4 );
+
+            std::function< double( ) > currentHeadingError_rad =
+                    std::bind( &evaluatePentavariateReferenceFunction< double, double, double, double, double, double >,
+                               currentHeadingError_rad_Def, currentLatitude, currentLongitude, targatLat, targatLon, currentHeading );
+
+            std::function< double( ) > currentHeadingError_deg =
+                    std::bind( &evaluateReferenceFunction< double, double >,
+                               rad2deg_Def, currentHeadingError_rad );
+
+            std::function< double( ) > absoluteValueCurrentHeadingError_deg =
+                    std::bind( &evaluateReferenceFunction< double, double >,
+                               absoluteValue_Def, currentHeadingError_deg );
+
+            std::function< double( const double& ) > bankAngleSign_Def =
+                    std::bind( &bislip::Variables::determineBankAngleSign, std::placeholders::_1 );
+
+            std::function< double( ) > bankAngleSign =
+                    std::bind( &evaluateReferenceFunction< double, double >,
+                               bankAngleSign_Def, currentBankAngle );
+
+            std::function< double( const double&, const double& ) > reversalConditional_Def =
+                    std::bind( &bislip::Variables::determineReversalConditional, std::placeholders::_1, std::placeholders::_2 );
+
+            std::function< double( ) > reversalConditional =
+                    std::bind( &evaluateBivariateReferenceFunction< double, double, double >,
+                               reversalConditional_Def, bankAngleSign, currentHeadingError_deg );
+
+
+
+            //  This section is to extract the new bank angle function
+            //! Extract Bislip Systems pointer.
+            std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( bodyWithProperty )->getBislipSystems( ) ;
+
+            //! Extract current bank angle.
+            std::function< double( ) > currentBankAngle_rad = std::bind( &bislip::BislipVehicleSystems::getCurrentBankAngle, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            std::function< double( ) > currentBankAngle_deg = std::bind( &evaluateReferenceFunction< double, double >,
+                                                                         rad2deg_Def, currentBankAngle_rad );
+
+            std::function< int( const double& ) > bankAngleSign_Def = std::bind( &bislip::Variables::determineBankAngleSign, std::placeholders::_1 );
+
+            std::function< int( ) > bankAngleSign = std::bind( &evaluateReferenceFunction< double, double >,
+                                                               bankAngleSign_Def, currentBankAngle_deg );
+
+            std::function< double( const bislip::Parameters::Optimization&, const tudat::simulation_setup::NamedBodyMap&, const std::string& ) > newBankAngle_Def =
+                    std::bind( &bislip::Variables::evaluateGuidanceInterpolator, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 );
+
+             std::function< bislip::Parameters::Optimization( ) > parameter = std::bind( &bislip::Variables::passOptimizationParameter, bislip::Parameters::Optimization::BankAngle );
+*/
+
+            //  std::function< double( const double&, const double& ) > newBankAngleSigned_Def =
+            //        std::bind( &bislip::Variables::determineSignedBankAngle, std::placeholders::_1, std::placeholders::_2 );
+
+            //std::function< double( ) > newBankAngleSigned = std::bind( &evaluateBivariateReferenceFunction< double, double, double >,
+            //                                                         newBankAngleSigned_Def, bankAngleSign, newBankAngle );
+            //*******************************************************
+
+
+            /* std::function< double( const tudat::simulation_setup::NamedBodyMap&, const std::string&, const double& ) > functionToEvaluate =
+                    std::bind( &bislip::Variables::determineBankAngleReversal, std::placeholders::_1, std::placeholders::_2 , std::placeholders::_3 );
+
+            std::function< tudat::simulation_setup::NamedBodyMap&( ) > bodyMap_function = std::bind( &bislip::Variables::passBodyMap, bodyMap );
+
+            //! Retrieve function for parameter string
+            std::function< std::string( ) > bodyWithProperty_function = std::bind( &bislip::Variables::passString, bodyWithProperty );
+
+            std::function< double( ) > newBankAngle = std::bind( &bislip::Variables::determineNewBankAngle, bodyMap, bodyWithProperty );
+
+            variableFunction =  std::bind( &evaluateTrivariateReferenceFunction< double, tudat::simulation_setup::NamedBodyMap&, std::string, double >,
+                                           functionToEvaluate, bodyMap_function, bodyWithProperty_function, newBankAngle );
+
+
+*/
+
+
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getBankAngleReversalTrigger, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+
+            break;
+        }
+        case current_lift_magnitude:
+        {
+            variableFunction = std::bind( &bislip::Variables::computeCurrentLiftForce, bodyMap, bodyWithProperty );
+            break;
+        }
+        case wall_temperature_chapman:
+        {
+           /*
+
+            //! Extract flight conditions pointer.
+            std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions =
+                    std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >( bodyMap.at( bodyWithProperty )->getFlightConditions( ) );
+
+            //! Extract Bislip Systems pointer.
+            std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( bodyWithProperty )->getBislipSystems( ) ;
+
+            //! Extract Vehicle Systems pointer.
+            std::shared_ptr< tudat::system_models::VehicleSystems > vehicleSystems = bodyMap.at( bodyWithProperty )->getVehicleSystems( ) ;
+
+
+            int debugInfo = bislipSystems->getDebugInfo();
+
+            if( debugInfo == 1 ){ std::cout << "Extract wall emissivity" << std::endl; }
+            const double wallEmissivity = vehicleSystems->getWallEmissivity( );
+
+            if( debugInfo == 1 ){ std::cout << "     currentAirTemperature = " << currentAirTemperature << std::endl; }
+            if( debugInfo == 1 ){ std::cout << "     currentMachNumber     = " << currentMachNumber << std::endl; }
+
+            if( debugInfo == 1 ){ std::cout << "     adiabaticWallTemperature = " << adiabaticWallTemperature << std::endl; }
+
+
+
+
+            if( debugInfo == 1 ){ std::cout << "Find equilibrium wall temperature" << std::endl; }
+            double equilibriumWallTemperature = bislip::Variables::findEquilibriumWallTemperature( heatTransferFunction, wallEmissivity, adiabaticWallTemperature);
+
+
+
+
+
+
+            std::function< double( const double, const double ) > adiabaticWallTemperature_def =
+                    std::bind( &bislip::Variables::computeAdiabaticWallTemperature, std::placeholders::_1, std::placeholders::_2 );
+
+            // Retrieve functions for
+            std::function< double( ) > firstInput =
+                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentFreestreamTemperature,
+                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
+            std::function< double( ) > secondInput =
+                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentMachNumber,
+                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
+
+           std::function< double( ) >  adiabaticWallTemperature = std::bind( &evaluateBivariateReferenceFunction< double, double, double >,
+                                          adiabaticWallTemperature_def, firstInput, secondInput );
+
+
+
+           if( debugInfo == 1 ){ std::cout << "Get heat transfer function" << std::endl; }
+         //  std::function< double( const tudat::simulation_setup::NamedBodyMap& , const std::string ) > heatTransferFunction_def =
+         //          std::bind( &bislip::Variables::getStagnationHeatTransferFunction, std::placeholders::_1, std::placeholders::_2 );
+
+//                   std::bind( &bislip::Variables::getStagnationHeatTransferFunction, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+
+
+           std::function< double( const tudat::simulation_setup::NamedBodyMap&, const std::string  ) > heatTransferFunction_def =
+                   std::bind( &bislip::Variables::getStagnationHeatTransferFunction, std::placeholders::_1, std::placeholders::_2 );
+
+           std::function< double(const tudat::simulation_setup::NamedBodyMap&, const std::string& ) > newBankAngle_Def =
+                   std::bind( &bislip::Variables::getStagnationHeatTransferFunction, std::placeholders::_1, std::placeholders::_2 );
+
+
+
+           std::function< double( const double ) > heatTransferFunction = std::bind( &bislip::Variables::getStagnationHeatTransferFunction, bodyMap, bodyWithProperty );
+
+
+
+           std::function< double( const tudat::simulation_setup::NamedBodyMap&, const std::string& ) > functionToEvaluate =
+                   std::bind( &bislip::Variables::getStagnationHeatTransferFunction, std::placeholders::_1, std::placeholders::_2 );
+
+           std::function< tudat::simulation_setup::NamedBodyMap&( ) > bodyMap_function = std::bind( &bislip::Variables::passBodyMap, bodyMap );
+
+           //! Retrieve function for parameter string
+           std::function< std::string( ) > bodyWithProperty_function = std::bind( &bislip::Variables::passString, bodyWithProperty );
+
+
+           variableFunction =  std::bind( &evaluateBivariateReferenceFunction< double, tudat::simulation_setup::NamedBodyMap&, std::string& >,
+                                          functionToEvaluate, bodyMap_function, bodyWithProperty_function );
+
+
+
+
+
+
+
+
+
+           std::function< double( const double& ) > rad2deg_Def =
+                   std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+           variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, angular_distance_to_go_rad );
+
+
+
+
+
+*/
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getChapmanWallTemp, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+            break;
+        }
+        case wall_temperature_tauber_stagnation:
+        {
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getTauberWallTempStagnation, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+            break;
+        }
+        case wall_temperature_tauber_flatplate:
+        {
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getTauberWallTempFlatPlate, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+            break;
+        }
+        case heat_flux_tauber_stagnation:
+        {
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getTauberHeatFluxStagnation, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+            break;
+        }
+        case heat_flux_tauber_flatplate:
+        {
+            variableFunction = std::bind( &bislip::BislipVehicleSystems::getTauberHeatFluxFlatPlate, bodyMap.at( bodyWithProperty )->getBislipSystems() );
+            break;
+        }
+        case cumulative_angular_distance_travelled:
+        {
+            variableFunction = std::bind( &bislip::Variables::computeCumulativeAngularDistanceTravelled, bodyMap, bodyWithProperty );
+            break;
+        }
+        case groundtrack_difference:
+        {
+            variableFunction = std::bind( &bislip::Variables::computeCumulativeAngularDistanceTravelledDifference, bodyMap, bodyWithProperty );
+            break;
+        }
+        case time_of_flight:
+        {
+            variableFunction = std::bind( &bislip::Variables::computeTimeOfFlight, bodyMap, bodyWithProperty );
+            break;
+        }
+        case flight_path_angle_rate:
+        {
+            std::function< double( ) > flightPathAngle_rad  = std::bind( &bislip::Variables::computeFlightPathAngleRate, bodyMap, bodyWithProperty, secondaryBody );
+
+            std::function< double( const double& ) > rad2deg_Def =
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+
+            variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, flightPathAngle_rad );
+
+            break;
+        }
+        case cumulative_cartesian_distance_travelled:
+        {
+            variableFunction = std::bind( &bislip::Variables::computeCumulativeCartesianDistanceTravelled, bodyMap, bodyWithProperty );
+            break;
+        }
+        case thrust_force_magnitude:
+        {
+            variableFunction = std::bind( &bislip::Variables::computeThrustMagnitudeOutput, bodyMap, bodyWithProperty );
+            break;
+        }
+        case speed_of_sound:
+        {
+            variableFunction =
+                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentSpeedOfSound,
+                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
+            break;
+
+        }
+        case adiabatic_wall_temperature:
+        {
+
+
+
+            std::function< double( const double, const double ) > functionToEvaluate =
+                    std::bind( &bislip::Variables::computeAdiabaticWallTemperature, std::placeholders::_1, std::placeholders::_2 );
+
+            // Retrieve functions for
+            std::function< double( ) > firstInput =
+                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentFreestreamTemperature,
+                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
+            std::function< double( ) > secondInput =
+                    std::bind( &aerodynamics::AtmosphericFlightConditions::getCurrentMachNumber,
+                               std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
+                                   bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
+
+            variableFunction = std::bind( &evaluateBivariateReferenceFunction< double, double, double >,
+                                          functionToEvaluate, firstInput, secondInput );
+
+
+            break;
+
+        }
+
+
+
+
         default:
             std::string errorMessage =
                     "Error, did not recognize double dependent variable type when making variable function: " +
