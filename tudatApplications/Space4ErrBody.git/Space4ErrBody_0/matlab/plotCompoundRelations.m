@@ -2,6 +2,113 @@ function [  ] = plotCompoundRelations( compilation )
 
 
 
+%% Time History: Height & Commanded Throttle Setting & Total g-Load - per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        fig_num = p*100 + 823000 + k*1;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Height through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        
+        ylim([0 1])
+        max_tof = max([compilation(p).evolutions.max_tof]);
+        % max_tof = 1400;
+        xlim([0 max_tof])
+        xlabel('Propagation Time (s)') % x-axis label
+        ylabel('Height (km)') % y-axis label
+        set(gca,'YTick', 0:.1:1);
+        set(gca,'XTick', 0:200:max_tof);
+        hold on
+        grid on
+        
+        %plot([0 max_tof],(25)*[1 1],'k','LineWidth',2)
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            
+            h = stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                compilation(p).evolutions(k).trajectories(ii).individual.height/max(compilation(p).evolutions(k).trajectories(ii).individual.height))
+            set(gca, 'ColorOrder', circshift(get(gca, 'ColorOrder'), numel(h)))
+            
+            
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                compilation(p).evolutions(k).trajectories(ii).individual.commanded_throttle_setting);
+            set(gca, 'ColorOrder', circshift(get(gca, 'ColorOrder'), numel(h)))
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                compilation(p).evolutions(k).trajectories(ii).individual.body_fixed_total_g_load_mag/max(compilation(p).evolutions(k).trajectories(ii).individual.body_fixed_total_g_load_mag));
+            set(gca, 'ColorOrder', circshift(get(gca, 'ColorOrder'), numel(h)))
+            
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                compilation(p).evolutions(k).trajectories(ii).individual.angle_of_attack/max(compilation(p).evolutions(k).trajectories(ii).individual.angle_of_attack));
+            
+        end
+        
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/height_v_T_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %    close(fig_num);
+    end
+end
+
+
+
+
+
+
+
+
+%% Height vs. Freestream Temperature - per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        %for k = 1
+        fig_num = p*100 + k*1 + 100000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Height vs. Freestream Temperature - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        ylim([0 130])
+        xlim([150 400])
+        xlabel('Temperature (K)') % x-axis label
+        ylabel('Height (km)') % y-axis label
+        set(gca,'YTick', 0:10:130);
+        set(gca,'XTick', 150:25:400);
+        hold on
+        grid on
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.freestreamTemperature,...
+                compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,'k','LineWidth',2);
+        end
+        
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/freestreamTemperature_v_height_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
+
+
+
 %% Angle of Attack vs. Mach Number - per Evolution
 for p = 1:numel(compilation)
     
@@ -22,25 +129,18 @@ for p = 1:numel(compilation)
         set(gca,'XTick', 0:2.5:30);
         hold on
         grid on
+        
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-           % if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-            %    if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-             %       if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-              %          if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.mach,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.angle_of_attack);
-               %         end
-               %     end
-              %  end
-            %end
+            if  compilation(1).validation == 1
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.mach,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.angle_of_attack,'k','LineWidth',2);
+            else
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.mach,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.angle_of_attack);
+            end
         end
-        
-        alphaMachBounds_Mach = compilation(1).evolutions(1).trajectories(1).individual.alphaMachBounds_Mach;
-        alphaMachBounds_LB = compilation(1).evolutions(1).trajectories(1).individual.alphaMachBounds_LB;
-        alphaMachBounds_UB = compilation(1).evolutions(1).trajectories(1).individual.alphaMachBounds_UB;
-        
-        plot(alphaMachBounds_Mach,alphaMachBounds_UB,'k','LineWidth',2);
-        plot(alphaMachBounds_Mach,alphaMachBounds_LB,'k','LineWidth',2);
+        plot(compilation(p).evolutions(k).trajectories(ii).individual.alphaMachBounds_Mach,compilation(p).evolutions(k).trajectories(ii).individual.alphaMachBounds_UB,'k','LineWidth',2);
+        plot(compilation(p).evolutions(k).trajectories(ii).individual.alphaMachBounds_Mach,compilation(p).evolutions(k).trajectories(ii).individual.alphaMachBounds_LB,'k','LineWidth',2);
         
         hold off
         saveas(...
@@ -78,29 +178,22 @@ for p = 1:numel(compilation)
         set(gca,'YTick', -90:15:90);
         set(gca,'XTick', 0:10:60);
         hold on
+        grid on
         plot([0 60],[0 0],'k','LineWidth',2)
         
         %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.skip_suppression_limit);
-                            %  stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                            %     compilation(p).evolutions(k).trajectories(ii).individual.evaluated_bank_angle);
-                           % stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                            %    compilation(p).evolutions(k).trajectories(ii).individual.bank_angle);
-                            %
-                            %                 stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                            %                     compilation(p).evolutions(k).trajectories(ii).individual.commanded_bank_angle);
-                            
-                            
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.skip_suppression_limit);
+            %  stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+            %     compilation(p).evolutions(k).trajectories(ii).individual.evaluated_bank_angle);
+            % stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+            %    compilation(p).evolutions(k).trajectories(ii).individual.bank_angle);
+            %
+            %                 stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+            %                     compilation(p).evolutions(k).trajectories(ii).individual.commanded_bank_angle);
+            
+            
         end
         hold off
         saveas(...
@@ -113,9 +206,60 @@ for p = 1:numel(compilation)
             convertCharsToStrings(compilation(p).set),...
             '.png'),...
             'png');
-        %     close(fig_num);
+        %    close(fig_num);
     end
 end
+
+%% Skip Suppression Limit vs. Normalized Specific Energy - per Evolution
+for p = 1:numel(compilation)
+    
+    %  for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+    %for k = 30:numel(compilation(p).evolutions)
+    for k = 1:numel(compilation(p).evolutions)
+        %for k = 1
+        fig_num = p*100 + k*1 + 101000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Skip Suppression Limit vs. Normalized Specific Energy - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        ylim(rad2deg([-pi/2 pi/2]))
+        xlim([0 1])
+        xlabel('Normalized Specific Energy (-)') % x-axis label
+        ylabel('Skip Suppression Limit (deg)') % y-axis label
+        set(gca,'YTick', -90:15:90);
+        set(gca,'XTick', 0:.1:1);
+        hold on
+        grid on
+        plot([0 60],[0 0],'k','LineWidth',2)
+        
+        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                compilation(p).evolutions(k).trajectories(ii).individual.skip_suppression_limit);
+            %  stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+            %     compilation(p).evolutions(k).trajectories(ii).individual.evaluated_bank_angle);
+            % stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+            %    compilation(p).evolutions(k).trajectories(ii).individual.bank_angle);
+            %
+            %                 stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+            %                     compilation(p).evolutions(k).trajectories(ii).individual.commanded_bank_angle);
+            
+        end
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/skip_suppression_limit_v_normalizedSpecificEnergy_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %    close(fig_num);
+    end
+end
+
 
 %% Total Passenger Z-Component G-load vs. Angular Distance To Go - per Evolution
 for p = 1:numel(compilation)
@@ -138,16 +282,16 @@ for p = 1:numel(compilation)
         
         %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-           if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.passenger_fixed_total_g_load_z);
-                 end
-            end
-                end
-           end
+            %   if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
+            %       if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
+            %          if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
+            %             if compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy(end) < 0.3
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.passenger_fixed_total_g_load_z);
+            %     end
+            % end
+            %    end
+            %end
         end
         
         plot([0 60],(0)*[1 1],'k','LineWidth',2)
@@ -187,20 +331,12 @@ for p = 1:numel(compilation)
         set(gca,'XTick', 0:10:60);
         hold on
         grid on
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
-        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.E_hat);
-                        end
-                    end
-                end
-            end
-        end
         plot([0 60],(1)*[1 1],'k','LineWidth',2)
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy);
+        end
         
         hold off
         saveas(...
@@ -237,19 +373,10 @@ for p = 1:numel(compilation)
         %set(gca,'YTick', 0:100:1100);
         set(gca,'XTick', 0:10:60);
         hold on
-        
+        grid on
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            % for ii = 194
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.thrustMagnitude/1e3);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.thrustMagnitude/1e3);
         end
         hold off
         saveas(...
@@ -257,6 +384,44 @@ for p = 1:numel(compilation)
             strcat(...
             compilation(p).mainpath,...
             '/figures/thrustMagnitude_v_distanceToGo_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
+
+%% Thrust Magnitude vs. Normalized Specific Energy - per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        %for k = 1
+        fig_num = p*100 + k*1 + 104000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Thrust Magnitude vs. Normalized Specific Energy - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        %ylim([0 1100])
+        xlim([0 1])
+        xlabel('Normalized Specific Energy ()') % x-axis label
+        ylabel('Thrust Magnitude (kN)') % y-axis label
+        %set(gca,'YTick', 0:100:1100);
+        set(gca,'XTick', 0:.1:1);
+        hold on
+        grid on
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                compilation(p).evolutions(k).trajectories(ii).individual.thrustMagnitude/1e3);
+        end
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/thrustMagnitude_v_normalizedSpecificEnergy_Evolution_',...
             num2str(k - 1),...
             '_Set',...
             convertCharsToStrings(compilation(p).set),...
@@ -285,30 +450,18 @@ for p = 1:numel(compilation)
         set(gca,'YTick', -40:10:40);
         set(gca,'XTick', 0:10:60);
         hold on
+        grid on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            % for ii = 194
-            if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
-                %     if( sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) < 6 )
-                
-                
-                
-                stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.acc_thru_x,'k');
-                stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.acc_thru_y,'r');
-                stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.acc_thru_z,'b');
-                
-                
-                %  end
-                
-            end
             
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.acc_thru_x,'k');
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.acc_thru_y,'r');
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.acc_thru_z,'b');
             
         end
-        
         
         legend('x-dir','y-dir','z-dir')
         
@@ -346,19 +499,11 @@ for p = 1:numel(compilation)
         set(gca,'YTick', 0:5:40);
         set(gca,'XTick', 0:10:60);
         hold on
+        grid on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.acc_thru_M);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.acc_thru_M);
         end
         
         hold off
@@ -394,15 +539,11 @@ for p = 1:numel(compilation)
         set(gca,'YTick', 0:10:100);
         set(gca,'XTick', 0:.01:.05);
         hold on
+        grid on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            %   if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 20 )
-            %     if( sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) < 6 )
             stairs(compilation(p).evolutions(k).trajectories(ii).individual.localDensity,...
-                compilation(p).evolutions(k).trajectories(ii).individual.height/1e3);
-            % end
-            %     end
+                compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,'k','LineWidth',2);
         end
         hold off
         saveas(...
@@ -436,7 +577,7 @@ for p = 1:numel(compilation)
         % set(gca,'YTick', 0:100:800);
         set(gca,'XTick', 0:10:60);
         hold on
-        
+        grid on
         %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
             %   if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 20 )
@@ -474,26 +615,19 @@ for p = 1:numel(compilation)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
         title(strcat('Height vs. Angular Distance To Go - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-        ylim([0 150])
+        % ylim([0 150])
         xlim([0 60])
         xlabel('Angular Distance To Go (deg)') % x-axis label
         ylabel('Height (km)') % y-axis label
-        set(gca,'YTick', 0:25:150);
+        % set(gca,'YTick', 0:25:150);
         set(gca,'XTick', 0:10:60);
         hold on
         grid on
         
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.height/1e3);
-                        end
-                    end
-                end
-            end
+            
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.height/1e3);
         end
         
         hold off
@@ -523,33 +657,65 @@ for p = 1:numel(compilation)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
         title(strcat('Mass vs. Angular Distance To Go - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-        ylim([0 150])
+        %ylim([0 150])
         xlim([0 60])
         xlabel('Distance To Go (deg)') % x-axis label
         ylabel('Mass (10^3 kg)') % y-axis label
-        set(gca,'YTick', 0:15:150);
+        %set(gca,'YTick', 0:15:150);
         set(gca,'XTick', 0:10:60);
         hold on
+        grid on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.mass/1e3);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.mass/1e3);
         end
+        
         hold off
         saveas(...
             figure(fig_num),...
             strcat(...
             compilation(p).mainpath,...
             '/figures/mass_v_distanceToGo_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
+
+%% Mass vs. Normalized Specific Energy - per Evolution
+for p = 1:numel(compilation)
+    
+    % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+    for k = 1:numel(compilation(p).evolutions)
+        fig_num = p*100 + k*1 + 110000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Mass vs. Normalized Specific Energy - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        % ylim([0 150])
+        xlim([0 1])
+        xlabel('Normalized Specific Energy (-)') % x-axis label
+        ylabel('Mass (10^3 kg)') % y-axis label
+        %set(gca,'YTick', 0:15:150);
+        set(gca,'XTick', 0:.1:1);
+        hold on
+        grid on
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                compilation(p).evolutions(k).trajectories(ii).individual.mass/1e3);
+        end
+        
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/mass_v_normalizedSpecificEnergy_Evolution_',...
             num2str(k - 1),...
             '_Set',...
             convertCharsToStrings(compilation(p).set),...
@@ -577,19 +743,11 @@ for p = 1:numel(compilation)
         set(gca,'XTick', 0:10:60);
         hold on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                    abs(compilation(p).evolutions(k).trajectories(ii).individual.mass_rate) );
-                    end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                abs(compilation(p).evolutions(k).trajectories(ii).individual.mass_rate) );
         end
-            end
-        end
+        
         hold off
         saveas(...
             figure(fig_num),...
@@ -624,14 +782,9 @@ for p = 1:numel(compilation)
         % set(gca,'XTick', 0:500:8000);
         hold on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 20 )
-                if( sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) < 6 )
-                    stairs(compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,...
-                        compilation(p).evolutions(k).trajectories(ii).individual.mass);
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,...
+                compilation(p).evolutions(k).trajectories(ii).individual.mass);
         end
         
         hold off
@@ -649,7 +802,7 @@ for p = 1:numel(compilation)
     end
 end
 
-%% Throttle vs. Height - per Evolution
+%% Height vs. Evaluated Throttle - per Evolution
 for p = 1:numel(compilation)
     
     %for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
@@ -658,15 +811,15 @@ for p = 1:numel(compilation)
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
-        title(strcat('Throttle vs. Height  - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        title(strcat('Evaluated Throttle Setting vs. Height  - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
         % ylim([0 150])
         % xlim([0 8000])
-        xlabel('Height (-)') % x-axis label
-        ylabel('Throttle (-)') % y-axis label
+        ylabel('Height (km)') % x-axis label
+        xlabel('Evaluated Throttle Setting (-)') % y-axis label
         % set(gca,'YTick', 0:10:150);
         % set(gca,'XTick', 0:500:8000);
         hold on
-        
+        grid on
         %   for ii = (numel(compilation(p).evolutions(k).trajectories)-20):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
             stairs(compilation(p).evolutions(k).trajectories(ii).individual.evaluated_throttle_setting,...
@@ -678,7 +831,7 @@ for p = 1:numel(compilation)
             figure(fig_num),...
             strcat(...
             compilation(p).mainpath,...
-            '/figures/throttle_v_height_Evolution_',...
+            '/figures/evaluatedThrottle_v_height_Evolution_',...
             num2str(k - 1),...
             '_Set',...
             convertCharsToStrings(compilation(p).set),...
@@ -708,7 +861,7 @@ for p = 1:numel(compilation)
         % set(gca, 'XDir','reverse')
         
         hold on
-        
+        grid on
         %   for ii = (numel(compilation(p).evolutions(k).trajectories)-20):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
             if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
@@ -757,18 +910,11 @@ for p = 1:numel(compilation)
         % set(gca, 'XDir','reverse')
         
         hold on
+        grid on
         
-        %   for ii = (numel(compilation(p).evolutions(k).trajectories)-20):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
-                %    if( sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) < 6 )
-                
-                stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.commanded_throttle_setting);
-                %     end
-            end
-            
-            
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.commanded_throttle_setting);
         end
         
         hold off
@@ -788,8 +934,57 @@ end
 
 
 
+%% Commanded Throttle Setting vs. Normalized Specific Energy - per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        %for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        fig_num = p*100 + k*1 + 115000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Commanded Throttle Setting vs. Normalized Specific Energy - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        %ylim([180 360])
+        xlim([0 1])
+        xlabel('Normalized Specific Energy (-)') % x-axis label
+        ylabel('Commanded Throttle Setting (-)') % y-axis label
+        %set(gca,'YTick', 180:30:360);
+        set(gca,'XTick', 0:.1:1);
+        % set(gca, 'XDir','reverse')
+        
+        hold on
+        grid on
+        %   for ii = (numel(compilation(p).evolutions(k).trajectories)-20):numel(compilation(p).evolutions(k).trajectories)
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
+                %    if( sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) < 6 )
+                
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.commanded_throttle_setting);
+                %     end
+            end
+            
+            
+        end
+        
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/commandedThrottleSetting_v_normalizedSpecificEnergy_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
 
-%% Height vs. Velocity - per Evolution
+
+
+%% Height vs. Normalized Specific Energy - per Evolution
 for p = 1:numel(compilation)
     
     for k = 1:numel(compilation(p).evolutions)
@@ -799,33 +994,120 @@ for p = 1:numel(compilation)
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
-        title(strcat('Height vs. Velocity - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        title(strcat('Height vs. Normalized Specific Energy - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
         ylim([0 130])
-        xlim([0 8000])
-        xlabel('Velocity (m/s)') % x-axis label
+        xlim([0 1])
+        xlabel('Normalized Specific Energy (-)') % x-axis label
         ylabel('Height (km)') % y-axis label
         set(gca,'YTick', 0:10:130);
-        set(gca,'XTick', 0:500:8000);
+        set(gca,'XTick', 0:.1:1);
         hold on
         grid on
-
+        
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.airspeed,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.height/1e3);
-                        end
-                    end
-                end
-                
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                compilation(p).evolutions(k).trajectories(ii).individual.height/1e3);
         end
         
         %plot(V,compilation(1).evolutions(1).trajectories(1).individual.height/1e3)
         
         plot([0 8000],(25)*[1 1],'k','LineWidth',2)
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/height_v_normalizedSpecificEnergy_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
+%% Airspeed vs. Normalized Specific Energy- per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        %for k = 1
+        fig_num = p*100 + k*1 + 116000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Airspeed va. Normalized Specific Energy - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        ylim([0 8000])
+        xlim([0 1])
+        ylabel('Airspeed (m/s)') % x-axis label
+        xlabel('Normalized Specific Energy (-)') % y-axis label
+        set(gca,'YTick', 0:500:8000);
+        set(gca,'XTick', 0:.1:1);
+        hold on
+        grid on
+        
+        %  plot([0 1],(25)*[1 1],'k','LineWidth',2)
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                compilation(p).evolutions(k).trajectories(ii).individual.airspeed);
+        end
+        
+        %plot(V,compilation(1).evolutions(1).trajectories(1).individual.height/1e3)
+        
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/airspeed_v_normalizedSpecificEnergy_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
+
+%% Height vs. Airspeed - per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        %for k = 1
+        fig_num = p*100 + k*1 + 116000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Height vs. Airspeed - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        ylim([0 130])
+        xlim([0 8000])
+        xlabel('Airspeed (m/s)') % x-axis label
+        ylabel('Height (km)') % y-axis label
+        set(gca,'YTick', 0:10:130);
+        set(gca,'XTick', 0:500:8000);
+        hold on
+        grid on
+        
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            if  compilation(1).validation == 1
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.airspeed,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,'k','LineWidth',2);
+               %             xlim([0 1400])
+               % set(gca,'XTick', 0:200:1400);
+                %ylim([0 1])
+                %set(gca,'YTick', 0:.2:2);
+              %  plot([0 1400],(.75)*[1 1],'k','LineWidth',2)
+            else
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.airspeed,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.height/1e3);
+            end
+        end
+        %plot(V,compilation(1).evolutions(1).trajectories(1).individual.height/1e3)
+        
+        plot([0 8000],(10)*[1 1],'k','LineWidth',2)
         hold off
         saveas(...
             figure(fig_num),...
@@ -840,7 +1122,6 @@ for p = 1:numel(compilation)
         %     close(fig_num);
     end
 end
-
 
 %% Heading Angle vs. Distance To Go - per Evolution
 for p = 1:numel(compilation)
@@ -919,35 +1200,28 @@ for p = 1:numel(compilation)
         set(gca,'YTick', -30:10:30);
         set(gca,'XTick', 0:10:60);
         % set(gca, 'XDir','reverse')
-        
         hold on
         grid on
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-20):numel(compilation(p).evolutions(k).trajectories)
+        
+        
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.heading_error);
-                            % stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                            %    compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger);
-                        end
-                        % end
-                        
-                        %stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                        %     compilation(p).evolutions(k).trajectories(ii).individual.bank_angle);
-                        
-                        %   end
-                    end
-                end
+            if  compilation(1).validation == 1
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.heading_error,'k','LineWidth',2);
+              
+            else
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.heading_error);
             end
         end
-        stairs(compilation(1).evolutions(1).trajectories(1).individual.headingErrorDeadBand_distance,...
-            compilation(p).evolutions(1).trajectories(1).individual.headingErrorDeadBand_LB,'k','LineWidth',2);
-        stairs(compilation(1).evolutions(1).trajectories(1).individual.headingErrorDeadBand_distance,...
-            compilation(1).evolutions(1).trajectories(1).individual.headingErrorDeadBand_UP,'k','LineWidth',2);
+        
+        
+        
+        
+        plot(compilation(p).evolutions(k).trajectories(ii).individual.headingErrorDeadBand_distance,...
+            compilation(p).evolutions(k).trajectories(ii).individual.headingErrorDeadBand_LB,'k','LineWidth',2);
+        plot(compilation(p).evolutions(k).trajectories(ii).individual.headingErrorDeadBand_distance,...
+            compilation(p).evolutions(k).trajectories(ii).individual.headingErrorDeadBand_UP,'k','LineWidth',2);
         
         hold off
         saveas(...
@@ -987,20 +1261,13 @@ for p = 1:numel(compilation)
         % set(gca, 'XDir','reverse')
         
         hold on
+        grid on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-20):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.angle_of_attack);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.angle_of_attack);
         end
+        
         hold off
         saveas(...
             figure(fig_num),...
@@ -1016,6 +1283,120 @@ for p = 1:numel(compilation)
     end
 end
 
+%% Angle of Attack vs. Distance Covered Ratio - per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        %for k = 1
+        fig_num = p*100 + k*1 + 119000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Angle of Attack vs. Distance Covered Ratio - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        ylim([0 50])
+        xlim([0 1])
+        xlabel('Distance Covered Ratio (-)') % x-axis label
+        ylabel('Angle of Attack (deg)') % y-axis label
+        set(gca,'YTick', 0:10:50);
+        set(gca,'XTick', 0:.1:1);
+        % set(gca, 'XDir','reverse')
+        
+        hold on
+        grid on
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            
+            distanceToCover = compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(1);
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_traveled/distanceToCover,...
+                compilation(p).evolutions(k).trajectories(ii).individual.angle_of_attack);
+        end
+        
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/angleOfAttack_v_distanceCoveredRatio_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
+
+
+%% Angle of Attack vs. Normalized Specific Energy - per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        %for k = 1
+        fig_num = p*100 + k*1 + 119000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Angle of Attack vs. Normalized Specific Energy - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        ylim([0 50])
+        xlim([0 1])
+        xlabel('Normalized Specific Energy (-)') % x-axis label
+        ylabel('Angle of Attack (deg)') % y-axis label
+        set(gca,'YTick', 0:10:50);
+        set(gca,'XTick', 0:.1:1);
+        % set(gca, 'XDir','reverse')
+        
+        hold on
+        grid on
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+        
+            h = stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                compilation(p).evolutions(k).trajectories(ii).individual.angle_of_attack);
+            %{
+            set(gca, 'ColorOrder', circshift(get(gca, 'ColorOrder'), numel(h)))
+           
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                compilation(p).evolutions(k).trajectories(ii).individual.evaluated_angle_of_attack);
+            set(gca, 'ColorOrder', circshift(get(gca, 'ColorOrder'), numel(h)))
+            
+            plot(compilation(p).evolutions(k).trajectories(ii).individual.interp_E_mapped_Ascent,...
+                compilation(p).evolutions(k).trajectories(ii).individual.interp_angle_of_attack_Ascent);
+            set(gca, 'ColorOrder', circshift(get(gca, 'ColorOrder'), numel(h)))
+            
+            scatter(compilation(p).evolutions(k).trajectories(ii).individual.DV_E_mapped_Ascent,...
+                compilation(p).evolutions(k).trajectories(ii).individual.DV_angle_of_attack_Ascent);
+                              set(gca, 'ColorOrder', circshift(get(gca, 'ColorOrder'), numel(h)))
+   
+            plot(compilation(p).evolutions(k).trajectories(ii).individual.interp_E_mapped_Descent,...
+                compilation(p).evolutions(k).trajectories(ii).individual.interp_angle_of_attack_Descent);
+            set(gca, 'ColorOrder', circshift(get(gca, 'ColorOrder'), numel(h)))
+            
+            scatter(compilation(p).evolutions(k).trajectories(ii).individual.DV_E_mapped_Descent,...
+                compilation(p).evolutions(k).trajectories(ii).individual.DV_angle_of_attack_Descent);
+                     
+            %}
+        end
+        
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/angleOfAttack_v_normalizedSPecificEnergy_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
+
+
+
+
 %% Bank Angle vs. Distance To Go - per Evolution
 for p = 1:numel(compilation)
     
@@ -1027,28 +1408,21 @@ for p = 1:numel(compilation)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
         title(strcat('Bank Angle vs. Distance To Go - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-        ylim(90*[-1 1.2])
+        ylim(90*[-1 1])
         xlim([0 60])
         xlabel('Distance To Go (deg)') % x-axis label
         ylabel('Bank Angle (deg)') % y-axis label
-        set(gca,'YTick', -90:15:105);
+        set(gca,'YTick', -90:15:90);
         set(gca,'XTick', 0:10:60);
         % set(gca, 'XDir','reverse')
         hold on
+        grid on
         
         plot([0 60],[0 0],'k','LineWidth',2)
         
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.bank_angle);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.bank_angle);
         end
         
         hold off
@@ -1057,6 +1431,49 @@ for p = 1:numel(compilation)
             strcat(...
             compilation(p).mainpath,...
             '/figures/bankAngle_v_distanceToGo_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
+
+%% Bank Angle vs. Normalized Specific Energy - per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        %for k = 1
+        fig_num = p*100 + k*1 + 120000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Bank Angle vs. Normalized Specific Energy - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        ylim(90*[-1 1])
+        xlim([0 1])
+        xlabel('Normalized Specific Energy (-)') % x-axis label
+        ylabel('Bank Angle (deg)') % y-axis label
+        set(gca,'YTick', -90:15:90);
+        set(gca,'XTick', 0:.1:1);
+        % set(gca, 'XDir','reverse')
+        hold on
+        grid on
+        
+        plot([0 1],[0 0],'k','LineWidth',2)
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                compilation(p).evolutions(k).trajectories(ii).individual.bank_angle);
+        end
+        
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/bankAngle_v_normalizedSpecificEnergy_Evolution_',...
             num2str(k - 1),...
             '_Set',...
             convertCharsToStrings(compilation(p).set),...
@@ -1088,21 +1505,57 @@ for p = 1:numel(compilation)
         % set(gca, 'XDir','reverse')
         
         hold on
-                plot([0 60],[0 0],'k','LineWidth',2)
+        plot([0 60],[0 0],'k','LineWidth',2)
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.evaluated_bank_angle);
+        end
+        
+        hold off
+        saveas(...
+            figure(fig_num),...
+            strcat(...
+            compilation(p).mainpath,...
+            '/figures/evaluatedBankAngle_v_distanceToGo_Evolution_',...
+            num2str(k - 1),...
+            '_Set',...
+            convertCharsToStrings(compilation(p).set),...
+            '.png'),...
+            'png');
+        %     close(fig_num);
+    end
+end
 
+
+%% Evaluated Bank Angle vs. Normalized Specific Energy - per Evolution
+for p = 1:numel(compilation)
+    
+    for k = 1:numel(compilation(p).evolutions)
+        % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        %for k = 1
+        fig_num = p*100 + k*1 + 121000;
+        figure(fig_num)
+        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+        set (gca,'Fontsize',15)
+        title(strcat('Evaluated Bank Angle vs. Normalized Specific Energy - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        ylim(90*[-1 1])
+        xlim([0 1])
+        xlabel('Normalized Specific Energy (-)') % x-axis label
+        ylabel('Evaluated Bank Angle (deg)') % y-axis label
+        set(gca,'YTick', -90:15:90);
+        set(gca,'XTick', 0:.1:1);
+        % set(gca, 'XDir','reverse')
+        
+        hold on
+        grid on
+        plot([0 1],[0 0],'k','LineWidth',2)
+        
         %for ii = (numel(compilation(p).evolutions(k).trajectories)-20):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
-    if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3                stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.evaluated_bank_angle);
-                end
-            end
-                end
-    end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,...
+                compilation(p).evolutions(k).trajectories(ii).individual.evaluated_bank_angle);
         end
         
         
@@ -1111,7 +1564,7 @@ for p = 1:numel(compilation)
             figure(fig_num),...
             strcat(...
             compilation(p).mainpath,...
-            '/figures/evaluatedBankAngle_v_distanceToGo_Evolution_',...
+            '/figures/evaluatedBankAngle_v_normalizedSpecificEnergy_Evolution_',...
             num2str(k - 1),...
             '_Set',...
             convertCharsToStrings(compilation(p).set),...
@@ -1148,16 +1601,8 @@ for p = 1:numel(compilation)
         hold on
         
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger);
         end
         hold off
         saveas(...
@@ -1185,31 +1630,24 @@ for p = 1:numel(compilation)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
         title(strcat('Flight-Path Angle vs. Distance To Go - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-        ylim([-15 3])
+        ylim([-15 10])
         xlim([0 60])
         xlabel('Distance To Go (deg)') % x-axis label
         ylabel('Flight-Path Angle (deg)') % y-axis label
-        set(gca,'YTick', -15:3:3);
+        set(gca,'YTick', -15:3:10);
         set(gca,'XTick', 0:10:60);
         % set(gca, 'XDir','reverse')
         
         hold on
+        grid on
+        
         plot([0 60],[0 0],'k','LineWidth',2)
         
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.flight_path_angle);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.flight_path_angle);
         end
-        %
+        
         hold off
         saveas(...
             figure(fig_num),...
@@ -1247,21 +1685,12 @@ for p = 1:numel(compilation)
         % set(gca, 'XDir','reverse')
         
         hold on
-        
+        grid on
         plot([0 60],[0 0],'k','LineWidth',2)
         
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.flight_path_angle_rate);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.flight_path_angle_rate);
         end
         hold off
         saveas(...
@@ -1292,32 +1721,20 @@ for p = 1:numel(compilation)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
         title(strcat('Dynamic Pressure vs. Distance To Go - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-        ylim([0 1000]/1e3)
+        ylim([0 10000]/1e3)
         xlim([0 60])
         xlabel('Distance To Go (deg)') % x-axis label
         ylabel('Dynamic Pressure (kPa)') % y-axis label
         % set(gca,'YTick', -90:15:90);
         set(gca,'XTick', 0:10:60);
         % set(gca, 'XDir','reverse')
-              hold on
-                       plot([0 60],[100 100]/1e3,'k','LineWidth',2)
-
+        hold on
+        grid on
+        plot([0 60],[100 100]/1e3,'k','LineWidth',2)
+        
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            
-                            % semilogy(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                            %    compilation(p).evolutions(k).trajectories(ii).individual.dynamic_pressure);
-                            
-                      
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.dynamic_pressure/1e3);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.dynamicPressure/1e3);
         end
         
         hold off
@@ -1358,21 +1775,11 @@ for p = 1:numel(compilation)
         grid on
         plot([0 60],[5014 5014]/1e3,'k','LineWidth',2)
         
-        
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-20):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.bending_moment/1e3);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.bending_moment/1e3);
         end
-       
+        
         hold off
         saveas(...
             figure(fig_num),...
@@ -1412,17 +1819,10 @@ for p = 1:numel(compilation)
         grid on
         
         plot([0 60],[0 0],'k','LineWidth',2)
+        
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.aero_moment_coefficient_C_m );
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.aero_moment_coefficient_C_m );
         end
         
         hold off
@@ -1460,19 +1860,12 @@ for p = 1:numel(compilation)
         set(gca,'YTick', -30:5:30);
         set(gca,'XTick', 0:10:60);
         hold on
+        grid on
         
         plot([0 60],[0 0],'k','LineWidth',2)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.bodyflap_deflection);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.bodyflap_deflection);
         end
         
         hold off
@@ -1508,19 +1901,13 @@ for p = 1:numel(compilation)
         set(gca,'YTick', -45:10:45);
         set(gca,'XTick', 0:10:60);
         hold on
+        grid on
         
         plot([0 60],[0 0],'k','LineWidth',2)
+        
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.elevon_deflection);
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.elevon_deflection);
         end
         
         hold off
@@ -1560,19 +1947,11 @@ for p = 1:numel(compilation)
         hold on
         grid on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3          
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.body_fixed_total_g_load_mag );
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.body_fixed_total_g_load_mag );
         end
+        
         hold off
         saveas(...
             figure(fig_num),...
@@ -1630,7 +2009,7 @@ for p = 1:numel(compilation)
     end
 end
 
-%% Tauber Heat Flux at Leading Edge vs. Velocity - per Evolution
+%% Tauber Heat Flux at Leading Edge vs. Airspeed - per Evolution
 for p = 1:numel(compilation)
     
     for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
@@ -1638,10 +2017,10 @@ for p = 1:numel(compilation)
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
-        title(strcat('Tauber Heat Flux at Leading Edge vs. Velocity - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        title(strcat('Tauber Heat Flux at Leading Edge vs. Airspeed - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
         ylim([0 1000])
         xlim([0 8000])
-        xlabel('Velocity (m/s)') % x-axis label
+        xlabel('Airspeed (m/s)') % x-axis label
         ylabel('Tauber Heat Flux at Leading Edge (W/m^2)') % y-axis label
         set(gca,'YTick', 0:100:1000);
         set(gca,'XTick', 0:500:8000);
@@ -1728,19 +2107,10 @@ for p = 1:numel(compilation)
         set(gca,'XTick', 0:10:60);
         hold on
         grid on
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
+        
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3
-                            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                                compilation(p).evolutions(k).trajectories(ii).individual.heat_flux_chapman_nose/1e3 );
-                        end
-                    end
-                    
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.heat_flux_chapman_nose/1e3 );
         end
         
         hold off
@@ -1776,19 +2146,11 @@ for p = 1:numel(compilation)
         set(gca,'YTick', 0:200:2000);
         set(gca,'XTick', 0:10:60);
         hold on
+        grid on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
-                    if sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2
-                        if compilation(p).evolutions(k).trajectories(ii).individual.E_hat(end) < 0.3                
-                stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.wall_temperature_chapman );
-                        end
-                    end
-                end
-            end
+            stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.wall_temperature_chapman );
         end
         hold off
         saveas(...
@@ -1862,6 +2224,15 @@ end
 %% Height vs. Groundtrack - per Evolution
 lat_f_deg = 38.9444444444444;
 lon_f_deg = -77.4558333333;
+
+lon_i_deg = -106.7;
+lon_i_rad = deg2rad(-22.37);
+lon_i_deg = -22.37;
+lat_f_deg = 5;
+lon_f_deg = -53;
+validation = 1;
+
+
 th = 0:pi/50:2*pi;
 xunit = .75 * cos(th) + lon_f_deg;
 yunit = .75 * sin(th) + lat_f_deg;
@@ -1887,34 +2258,29 @@ for p = 1:numel(compilation)
         xlim([-90 30])
         ylim([0 90])
         zlim([0 150])
+        xlim([-82 -42])
+        ylim([-8 12])
         
         
-        
-        %  for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
-        %   for k = 1:numel(compilation(p).evolutions)
-        %    for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii =1:numel(compilation(p).evolutions(k).trajectories)
-            %for ii = 194
-            if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
-                
-                color_line3(...
-                    compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.time_vector);
-                stairs(...
-                    compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle,'g')
-                %                 scatter3(...
-                %                     compilation(p).evolutions(i).trajectories(k).individual.x_R(1),...
-                %                     compilation(p).evolutions(i).trajectories(k).individual.y_R(1),...
-                %                     compilation(p).evolutions(i).trajectories(k).individual.z_R(1),'filled')
-                %                 scatter3(...
-                %                     compilation(p).evolutions(i).trajectories(k).individual.x_R(end),...
-                %                     compilation(p).evolutions(i).trajectories(k).individual.y_R(end),...
-                %                     compilation(p).evolutions(i).trajectories(k).individual.z_R(end),'filled')
-            end
-            % end
+            
+            color_line3(...
+                compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
+                compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle,...
+                compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,...
+                compilation(p).evolutions(k).trajectories(ii).individual.time_vector);
+            stairs(...
+                compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
+                compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle,'g')
+            %                 scatter3(...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.x_R(1),...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.y_R(1),...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.z_R(1),'filled')
+            %                 scatter3(...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.x_R(end),...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.y_R(end),...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.z_R(end),'filled')
+            
         end
         
         plot(lon_f_deg,lat_f_deg,'MarkerSize',20)
@@ -2042,7 +2408,7 @@ for p = 1:numel(compilation)
         xlim([0 60])
         %ylim([0 90])
         zlim([0 175])
-    hold on
+        hold on
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
             if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
                 if compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30
@@ -2052,10 +2418,10 @@ for p = 1:numel(compilation)
                             compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
                             compilation(p).evolutions(k).trajectories(ii).individual.bank_angle,...
                             compilation(p).evolutions(k).trajectories(ii).individual.height/1e3)
-                        plot3(...
-                            compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                            compilation(p).evolutions(k).trajectories(ii).individual.skip_suppression_limit,...
-                            compilation(p).evolutions(k).trajectories(ii).individual.height/1e3)
+                        %plot3(...
+                         %   compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                          %  compilation(p).evolutions(k).trajectories(ii).individual.skip_suppression_limit,...
+                           % compilation(p).evolutions(k).trajectories(ii).individual.height/1e3)
                         
                         % stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
                         %     compilation(p).evolutions(k).trajectories(ii).individual.bank_angle,'g');
@@ -2128,43 +2494,38 @@ for p = 1:numel(compilation)
         zlim([0 100])
         
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if sum(abs(compilation(p).evolutions(k).trajectories(ii).individual.heading_error) > 30) == 0
-                if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
-                    if( sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2 )
-                        
-                        %color_line3(...
-                        %    compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
-                        %    compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle,...
-                        %    compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,...
-                        %    compilation(p).evolutions(k).trajectories(ii).individual.mass);
-                        plot3(...
-                            compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                            compilation(p).evolutions(k).trajectories(ii).individual.flight_path_angle,...
-                            compilation(p).evolutions(k).trajectories(ii).individual.height/1e3)
-                        
-                        
-                        %stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                        %   compilation(p).evolutions(k).trajectories(ii).individual.flight_path_angle,'g');
-                        
-                        
-                        % plot3(...
-                        %     compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
-                        %     ones(numel(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go))*100,...
-                        %     compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,'g')
-                        
-                        %                 scatter3(...
-                        %                     compilation(p).evolutions(i).trajectories(k).individual.x_R(1),...
-                        %                     compilation(p).evolutions(i).trajectories(k).individual.y_R(1),...
-                        %                     compilation(p).evolutions(i).trajectories(k).individual.z_R(1),'filled')
-                        %                 scatter3(...
-                        %                     compilation(p).evolutions(i).trajectories(k).individual.x_R(end),...
-                        %                     compilation(p).evolutions(i).trajectories(k).individual.y_R(end),...
-                        %                     compilation(p).evolutions(i).trajectories(k).individual.z_R(end),'filled')
-                        %end
-                        
-                    end
-                end
-            end
+            
+            %color_line3(...
+            %    compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
+            %    compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle,...
+            %    compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,...
+            %    compilation(p).evolutions(k).trajectories(ii).individual.mass);
+            plot3(...
+                compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+                compilation(p).evolutions(k).trajectories(ii).individual.flight_path_angle,...
+                compilation(p).evolutions(k).trajectories(ii).individual.height/1e3)
+            
+            
+            %stairs(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+            %   compilation(p).evolutions(k).trajectories(ii).individual.flight_path_angle,'g');
+            
+            
+            % plot3(...
+            %     compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go,...
+            %     ones(numel(compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go))*100,...
+            %     compilation(p).evolutions(k).trajectories(ii).individual.height/1e3,'g')
+            
+            %                 scatter3(...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.x_R(1),...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.y_R(1),...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.z_R(1),'filled')
+            %                 scatter3(...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.x_R(end),...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.y_R(end),...
+            %                     compilation(p).evolutions(i).trajectories(k).individual.z_R(end),'filled')
+            %end
+            
+            
             
         end
         
@@ -2203,18 +2564,15 @@ for p = 1:numel(compilation)
         % img = imread('img.jpg');
         %imagesc([-180 180], [-90 90], (flipud(img)));
         set (gca,'Fontsize',20)
-        %set(gca,'XTick', -90:15:30);
+        set(gca,'XTick', 0:5:60);
         %set(gca,'YTick', 0:15:90);
-        %set(gca,'ZTick', 0:15:150);
-        %xlim([-90 30])
+        set(gca,'ZTick', 0:15:165);
+        xlim([0 60])
         %ylim([0 90])
-        zlim([0 175])
+        zlim([0 165])
         
         
-        
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
-        % for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-        for ii = 1
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
             
             %color_line3(...
             %    compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...

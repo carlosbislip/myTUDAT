@@ -18,6 +18,7 @@
 
 #include "Tudat/InputOutput/aerodynamicCoefficientReader.h"
 #include "Tudat/Astrodynamics/Aerodynamics/controlSurfaceAerodynamicCoefficientInterface.h"
+#include "Tudat/Mathematics/Interpolators/createInterpolator.h"
 #include "Tudat/Mathematics/Interpolators/multiLinearInterpolator.h"
 
 namespace tudat
@@ -83,8 +84,8 @@ public:
                         aerodynamics::control_surface_deflection_dependent ) != 1 )
         {
             std::cerr << "Warning when creating ControlSurfaceIncrementAerodynamicCoefficientSettings, expected single dependency on control surface deflections, found " <<
-                std::count( independentVariableNames.begin( ), independentVariableNames.end( ),
-                            aerodynamics::control_surface_deflection_dependent ) << ", dependencies" << std::endl;
+                         std::count( independentVariableNames.begin( ), independentVariableNames.end( ),
+                                     aerodynamics::control_surface_deflection_dependent ) << ", dependencies" << std::endl;
         }
     }
 
@@ -101,7 +102,7 @@ public:
         return aerodynamicCoefficientType_;
     }
 
-       //! Function to return identifiers of physical meaning of independent variables.
+    //! Function to return identifiers of physical meaning of independent variables.
     /*!
      *  Function to return identifiers of physical meaning of independent variables.
      *  \return Identifiers of physical meaning of independent variables.
@@ -328,6 +329,7 @@ readTabulatedControlIncrementAerodynamicCoefficientsFromFiles(
         const std::map< int, std::string > momentCoefficientFiles,
         const std::vector< aerodynamics::AerodynamicCoefficientsIndependentVariables > independentVariableNames );
 
+
 //! Function to create control surface aerodynamic coefficient settings fom coefficients stored in data files
 /*!
  * Function to create control surface aerodynamic coefficient settings fom coefficients stored in data files. Separate files
@@ -376,30 +378,43 @@ createTabulatedControlSurfaceIncrementAerodynamicCoefficientInterface(
 
     if( independentVariableNames.size( ) != NumberOfDimensions )
     {
-       throw std::runtime_error( "Error when creating tabulated control surface increment aerodynamic coefficient interface, inconsistent variable name vector dimensioning" );
-
+        throw std::runtime_error( "Error when creating tabulated control surface increment aerodynamic coefficient interface, inconsistent variable name vector dimensioning" );
     }
 
-    // Create interpolators for coefficients.
-    std::shared_ptr< interpolators::MultiLinearInterpolator
-            < double, Eigen::Vector3d, NumberOfDimensions > > forceInterpolator =
-            std::make_shared< interpolators::MultiLinearInterpolator
-            < double, Eigen::Vector3d, NumberOfDimensions > >(
-                independentVariables, forceCoefficients );
-    std::shared_ptr< interpolators::MultiLinearInterpolator
-            < double, Eigen::Vector3d, NumberOfDimensions > > momentInterpolator =
-            std::make_shared< interpolators::MultiLinearInterpolator
-            < double, Eigen::Vector3d, NumberOfDimensions > >(
-                independentVariables, momentCoefficients );
+    std::shared_ptr< interpolators::MultiLinearInterpolator < double, Eigen::Vector3d, NumberOfDimensions > > forceInterpolator;
+    std::shared_ptr< interpolators::MultiLinearInterpolator < double, Eigen::Vector3d, NumberOfDimensions > > momentInterpolator;
+
+   /* if( NumberOfDimensions == 3 )
+    {
+        std::vector< tudat::interpolators::BoundaryInterpolationType > aerodynamicCoefficicientCleanConfigurationBoundaryHandling( 3 );
+
+        aerodynamicCoefficicientCleanConfigurationBoundaryHandling[ 0 ] = tudat::interpolators::BoundaryInterpolationType::extrapolate_at_boundary ;
+        aerodynamicCoefficicientCleanConfigurationBoundaryHandling[ 1 ] = tudat::interpolators::BoundaryInterpolationType::extrapolate_at_boundary ;
+        aerodynamicCoefficicientCleanConfigurationBoundaryHandling[ 2 ] = tudat::interpolators::BoundaryInterpolationType::extrapolate_at_boundary ;
+
+        std::shared_ptr< tudat::interpolators::InterpolatorSettings > multi4DLinearInterpolatorSettings =
+                std::make_shared< tudat::interpolators::InterpolatorSettings >(
+                    tudat::interpolators::InterpolatorTypes::multi_linear_interpolator,
+                    tudat::interpolators::AvailableLookupScheme::huntingAlgorithm,
+                    false,
+                    aerodynamicCoefficicientCleanConfigurationBoundaryHandling );
+
+        // Create interpolators for coefficients.
+        forceInterpolator = std::make_shared< interpolators::MultiLinearInterpolator < double, Eigen::Vector3d, NumberOfDimensions > >( independentVariables, forceCoefficients, multi4DLinearInterpolatorSettings );
+        momentInterpolator = std::make_shared< interpolators::MultiLinearInterpolator < double, Eigen::Vector3d, NumberOfDimensions > >( independentVariables, momentCoefficients, multi4DLinearInterpolatorSettings );
+    }
+    else
+    {*/
+        // Create interpolators for coefficients.
+        forceInterpolator = std::make_shared< interpolators::MultiLinearInterpolator < double, Eigen::Vector3d, NumberOfDimensions > >( independentVariables, forceCoefficients );
+        momentInterpolator = std::make_shared< interpolators::MultiLinearInterpolator < double, Eigen::Vector3d, NumberOfDimensions > >( independentVariables, momentCoefficients );
+    //}
+
 
     // Create aerodynamic coefficient interface.
     return  std::make_shared< aerodynamics::CustomControlSurfaceIncrementAerodynamicInterface >(
-                std::bind( &interpolators::MultiLinearInterpolator
-                             < double, Eigen::Vector3d, NumberOfDimensions >::interpolate,
-                             forceInterpolator, std::placeholders::_1 ),
-                std::bind( &interpolators::MultiLinearInterpolator
-                             < double, Eigen::Vector3d, NumberOfDimensions >::interpolate,
-                             momentInterpolator, std::placeholders::_1 ),
+                std::bind( &interpolators::MultiLinearInterpolator < double, Eigen::Vector3d, NumberOfDimensions >::interpolate, forceInterpolator, std::placeholders::_1 ),
+                std::bind( &interpolators::MultiLinearInterpolator < double, Eigen::Vector3d, NumberOfDimensions >::interpolate, momentInterpolator, std::placeholders::_1 ),
                 independentVariableNames );
 }
 

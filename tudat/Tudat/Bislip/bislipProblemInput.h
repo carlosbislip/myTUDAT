@@ -18,22 +18,22 @@ public:
     //! Constructor
     /*!
      * Constructor
-     * \param dryMass Total dry mass of the vehicle (not defined; NaN by default).
+     * \param playTimeString String containing a time-stamp of the entire batch (not defined; "" by default).
      */
-    ProblemInput( const std::string playTime = "" ):
-        playTime_( playTime ){ }
+    ProblemInput( const std::string playTimeString = "" ):
+        playTimestring_( playTimeString ){ }
 
     //! Destructor
     ~ProblemInput( ){ }
 
-    void setPlayTime( const std::string playTime )
+    void setPlayTimePair( const std::pair< std::chrono::time_point< std::chrono::system_clock >, std::string > playTimePair )
     {
-        playTime_ = playTime;
+        playTimePair_ = playTimePair;
     }
 
-   std::string getPlayTime( )
+   std::pair< std::chrono::time_point< std::chrono::system_clock >, std::string > getPlayTimePair( )
     {
-        return playTime_;
+        return playTimePair_;
     }
 
     void setProblemName( const std::string problemName )
@@ -166,12 +166,12 @@ public:
         return ascentParameterBounds_;
     }
 
-    void setAscentParameterBoundsMap( const std::map< bislip::Parameters::Optimization, std::pair < double, double > > ascentParameterBoundsMap )
+    void setAscentParameterBoundsMap( const std::map< bislip::Parameters::Interpolators, Eigen::MatrixXd > ascentParameterBoundsMap )
     {
         ascentParameterBoundsMap_ = ascentParameterBoundsMap;
     }
 
-    const std::map< bislip::Parameters::Optimization, std::pair < double, double > > getAscentParameterBoundsMap( )
+    const std::map< bislip::Parameters::Interpolators, Eigen::MatrixXd > getAscentParameterBoundsMap( )
     {
         return ascentParameterBoundsMap_;
     }
@@ -196,12 +196,12 @@ public:
         return descentParameterBounds_;
     }
 
-    void setDescentParameterBoundsMap( const std::map< bislip::Parameters::Optimization, std::pair < double, double > > descentParameterBoundsMap )
+    void setDescentParameterBoundsMap( const std::map< bislip::Parameters::Interpolators, Eigen::MatrixXd > descentParameterBoundsMap )
     {
         descentParameterBoundsMap_ = descentParameterBoundsMap;
     }
 
-    const std::map< bislip::Parameters::Optimization, std::pair < double, double > > getDescentParameterBoundsMap( )
+    const std::map< bislip::Parameters::Interpolators, Eigen::MatrixXd > getDescentParameterBoundsMap( )
     {
         return descentParameterBoundsMap_;
     }
@@ -296,13 +296,96 @@ public:
         return constraintsValues_;
     }
 
+    void setHardConstraints( const std::vector< double > hardConstraintsValues )
+    {
+        hardConstraintsValues_ = hardConstraintsValues;
+    }
+
+    std::vector< double > getHardConstraints( )
+    {
+        return hardConstraintsValues_;
+    }
+
+
+    void setPopulation( const  std::map < std::string, Eigen::VectorXd > population )
+    {
+        population_ = population;
+    }
+
+    std::map < std::string, Eigen::VectorXd > getPopulation( )
+    {
+        return population_;
+    }
+
+    void setFitness( const  std::map < std::string, Eigen::VectorXd > fitness )
+    {
+        fitness_ = fitness;
+    }
+
+    std::map < std::string, Eigen::VectorXd > getFitness( )
+    {
+        return fitness_;
+    }
+
+    void setPrintedPopulation( const  std::map < std::string, Eigen::VectorXd > printedPopulation )
+    {
+        printedPopulation_ = printedPopulation;
+    }
+
+    std::map < std::string, Eigen::VectorXd > getPrintedPopulation( )
+    {
+        return printedPopulation_;
+    }
+
+    void setPrintedFitness( const  std::map < std::string, Eigen::VectorXd > printedFitness )
+    {
+        printedFitness_ = printedFitness;
+    }
+
+    std::map < std::string, Eigen::VectorXd > getPrintedFitness( )
+    {
+        return printedFitness_;
+    }
+
+
+
+/*
+    void setAtmosphericModel_US76( const tudat::aerodynamics::TabulatedAtmosphere atmosphericModel_US76 )
+    {
+        atmosphericModel_US76_ = atmosphericModel_US76;
+    }
+
+    tudat::aerodynamics::TabulatedAtmosphere getAtmosphericModel_US76( )
+    {
+        return atmosphericModel_US76_;
+    }
+
+    void setAtmosphericModel_NRLMSISE00( const tudat::aerodynamics::NRLMSISE00Atmosphere atmosphericModel_NRLMSISE00 )
+    {
+        atmosphericModel_NRLMSISE00_ = atmosphericModel_NRLMSISE00;
+    }
+
+    tudat::aerodynamics::NRLMSISE00Atmosphere getAtmosphericModel_NRLMSISE00( )
+    {
+        return atmosphericModel_NRLMSISE00_;
+    }
+*/
 
 private:
+    //tudat::aerodynamics::NRLMSISE00Atmosphere atmosphericModel_NRLMSISE00_;
+    //tudat::aerodynamics::TabulatedAtmosphere atmosphericModel_US76_;
 
-    std::string playTime_;
+
+    std::map < std::string, Eigen::VectorXd > population_;
+    std::map < std::string, Eigen::VectorXd > fitness_;
+    std::map < std::string, Eigen::VectorXd > printedPopulation_;
+    std::map < std::string, Eigen::VectorXd > printedFitness_;
+    std::pair< std::chrono::time_point< std::chrono::system_clock >, std::string > playTimePair_;
+    std::string playTimestring_;
     std::string problemName_;
     std::string outputPath_;
     std::string outputSubFolder_;
+    std::vector< double > hardConstraintsValues_;
     std::vector< double > setOutputSettings_;
     std::vector< double > simulationSettings_;
     std::string vehicleName_;
@@ -313,10 +396,10 @@ private:
     Eigen::Vector6d initialState_Spherical_;
     std::vector< std::string > ascentParameterList_;
     std::vector< double > ascentParameterBounds_;
-    std::map< bislip::Parameters::Optimization, std::pair < double, double > > ascentParameterBoundsMap_;
+    std::map< bislip::Parameters::Interpolators, Eigen::MatrixXd > ascentParameterBoundsMap_;
     std::vector< std::string > descentParameterList_;
     std::vector< double > descentParameterBounds_;
-    std::map< bislip::Parameters::Optimization, std::pair < double, double > > descentParameterBoundsMap_;
+    std::map< bislip::Parameters::Interpolators, Eigen::MatrixXd > descentParameterBoundsMap_;
     std::vector< std::vector< double > > decisionVectorBounds_;
     std::vector< std::string > centralBodies_;
     std::vector< std::string > bodiesToIntegrate_;

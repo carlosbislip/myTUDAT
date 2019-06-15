@@ -21,8 +21,9 @@ function [ evolutions,...
     headingErrorDeadbandBounds_File_Path_List_prefix,...
     alphaMachBounds_File_Path_List_prefix,...
     Folder_Path_List,pop_file_path_prefix,fit_file_path_prefix)
-%UNTITLED8 Summary of this function goes here
+%PATH_PREP Summary of this function goes here
 %   Detailed explanation goes here
+disp('PATH_PREP')
 
 
 % Read in folder content

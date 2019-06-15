@@ -144,7 +144,13 @@ static std::map< PropagationDependentVariables, std::string > dependentVariableT
     { time_of_flight, "timeOfFlight" },
     { flight_path_angle_rate, "flightPathAngleRate" },
     { cumulative_cartesian_distance_travelled, "cumulativeCartesianDistanceTravelled" },
-    { thrust_force_magnitude, "thrustForceMagnitude" }
+    { thrust_force_magnitude, "thrustForceMagnitude" },
+    { aerodynamic_frame_aerodynamic_load_vector, "aerodynamicLoadVector" },
+    { aerodynamic_frame_total_load_vector, "totalLoadAerofynamicFrameVector" },
+    { trajectory_phase, "trajectoryPhase" }
+
+
+
 
 
 

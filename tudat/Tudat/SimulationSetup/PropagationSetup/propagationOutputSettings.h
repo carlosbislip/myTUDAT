@@ -160,7 +160,13 @@ enum PropagationDependentVariables
     cumulative_cartesian_distance_travelled = 89,
     thrust_force_magnitude = 90,
     speed_of_sound = 91,
-    adiabatic_wall_temperature = 92
+    adiabatic_wall_temperature = 92,
+    freestream_temperature = 93,
+    current_drag_magnitude = 94,
+    estimated_flight_path_angle = 95,
+    aerodynamic_frame_aerodynamic_load_vector = 96,
+    aerodynamic_frame_total_load_vector = 97,
+    trajectory_phase = 98
 
 };
 

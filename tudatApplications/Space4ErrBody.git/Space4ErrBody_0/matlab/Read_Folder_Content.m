@@ -21,8 +21,9 @@ function [ prop_Output_files,...
     headingErrorDeadbandBounds_File_Path_List_prefix,...
     alphaMachBounds_File_Path_List_prefix,...
     pop_file_path_prefix,fit_file_path_prefix)
-%UNTITLED6 Summary of this function goes here
+%READ_FOLDER_CONTENT Summary of this function goes here
 %   Detailed explanation goes here
+disp('READ_FOLDER_CONTENT')
 
 
 prop_Output_files = dir(prop_File_Path_List_prefix{p});
@@ -38,11 +39,13 @@ DV_mapped_Ascent_Output_files = dir(DV_mapped_Ascent_File_Path_List_prefix{p});
 DV_mapped_Descent_Output_files = dir(DV_mapped_Descent_File_Path_List_prefix{p});
 
 headingErrorDeadbandBounds_Output_files = DV_mapped_Descent_Output_files;
+headingErrorDeadbandBounds_Output_files(1).folder = erase(headingErrorDeadbandBounds_Output_files(1).folder,'map_DV_mapped_Descent');
 tempDir = dir(headingErrorDeadbandBounds_File_Path_List_prefix{p});
 headingErrorDeadbandBounds_Output_files(1).name = tempDir.name;
 clear tempDir;
 
 alphaMachBounds_Output_files = DV_mapped_Descent_Output_files;
+alphaMachBounds_Output_files(1).folder = erase(alphaMachBounds_Output_files(1).folder,'map_DV_mapped_Descent');
 tempDir = dir(alphaMachBounds_File_Path_List_prefix{p});
 alphaMachBounds_Output_files(1).name = tempDir.name;
 

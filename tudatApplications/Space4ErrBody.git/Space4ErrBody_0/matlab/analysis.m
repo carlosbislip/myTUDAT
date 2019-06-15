@@ -15,31 +15,38 @@ format long
 %%
 online = 0;
 
+matlabScripts = '/Users/bislip/Cloud Storage/OneDrive/School/TUDelft/Space Flight/Thesis/tudatBundle.git/tudatApplications/Space4ErrBody.git/Space4ErrBody_0/matlab/';
 mainpath = '/Users/bislip/Cloud Storage/OneDrive/School/TUDelft/Space Flight/Thesis/tudatBundle.git/tudatApplications/Space4ErrBody.git/Space4ErrBody_0/matlab/';
+%mainpath = uigetdir;
+%mainpath = '/Volumes/Public/';
 
 if online == 1
     mainpath = '..';
 end
-pop_Location = strcat(mainpath,'SimulationOutput/');
-
-
-%pop_prefix = 'population*';
-pop_prefix = 'monteCarloPopulation*';
-
+pop_Location = strcat(mainpath,'SimulationOutput/THESIS/HORUS/');
+%pop_Location = strcat(mainpath,'SimulationOutput/Validation/');
 fit_Location = pop_Location;
-%fit_prefix = 'fitness*';
-fit_prefix = 'monteCarloFitness*';
+pop_prefix = 'population*';
+fit_prefix = 'fitness*';
+
+%pop_prefix = 'monteCarloPopulation*';
+%fit_prefix = 'monteCarloFitness*';
 
 Output_Location = pop_Location;
 %Folder_prefix = 'HORUS_OUTPUT*';
 Folder_prefix = 'OUTPUT*';
 %File_prefix = 'HORUSsystemFinalStateGOAL*';
-prop_File_prefix = 'HORUSPropHistory*';
-depvar_File_prefix = 'HORUSDepVar*';
-interp_Ascent_File_prefix = 'evaluatedInterpolatorsAscent*';
-interp_Descent_File_prefix = 'evaluatedInterpolatorsDescent*';
-DV_mapped_Ascent_File_prefix = 'map_DV_mapped_Ascent*';
-DV_mapped_Descent_File_prefix = 'map_DV_mapped_Descent*';
+prop_File_prefix = 'propagationHistory/propagationHistory*';
+depvar_File_prefix = 'dependentVariables/dependentVariables*';
+interp_Ascent_File_prefix = 'evaluatedInterpolatorsAscent/evaluatedInterpolatorsAscent*';
+interp_Ascent_LB_File_prefix = 'evaluatedInterpolatorsAscent_LB/evaluatedInterpolatorsAscent*';
+interp_Ascent_UB_File_prefix = 'evaluatedInterpolatorsAscent_UB/evaluatedInterpolatorsAscent*';
+interp_Descent_File_prefix = 'evaluatedInterpolatorsDescent/evaluatedInterpolatorsDescent*';
+interp_Descent_LB_File_prefix = 'evaluatedInterpolatorsDescent_LB/evaluatedInterpolatorsAscent*';
+interp_Descent_UB_File_prefix = 'evaluatedInterpolatorsDescent_UB/evaluatedInterpolatorsAscent*';
+
+DV_mapped_Ascent_File_prefix = 'map_DV_mapped_Ascent/map_DV_mapped_Ascent*';
+DV_mapped_Descent_File_prefix = 'map_DV_mapped_Descent/map_DV_mapped_Descent*';
 headingErrorDeadbandBounds_prefix = 'headingErrorDeadBandBounds';
 alphaMachBounds_prefix = 'alphaMachBounds';
 
@@ -55,7 +62,7 @@ validation = 0;
 startEpoch = 2458419.95833333;
 
 % Coordinates for Validation case: Re-entry towards Kourou
-if contains(Folder_prefix,'HORUS_VALIDATION') == 1
+if contains(pop_Location,'Validation') == 1
     
     lon_i_deg = -106.7;
     lon_i_rad = deg2rad(lon_i_deg);
@@ -65,6 +72,49 @@ if contains(Folder_prefix,'HORUS_VALIDATION') == 1
     
 end
 
+%{
+
+minimumTimeOfFlight = 800;
+headingErrorConstraint = 230;
+distanceToGoConstraint = 1;
+%distanceToGoConstraint = 100;
+%normalizedSpecificEnergy = 0.3;
+normalizedSpecificEnergy = 100;
+dynamicPressureConstraint = 70000;
+dynamicPressureConstraint = 700000;
+bendingMomentConstraint = 5014000;
+bendingMomentConstraint = 50140000;
+heatFluxConstraint = 800000;
+mechanicalLoadConstraint = 100;
+%initialmechanicalLoadConstraint = 1.5;
+
+
+
+
+Minimum Flight Time   [ s   ]
+Heading Error         [ deg ]
+Distance To Go        [ deg ]
+Dynamic Pressure      [N/m^2]
+Bending Moment        [Pa-rad]
+Heat Flux             [W/m^2]
+Mechanical Load       [ g   ]
+Norm. Specific Energy [ -   ]
+
+800
+230
+100
+700000
+501400
+8000000
+100
+20
+
+hardConstraints = [ minimumTimeOfFlight headingErrorConstraint distanceToGoConstraint ...
+    normalizedSpecificEnergy dynamicPressureConstraint bendingMomentConstraint...
+    heatFluxConstraint mechanicalLoadConstraint ];
+
+
+%}
 
 
 
@@ -184,6 +234,7 @@ switch option
                 ...
                 Get_Trajectories(...
                 evolutions,...
+                pop_path,...
                 prop_path,...
                 depvar_path,...
                 interp_Ascent_path,...
@@ -207,10 +258,16 @@ switch option
         for p = 1:numel(prop_File_Path_List_prefix)
             
             % Prepare what's needed for the analysis
-            [evolutions,prop_path,depvar_path,interp_Ascent_path,...
-                interp_Descent_path,DV_mapped_Ascent_path,DV_mapped_Descent_path,...
+            [ evolutions,...
+                prop_path,...
+                depvar_path,...
+                interp_Ascent_path,...
+                interp_Descent_path,...
+                DV_mapped_Ascent_path,...
+                DV_mapped_Descent_path,...
                 headingErrorDeadbandBounds_path,...
-                alphaMachBounds_path,tof,v_i,gamma_i,chi_i,lat_f,lon_f,pop_path,...
+                alphaMachBounds_path,...
+                tof,v_i,gamma_i,chi_i,lat_f,lon_f,pop_path,...
                 pop_i,fit_path,fit_i,output] = ...
                 ...
                 ...
@@ -236,7 +293,7 @@ switch option
             %            end
             
             % Append poplution
-            [ evolutions ] = Analyze_Evolution(evolutions,v_i,gamma_i,chi_i,lat_f,lon_f,prop_path,pop_path,pop_i,fit_path,fit_i,lat_f_deg,lon_f_deg);
+            %[ evolutions ] = Analyze_Evolution(evolutions,v_i,gamma_i,chi_i,lat_f,lon_f,prop_path,pop_path,pop_i,fit_path,fit_i,lat_f_deg,lon_f_deg);
             
             % Analyze simulations
             [ evolutions ] = ...
@@ -244,6 +301,9 @@ switch option
                 ...
                 Get_Trajectories(...
                 evolutions,...
+                Folder_Path_List,...
+                pop_Location,...
+                pop_path,...
                 prop_path,...
                 depvar_path,...
                 interp_Ascent_path,...
@@ -254,12 +314,13 @@ switch option
                 alphaMachBounds_path,...
                 v_i,gamma_i,pop_i,lon_i_rad,lat_f_deg,lon_f_deg,startEpoch);
             
-            compilation(p).mainpath = mainpath;
+            compilation(p).mainpath = matlabScripts;
             compilation(p).set = char(strcat(extractBetween(output,'evolutions','.mat')));
             compilation(p).evolutions = evolutions;
+            %compilation(p).evolutions.hardConstraints = hardConstraints;
             compilation(p).validation = validation;
-            save(output, 'compilation', '-v7.3')
-            
+            save(output, 'compilation','-v7.3')
+
             % textprogressbar(p*100/numel(prop_File_Path_List_prefix))
             
         end

@@ -1,8 +1,62 @@
-Node Interval
-Angle of Attack
-Bank Angle
-Thrust Elevation Angle
-Thrust Azimuth Angle
-Throttle Setting
+Node Interval 1
+Node Interval 2
+Node Interval 3
+Node Interval 4
+Node Interval 5
+Node Interval 6
+Node Interval 7
+Node Interval 8
+Node Interval 9
+Angle of Attack 1
+Angle of Attack 2
+Angle of Attack 3
+Angle of Attack 4
+Angle of Attack 5
+Angle of Attack 6
+Angle of Attack 7
+Angle of Attack 8
+Angle of Attack 9
+Angle of Attack 10
+Bank Angle 1
+Bank Angle 2
+Bank Angle 3
+Bank Angle 4
+Bank Angle 5
+Bank Angle 6
+Bank Angle 7
+Bank Angle 8
+Bank Angle 9
+Bank Angle 10
+Thrust Elevation Angle 1
+Thrust Elevation Angle 2
+Thrust Elevation Angle 3
+Thrust Elevation Angle 4
+Thrust Elevation Angle 5
+Thrust Elevation Angle 6
+Thrust Elevation Angle 7
+Thrust Elevation Angle 8
+Thrust Elevation Angle 9
+Thrust Elevation Angle 10
+Thrust Azimuth Angle 1
+Thrust Azimuth Angle 2
+Thrust Azimuth Angle 3
+Thrust Azimuth Angle 4
+Thrust Azimuth Angle 5
+Thrust Azimuth Angle 6
+Thrust Azimuth Angle 7
+Thrust Azimuth Angle 8
+Thrust Azimuth Angle 9
+Thrust Azimuth Angle 10
+Throttle Setting 1
+Throttle Setting 2
+Throttle Setting 3
+Throttle Setting 4
+Throttle Setting 5
+Throttle Setting 6
+Throttle Setting 7
+Throttle Setting 8
+Throttle Setting 9
+Throttle Setting 10
 Final Velocity
 Skip Suppression
+Max. Mechanical Load

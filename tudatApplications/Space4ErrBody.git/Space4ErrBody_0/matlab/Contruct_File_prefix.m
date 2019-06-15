@@ -28,8 +28,12 @@ function [ Folder_Path_List,...
     fit_prefix)
 
 
-%UNTITLED3 Summary of this function goes here
+%CONSTRUCT_FILE_PREFIX Summary of this function goes here
 %   Detailed explanation goes here
+disp('CONSTRUCT_FILE_PREFIX')
+
+
+
 Folders_Containing_Simulations = dir([Output_Location Folder_prefix]);
 Folder_Path_List = fullfile(Output_Location,{Folders_Containing_Simulations.name}');
 prop_File_Path_List_prefix = fullfile(Folder_Path_List,prop_File_prefix);

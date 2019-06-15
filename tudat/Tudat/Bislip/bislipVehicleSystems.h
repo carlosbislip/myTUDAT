@@ -167,12 +167,12 @@ public:
         return x_T_;
     }
 
-    void setE_max( const double E_max )
+    void setMaximumSpecificEnergy( const double E_max )
     {
         E_max_ = E_max;
     }
 
-    double getE_max( )
+    double getMaximumSpecificEnergy( )
     {
         return E_max_;
     }
@@ -204,6 +204,31 @@ public:
     {
         return elevonBounds_;
     }
+    void setThrustElevationLimits( const std::pair < double, double > thrustElevationBounds )
+    {
+        thrustElevationBounds_ = thrustElevationBounds;
+    }
+
+    std::pair < double, double > getThrustElevationLimits( )
+    {
+        return thrustElevationBounds_;
+    }
+
+    void setThrottleSettingLimits( const std::pair < double, double > throttleSettingBounds )
+    {
+        throttleSettingBounds_ = throttleSettingBounds;
+    }
+
+    std::pair < double, double > getThrottleSettingLimits( )
+    {
+        return throttleSettingBounds_;
+    }
+
+
+
+
+
+
 
 
 
@@ -303,19 +328,29 @@ public:
     {
         return final_d_to_target_;
     }
-    void setParameterBounds( const std::map< bislip::Parameters::Optimization, std::pair < double, double > > &Bounds )
+    void setParameterLowerBounds( const std::map< bislip::Parameters::Interpolators, std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > > &parameterLowerBounds )
     {
-        Bounds_ = Bounds;
+        parameterLowerBounds_ = parameterLowerBounds;
     }
-    std::pair < double, double > getParameterBounds( const bislip::Parameters::Optimization &parameter )
+    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > getParameterLowerBounds( const bislip::Parameters::Interpolators &parameter )
     {
-        return Bounds_[ parameter ];
+        return parameterLowerBounds_[ parameter ];
     }
-    void setParameterInterpolator( const std::map< bislip::Parameters::Optimization, std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > > &Interpolators )
+
+    void setParameterUpperBounds( const std::map< bislip::Parameters::Interpolators, std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > > &parameterUpperBounds )
+    {
+        parameterUpperBounds_ = parameterUpperBounds;
+    }
+    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > getParameterUpperBounds( const bislip::Parameters::Interpolators &parameter )
+    {
+        return parameterUpperBounds_[ parameter ];
+    }
+
+    void setParameterInterpolator( const std::map< bislip::Parameters::Interpolators, std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > > &Interpolators )
     {
         Interpolators_ = Interpolators;
     }
-    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > getParameterInterpolator( const bislip::Parameters::Optimization &parameter )
+    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > getParameterInterpolator( const bislip::Parameters::Interpolators &parameter )
     {
         return Interpolators_[ parameter ];
     }
@@ -417,15 +452,32 @@ public:
     {
         return interpolatorAlphaMachEnvelopeLB_;
     }
-    void setHeadingErrorDeadBandInterpolator( const std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorHeadingErrorDeadband )
+    void setHeadingErrorDeadBandCoarseInterpolator( const std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorHeadingErrorDeadbandCoarse )
     {
-        interpolatorHeadingErrorDeadband_ = interpolatorHeadingErrorDeadband;
+        interpolatorHeadingErrorDeadbandCoarse_ = interpolatorHeadingErrorDeadbandCoarse;
     }
-    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > getHeadingErrorDeadBandInterpolator( )
+    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > getHeadingErrorDeadBandCoarseInterpolator( )
     {
-        return interpolatorHeadingErrorDeadband_;
+        return interpolatorHeadingErrorDeadbandCoarse_;
     }
 
+    void setHeadingErrorDeadBandLowDistanceInterpolator( const std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorHeadingErrorDeadbandLowDistance )
+    {
+        interpolatorHeadingErrorDeadbandLowDistance_ = interpolatorHeadingErrorDeadbandLowDistance;
+    }
+    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > getHeadingErrorDeadBandLowDistanceInterpolator( )
+    {
+        return interpolatorHeadingErrorDeadbandLowDistance_;
+    }
+
+    void setHeadingErrorDeadBandLowDistanceTrigger( const double lowDistanceDeadBandTrigger )
+    {
+        lowDistanceDeadBandTrigger_ = lowDistanceDeadBandTrigger;
+    }
+    double getHeadingErrorDeadBandLowDistanceTrigger( )
+    {
+        return lowDistanceDeadBandTrigger_;
+    }
 
     void setKourouAngleOfAttackInterpolator( const std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorKourouAngleOfAttack )
     {
@@ -435,7 +487,6 @@ public:
     {
         return interpolatorKourouAngleOfAttack_;
     }
-
 
     void setKourouBankAngleInterpolator( const std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorKourouBankAngle )
     {
@@ -780,6 +831,14 @@ public:
     {
         return initialAltitude_;
     }
+    void setInitialHeight( const double initialHeight )
+    {
+        initialHeight_ = initialHeight;
+    }
+    double getInitialHeight( )
+    {
+        return initialHeight_;
+    }
     void setInitialAirspeed( const double initialAirspeed )
     {
         initialAirspeed_ = initialAirspeed;
@@ -788,16 +847,156 @@ public:
     {
         return initialAirspeed_;
     }
+    void setMechanicalLoadConstraint( const double mechanicalLoadConstraint )
+    {
+        mechanicalLoadConstraint_ = mechanicalLoadConstraint;
+    }
+    double getMechanicalLoadConstraint( )
+    {
+        return mechanicalLoadConstraint_;
+    }
 
+
+
+    void setStartingMillis( const unsigned int startingMillis )
+    {
+        startingMillis_ = startingMillis;
+    }
+    unsigned int  getStartingMillis( )
+    {
+        return startingMillis_;
+    }
+
+
+    void setFullCurrentCoefficients( const Eigen::Vector6d fullCurrentCoefficients )
+    {
+        fullCurrentCoefficients_ = fullCurrentCoefficients;
+    }
+    Eigen::Vector6d  getFullCurrentCoefficients( )
+    {
+        return fullCurrentCoefficients_;
+    }
+
+    void setCurrentLiftForce( const double currentLiftForce )
+    {
+        currentLiftForce_ = currentLiftForce;
+    }
+    double getCurrentLiftForce( )
+    {
+        return currentLiftForce_;
+    }
+    void setCurrentDragForce( const double currentDragForce )
+    {
+        currentDragForce_ = currentDragForce;
+    }
+    double getCurrentDragForce( )
+    {
+        return currentDragForce_;
+    }
+    void setCurrentLocalGravityVector( const Eigen::Vector2d currentLocalGravityVector )
+    {
+        currentLocalGravityVector_ = currentLocalGravityVector;
+    }
+    Eigen::Vector2d getCurrentLocalGravityVector( )
+    {
+        return currentLocalGravityVector_;
+    }
+
+    void setInitialSpeedOfSound( const double initialSpeedOfSound )
+    {
+        initialSpeedOfSound_ = initialSpeedOfSound;
+    }
+    double getInitialSpeedOfSound( )
+    {
+        return initialSpeedOfSound_;
+    }
+    void setInitialDynamicPressure( const double initialDynamicPressure )
+    {
+        initialDynamicPressure_ = initialDynamicPressure;
+    }
+    double getInitialDynamicPressure( )
+    {
+        return initialDynamicPressure_;
+    }
+    void setInitialFlightPathAngle( const double initialFlightPathAngle )
+    {
+        initialFlightPathAngle_ = initialFlightPathAngle;
+    }
+    double getInitialFlightPathAngle( )
+    {
+        return initialFlightPathAngle_;
+    }
+
+    void setInitialMachNumber( const double initialMachNumber )
+    {
+        initialMachNumber_ = initialMachNumber;
+    }
+    double getInitialMachNumber( )
+    {
+        return initialMachNumber_;
+    }
+
+    void setInitialValueFlag( const bool initialValueFlag )
+    {
+        initialValueFlag_ = initialValueFlag;
+    }
+    bool getInitialValueFlag( )
+    {
+        return initialValueFlag_;
+    }
+
+    void setInitialHeading( const double initialHeading )
+    {
+        initialHeading_ = initialHeading;
+    }
+    double getInitialHeading( )
+    {
+        return initialHeading_;
+    }
+
+    void setInitialDensity( const double initialDensity )
+    {
+        initialDensity_ = initialDensity;
+    }
+    double getInitialDensity( )
+    {
+        return initialDensity_;
+    }
+
+    void setLowDistanceReversalCompleted( const bool lowDistanceReversalCompleted )
+    {
+        lowDistanceReversalCompleted_ = lowDistanceReversalCompleted;
+    }
+    bool getLowDistanceReversalCompleted( )
+    {
+        return lowDistanceReversalCompleted_;
+    }
 
 private:
-
+    bool lowDistanceReversalCompleted_;
+    double initialHeight_;
+    double initialDensity_;
+    double initialHeading_;
+    bool initialValueFlag_;
+    double initialMachNumber_;
+    double initialSpeedOfSound_;
+    double initialDynamicPressure_;
+    double initialFlightPathAngle_;
+    Eigen::Vector2d currentLocalGravityVector_;
+    Eigen::Vector6d fullCurrentCoefficients_;
+    double currentLiftForce_;
+    double currentDragForce_;
+    double mechanicalLoadConstraint_;
+    unsigned int startingMillis_;
     double initialAltitude_;
     double initialAirspeed_;
     double ascentTerminationDistanceRatio_;
     double skipSuppressionTimingTrigger_;
     std::pair< double, double > bodyFlapBounds_;
     std::pair< double, double > elevonBounds_;
+    std::pair< double, double > thrustElevationBounds_;
+    std::pair< double, double > throttleSettingBounds_;
+
 
     Eigen::Vector3d previousCartesianCoordinates_;
     Eigen::Vector2d previousCoordinates_;
@@ -868,16 +1067,18 @@ private:
     //    std::map< std::string, std::pair < double, double > > Bounds_;
     // std::map< std::string, std::pair < double, double > > Bounds_Ascent_;
     //std::map< std::string, std::pair < double, double > > Bounds_Descent_;
-    std::map< bislip::Parameters::Optimization, std::pair < double, double > > Bounds_;
-    std::map< bislip::Parameters::Optimization, std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > > Interpolators_;
+    std::map< bislip::Parameters::Interpolators, std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > > parameterLowerBounds_;
+    std::map< bislip::Parameters::Interpolators, std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > > parameterUpperBounds_;
+    std::map< bislip::Parameters::Interpolators, std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > > Interpolators_;
     std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorAlphaMachEnvelopeUB_;
     std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorAlphaMachEnvelopeLB_;
-    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorHeadingErrorDeadband_;
+    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorHeadingErrorDeadbandCoarse_;
+    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorHeadingErrorDeadbandLowDistance_;
+    double lowDistanceDeadBandTrigger_;
 
-
-std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorKourouAngleOfAttack_;
-std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorKourouBankAngle_;
-bool validationFlag_;
+    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorKourouAngleOfAttack_;
+    std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorKourouBankAngle_;
+    bool validationFlag_;
     /*
     std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorAngleOfAttack_;
     std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > interpolatorBankAngle_;

@@ -341,6 +341,28 @@ std::string getDependentVariableName( const PropagationDependentVariables propag
     case adiabatic_wall_temperature:
         variableName = "Adiabatic Wall Temperature ";
         break;
+    case freestream_temperature:
+        variableName = "Freestream Temperature ";
+        break;
+    case current_drag_magnitude:
+        variableName = "Current Drag Force ";
+        break;
+    case estimated_flight_path_angle:
+        variableName = "Estimated Flight-Path Angle ";
+        break;
+    case aerodynamic_frame_aerodynamic_load_vector:
+        variableName = "Aerodynamic Frame Aerodynamic Load Vector ";
+        break;
+    case aerodynamic_frame_total_load_vector:
+        variableName = "Aerodynamic Frame Total Load Vector ";
+        break;
+    case trajectory_phase:
+        variableName = "Trajectory Phase ";
+        break;
+
+
+
+
 
 
     default:

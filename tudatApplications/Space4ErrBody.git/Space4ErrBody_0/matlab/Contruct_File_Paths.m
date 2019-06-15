@@ -26,8 +26,9 @@ function [ prop_path,...
     fit_files,...
     nfit_files)
 
-%UNTITLED2 Summary of this function goes here
+%CONSTRUCT_FILE_PATHS Summary of this function goes here
 %   Detailed explanation goes here
+disp('CONSTRUCT_FILE_PATHS')
 
 
 prop_path{n_prop_Output_files,1} = [];
@@ -76,7 +77,7 @@ for i = 1:n_prop_Output_files
     
     alphaMachBounds_Output_files(i).datenum_sorted = datenum_sorted(i);
     alphaMachBounds_Output_files(i).name_sorted = alphaMachBounds_Output_files.name;
-  
+    
     
 end
 for i = 2:n_prop_Output_files
@@ -147,33 +148,65 @@ end
 
 % Loop used to create each file's path and extract the evolution from the
 % file path/name.
-for i = 1:npop_files
-    
+if contains(pop_files(1).name, 'monteCarlo') == true
     % Create file path string from known data
-    pop_path(i,:) = {strcat(pop_files(i).folder,'/',pop_files(i).name)};
+    pop_path(1,:) = {strcat(pop_files(1).folder,'/',pop_files(1).name)};
     
     % Extract string of evolution file path/name
-    pop_string = extractBetween(pop_files(i).name,12,'_');
+    pop_string = extractBetween(pop_files(1).name,22,'_');
     
     % Convert string to double
-    pop_i(i) = str2double(cellstr(pop_string));
+    pop_i(1) = str2double(cellstr(pop_string));
+    
+else
+    for i = 1:npop_files
+        
+        % Create file path string from known data
+        pop_path(i,:) = {strcat(pop_files(i).folder,'/',pop_files(i).name)};
+        
+        % Extract string of evolution file path/name
+        pop_string = extractBetween(pop_files(i).name,12,'_');
+        
+        % Convert string to double
+        pop_i(i) = str2double(cellstr(pop_string));
+    end
 end
+
+
 
 % Loop used to create each file's path and extract the evolution from the
 % file path/name.
-for i = 1:nfit_files
+
+if contains(fit_files(1).name, 'monteCarlo') == true
+    
     
     % Create file path string from known data
-    fit_path(i,:) = {strcat(fit_files(i).folder,'/',fit_files(i).name)};
+    fit_path(1,:) = {strcat(fit_files(1).folder,'/',fit_files(1).name)};
     
     % Extract string of evolution file path/name
-    fit_string = extractBetween(fit_files(i).name,9,'_');
+    fit_string = extractBetween(fit_files(1).name,19,'_');
     
     % Convert string to double
-    fit_i(i) = str2double(cellstr(fit_string));
+    fit_i(1) = str2double(cellstr(fit_string));
+    
+    
+else
+    
+    for i = 1:nfit_files
+        
+        % Create file path string from known data
+        fit_path(i,:) = {strcat(fit_files(i).folder,'/',fit_files(i).name)};
+        
+        % Extract string of evolution file path/name
+        fit_string = extractBetween(fit_files(i).name,9,'_');
+        
+        % Convert string to double
+        fit_i(i) = str2double(cellstr(fit_string));
+    end
+    
+    
+    
 end
-
-
 
 
 

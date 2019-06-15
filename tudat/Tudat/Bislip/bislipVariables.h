@@ -7,15 +7,17 @@
 #include "Tudat/Mathematics/RootFinders/secantRootFinder.h"
 #include "Tudat/Mathematics/RootFinders/bisection.h"
 
+//#include <math.h>
 
 namespace bislip {
 
 namespace Variables
 {
 
-std::string getOutputPath(
+/*
+ std::string getOutputPath(
         const std::string& extraDirectory = "" );
-
+*/
 Eigen::MatrixXd convertVectorOfVectorsDoubleToEigenMatrixXd(
         const std::vector< std::vector< double > > &vectorOfVectorsDouble );
 
@@ -23,15 +25,29 @@ void printEigenMatrixXdToFile( const Eigen::MatrixXd &matrixToPrint,
                                const std::string &fileName,
                                const std::string &outputSubFolder );
 
+
 unsigned int millis_since_midnight ( );
 
-std::string getCurrentDateTime ( const bool useLocalTime = false );
+std::chrono::time_point< std::chrono::system_clock > getDateTime ( );
+
+unsigned int getMillisSincePlayTime( const std::chrono::time_point< std::chrono::system_clock > playTime );
+
+std::string convertDateTimeToString(
+        const bool &useLocalTime,
+        const std::chrono::time_point<std::chrono::system_clock> &playTime );
+
 
 std::vector< std::string > getDataString ( const std::string &filename );
 
 std::vector< double > getDataNumeri ( const std::string &filename );
 
 double rootFinderBisection (
+        const std::function< double( const double ) > &function,
+        const double &minimum,
+        const double &maximum,
+        const double &initialGuess );
+
+double goldenSectionSearch(
         const std::function< double( const double ) > &function,
         const double &minimum,
         const double &maximum );
@@ -74,8 +90,8 @@ std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, doubl
         const std::map< double, double > &mapped_data,
         const std::shared_ptr< tudat::interpolators::InterpolatorSettings > &interpolatorSettings );
 
-bislip::Parameters::Optimization passOptimizationParameter (
-        const bislip::Parameters::Optimization &parameter);
+bislip::Parameters::Interpolators passOptimizationParameter (
+        const bislip::Parameters::Interpolators &parameter);
 
 std::string passString (
         const std::string &string);
@@ -84,17 +100,18 @@ tudat::simulation_setup::NamedBodyMap& passBodyMap (
         tudat::simulation_setup::NamedBodyMap& bodyMap );
 /*
 std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > chooseGuidanceInterpolator (
-        const bislip::Parameters::Optimization &parameter,
+        const bislip::Parameters::Interpolators &parameter,
         const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems);
 
 std::pair < double, double > chooseGuidanceBounds (
-        const bislip::Parameters::Optimization &parameter,
+        const bislip::Parameters::Interpolators &parameter,
         const std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems);
 */
 double evaluateGuidanceInterpolator (
-        const bislip::Parameters::Optimization &parameter,
+        const bislip::Parameters::Interpolators &parameter,
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
-        const std::string &vehicleName );
+        const std::string &vehicleName,
+        const std::string &centralBodyName  );
 
 Eigen::Vector3d computeBodyFixedThrustDirection (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
@@ -102,7 +119,7 @@ Eigen::Vector3d computeBodyFixedThrustDirection (
 
 double computeThrustMagnitude (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
-        const std::string &vehicleName);
+        const std::string &vehicleName) ;
 
 Eigen::Vector3d computeBodyFixedThrustVector (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
@@ -110,25 +127,53 @@ Eigen::Vector3d computeBodyFixedThrustVector (
 
 bool determineEngineStatus (
         const double &currentMass,
-        const double &landingMass);
-
-double computeThrustMagnitudeOutput (
-        const tudat::simulation_setup::NamedBodyMap& bodyMap,
-        const std::string &vehicleName );
+        const double &landingMass );
 
 Eigen::Vector2d computeLocalGravity (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName,
         const std::string &centralBodyName );
 
+double computeCurrentDragForce (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
 double computeCurrentLiftForce (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
-        const std::string &vehicleName);
+        const std::string &vehicleName );
+
+double determineThrottleSetting(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const std::string &centralBodyName );
+
+double throttleSettingEvaluationFunction (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const std::string &centralBodyName,
+                const double &throttleSetting );
+
+double throttleSettingLimitSearchFunction (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const std::string &centralBodyName,
+        const double &throttleSetting );
+
+double determineThrustElevationAngle (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const std::string &centralBodyName );
+
+double thrustElevationAngleEvaluationFunction(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const std::string &centralBodyName,
+        const double &thrustElevationAngle );
 
 double computeSkipSuppressionLimit (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName,
-        const std::string &centralBodyName);
+        const std::string &centralBodyName );
 
 double computeFlightPathAngleRate(
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
@@ -174,7 +219,8 @@ double computeFlatPlateHeatFlux (
 double findEquilibriumWallTemperature (
         const std::function< double( const double ) > &heatTransferFunction,
         const double &wallEmissivity,
-        const double &adiabaticWallTemperature );
+        const double &adiabaticWallTemperature,
+        const double &currentWallTemperature );
 
 double computeEquilibiumWallTemperatureRootFinder (
         const std::function< double( const double ) > &heatTransferFunction,
@@ -262,9 +308,9 @@ Eigen::Vector2d computeControlSurfaceDeflection (
 
 double computeFullPitchMomentCoefficient (
         const std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > &coefficientInterface,
+        const std::vector< double > &aerodynamicCoefficientInput,
         const double &bodyFlapDeflection,
-        const double &elevonDeflection,
-        const std::vector< double > &aerodynamicCoefficientInput );
+        const double &elevonDeflection );
 
 double computePitchMomentCoefficient (
         const std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > &coefficientInterface,
@@ -345,8 +391,8 @@ double convertNegativeAnglesToPositive (
 double determineAbsoluteValue (
         const double &value );
 
-int determineBankAngleSign (
-        const double &currentBankAngle );
+int determineSignOfValue (
+        const double &value );
 
 double determineSignedBankAngle (
         const int &sign,
@@ -380,13 +426,16 @@ void printAlphaMachBounds (
 void createHeadingErrorDeadBandInterpolator (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName,
-        const std::vector< double > &headingErrorDeadBand,
+        const std::vector< double > &headingErrorDeadBandCoarse,
+        const std::vector< double > &headingErrorDeadBandLowDistance,
         const std::string &outputPath,
         const std::string &outputSubFolder );
 
 void printHeadingErrorDeadBandBounds (
-        const std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > &headingErrorDeadBandInterpolator,
-        const std::pair< double, double > &headingErrorDeadBandInterpolatorDomainInterval,
+        const std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > &headingErrorDeadBandCoarseInterpolator,
+        const std::pair< double, double > &headingErrorDeadBandInterpolatorCoarseDomainInterval,
+        const std::shared_ptr< tudat::interpolators::OneDimensionalInterpolator< double, double > > &headingErrorDeadBandLowDistanceInterpolator,
+        const std::pair< double, double > &headingErrorDeadBandInterpolatorLowDistanceDomainInterval,
         const std::string &outputPath,
         const std::string &outputSubFolder );
 
@@ -413,6 +462,55 @@ Eigen::VectorXd computeElementwiseDivisionOfEigenVectorXd (
         const Eigen::VectorXd numerator,
         const Eigen::VectorXd denominator );
 
+double estimatedFlightPathAngle (
+        const Eigen::Vector3d &aerodynamicFrameTotalLoad,
+        const double &currentMass );
+
+Eigen::Vector3d computeAerodynamicFrameAerodynamicLoad(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
+Eigen::Vector3d computeAerodynamicFrameTotalLoad(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
+
+bool customTermination_FlightPathAngleCombination_Ascent(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const std::string &centralBodyName );
+
+bool customTermination_FlightPathAngleCombination_Descent (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
+double computeDeadbandViolationPenalty (
+        const Eigen::VectorXd &depVar_TimeHistory,
+        const Eigen::VectorXd &depVar_Constraint,
+        const double &propagationStepSize,
+        const double &normalizer );
+
+double optimizeAngleOfAttack (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
+double angleofAttackEvaluationFunction (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const double &angleOfAttack );
+
+double angleOfAttackOptimizationFunction (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const double &angleOfAttack );
+
+int determineNumberOfHardViolations (
+        const Eigen::VectorXd &depVar,
+        const double &hardConstraint );
+
+bool convertTrajectoryPhaseToBoolean (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
 
 /*    Copyright (c) 2010-2018, Delft University of Technology
  *    All rigths reserved
@@ -536,20 +634,6 @@ double computeEquilibiumWallTemperature(
         const double adiabaticWallTemperature,
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName );
-
-bool customTermination_FlightPathAngleCombination_Ascent(
-        const tudat::simulation_setup::NamedBodyMap& bodyMap,
-        const std::string &vehicleName);
-
-bool customTermination_FlightPathAngleCombination_Descent(
-        const tudat::simulation_setup::NamedBodyMap& bodyMap,
-        const std::string &vehicleName);
-
-double computeDeadbandViolationPenalty(
-        const Eigen::VectorXd &depVar_TimeHistory,
-        const Eigen::VectorXd &depVar_Constraint,
-        const double &propagationStepSize,
-        const double &normalizer );
 
 
 //} //namespace_aerodynamics

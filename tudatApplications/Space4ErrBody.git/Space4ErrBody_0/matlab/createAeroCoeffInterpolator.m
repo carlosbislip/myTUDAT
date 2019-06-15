@@ -1,11 +1,5 @@
-function [ Cm_int_matrix, CL_int_matrix, CD_int_matrix ] = createAeroCoeffInterpolator(  )
+function [ Cm_int_matrix, CL_int_matrix, CD_int_matrix, alpha_cs, Mach_cs, dw_cs, dCmw ] = createAeroCoeffInterpolator(alpha_cs, Mach_cs, db_cs, dw_cs, Cm0, dCmb, dCmw, CL0, dCLb, dCLw, CD0, dCDb, dCDw )
 
-
-cleanconfiguration = '/Users/bislip/Cloud Storage/OneDrive/School/TUDelft/Space Flight/Lit Study/Brought to you by Erwin Mooij/Archive/haerobody.mat';
-controlsurfaces = '/Users/bislip/Cloud Storage/OneDrive/School/TUDelft/Space Flight/Lit Study/Brought to you by Erwin Mooij/Archive/haerocs.mat';
-
-importfile(cleanconfiguration);
-importfile(controlsurfaces);
 
 
 %[Xb,Yb] = meshgrid(Mach_cs,alpha_cs,db_cs);
@@ -44,16 +38,16 @@ for i = 1:numel(alpha)
     for j = 1:numel(mach)
         
         xq2 = mach(j);
-        Cm0_int = interpn(alpha_cs',Mach_cs,Cm0,xq1,xq2,'spline');
-        CL0_int = interpn(alpha_cs',Mach_cs,CL0,xq1,xq2,'spline');
-        CD0_int = interpn(alpha_cs',Mach_cs,CD0,xq1,xq2,'spline');
+        Cm0_int = interpn(alpha_cs',Mach_cs,Cm0,xq1,xq2,'linear');
+        CL0_int = interpn(alpha_cs',Mach_cs,CL0,xq1,xq2,'linear');
+        CD0_int = interpn(alpha_cs',Mach_cs,CD0,xq1,xq2,'linear');
         
         for k = 1:numel(bodyflap)
             
             xq31 = deg2rad(bodyflap(k));
-            dCmb_int = interpn(alpha_cs',Mach_cs,db_cs,dCmb,xq1,xq2,xq31,'spline');
-            dCLb_int = interpn(alpha_cs',Mach_cs,db_cs,dCLb,xq1,xq2,xq31,'spline');
-            dCDb_int = interpn(alpha_cs',Mach_cs,db_cs,dCDb,xq1,xq2,xq31,'spline');
+            dCmb_int = interpn(alpha_cs',Mach_cs,db_cs,dCmb,xq1,xq2,xq31,'linear');
+            dCLb_int = interpn(alpha_cs',Mach_cs,db_cs,dCLb,xq1,xq2,xq31,'linear');
+            dCDb_int = interpn(alpha_cs',Mach_cs,db_cs,dCDb,xq1,xq2,xq31,'linear');
             
             %Cm_int_0(i,j,k)        = Cm0_int;
             %Cm_int_bodyflap(i,j,k) = dCmb_int;
@@ -62,9 +56,9 @@ for i = 1:numel(alpha)
             for l = 1:numel(elevon)
                 
                 xq32 = deg2rad(elevon(l));
-                dCme_int = 2*interpn(alpha_cs',Mach_cs,dw_cs,dCmw,xq1,xq2,xq32,'spline');
-                dCLe_int = 2*interpn(alpha_cs',Mach_cs,dw_cs,dCLw,xq1,xq2,xq32,'spline');
-                dCDe_int = 2*interpn(alpha_cs',Mach_cs,dw_cs,dCDw,xq1,xq2,xq32,'spline');
+                dCme_int = 2*interpn(alpha_cs',Mach_cs,dw_cs,dCmw,xq1,xq2,xq32,'linear');
+                dCLe_int = 2*interpn(alpha_cs',Mach_cs,dw_cs,dCLw,xq1,xq2,xq32,'linear');
+                dCDe_int = 2*interpn(alpha_cs',Mach_cs,dw_cs,dCDw,xq1,xq2,xq32,'linear');
                 
                 Cm_int_0(i,j,k,l) = Cm0_int;
                 Cm_int_bodyflap(i,j,k,l) = dCmb_int;

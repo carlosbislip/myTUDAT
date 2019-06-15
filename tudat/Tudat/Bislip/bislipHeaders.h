@@ -20,7 +20,9 @@
 #include <Tudat/Mathematics/BasicMathematics/mathematicalConstants.h>
 #include <Tudat/Astrodynamics/ReferenceFrames/referenceFrameTransformations.h>
 //#include <Tudat/Astrodynamics/BasicAstrodynamics/celestialBodyConstants.h>
-
+#include <Tudat/Astrodynamics/Aerodynamics/tabulatedAtmosphere.h>
+#include <Tudat/InputOutput/solarActivityData.h>
+#include <Tudat/Astrodynamics/Aerodynamics/nrlmsise00InputFunctions.h>
 #include <Tudat/Mathematics/BasicMathematics/basicFunction.h>
 #include <Tudat/Astrodynamics/BasicAstrodynamics/physicalConstants.h>
 //#include <Tudat/External/SpiceInterface/spiceInterface.h>

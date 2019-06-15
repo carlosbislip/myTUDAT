@@ -3,7 +3,7 @@ VALIDATIONparameterBounds_Ascent.txt
 VALIDATIONparameterList_Descent.txt
 VALIDATIONparameterBounds_Descent.txt
 HORUSvehicleParameterList.txt
-HORUSvehicleParameterValues.txt
+HORUSVALIDATIONvehicleParameterValues.txt
 HORUSaeroCoeffFileList.txt
 VALIDATIONoptimization_settingsList.txt
 VALIDATIONoptimization_settingsValues.txt
@@ -15,10 +15,12 @@ VALIDATIONinitialConditionsList.txt
 VALIDATIONinitialConditionsValues.txt
 VALIDATIONconstraintsList.txt
 VALIDATIONconstraintsValues.txt
-HORUSheadingErrorDeadBand.txt
+HORUSheadingErrorDeadBandCoarse.txt
+HORUSheadingErrorDeadBandLowDistance.txt
 HORUSalphaMachEnvelopeLB.txt
 HORUSalphaMachEnvelopeUB.txt
 HORUSkourouAngleofAttack.txt
 HORUSkourouBankAngle.txt
+/Users/bislip/Cloud Storage/OneDrive/School/TUDelft/Space Flight/Thesis/tudatBundle.git/tudatApplications/Space4ErrBody.git/Space4ErrBody_0/matlab/SimulationOutput/Validation/
 HORUS Validation: Re-Entry to Kourou
 Vehicle

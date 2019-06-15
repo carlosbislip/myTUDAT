@@ -630,6 +630,9 @@ createMultiDimensionalInterpolator(
     // Check size of boundary handling methods
     else if ( boundaryHandlingVector.size( ) != NumberOfDimensions )
     {
+
+        std::cout << "boundaryHandlingVector.size( ) = " << boundaryHandlingVector.size( ) << std::endl;
+        std::cout << "NumberOfDimensions             = " << NumberOfDimensions << std::endl;
         throw std::runtime_error( "Error while creating multi-dimensional interpolator. The number of boundary handling methods does not "
                                   "match the number of dimensions." );
     }

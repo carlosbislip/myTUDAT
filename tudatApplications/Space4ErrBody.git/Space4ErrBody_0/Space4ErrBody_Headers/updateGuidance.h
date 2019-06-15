@@ -51,7 +51,7 @@
 #include <Tudat/Mathematics/Interpolators/oneDimensionalInterpolator.h>
 #include <Tudat/Mathematics/Interpolators/cubicSplineInterpolator.h>
 #include <Tudat/Astrodynamics/SystemModels/vehicleSystems.h>
-
+#include <Tudat/External/SpiceInterface/spiceInterface.h>
 
 #include <Tudat/Astrodynamics/ReferenceFrames/aerodynamicAngleCalculator.h>
 
@@ -78,9 +78,19 @@ public:
     void updateGuidance( const double currentTime );
 
     void evaluateGuidanceFunctions(
+           // std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > &flightConditions,
             std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems,
             std::shared_ptr< tudat::system_models::VehicleSystems > &vehicleSystems,
-            const std::string &currentTrajectoryPhase);
+            const std::string &currentTrajectoryPhase,
+            const double &timeOfFLight );
+
+    void evaluateValidationGuidanceFunctions(
+            // std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > &flightConditions,
+            std::shared_ptr< bislip::BislipVehicleSystems > &bislipSystems,
+            std::shared_ptr< tudat::system_models::VehicleSystems > &vehicleSystems,
+            const std::string &currentTrajectoryPhase,
+            const double &timeOfFLight );
+
 
    // Eigen::Vector6d getPartialCurrentCoefficients( );
     Eigen::Vector3d getCurrentBodyFixedThrustDirection( );

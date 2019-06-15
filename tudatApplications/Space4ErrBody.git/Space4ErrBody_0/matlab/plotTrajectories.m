@@ -9,13 +9,14 @@ if compilation(1).validation == 1
     lon_i_deg = -106.7;
     lon_i_rad = deg2rad(-22.37);
     lon_i_deg = -22.37;
-    lat_f_deg = 5.239;
-    lon_f_deg = -52.768;
+    lat_f_deg = 5;
+    lon_f_deg = -53;
     validation = 1;
   end
 
 % %% Termination State on 2D Map - per Set
 % %close all
+
 % for p = 1:numel(compilation)
 %     fig_num = p + 100;
 %     figure(fig_num)
@@ -32,7 +33,7 @@ if compilation(1).validation == 1
 %     xlim([-180 180])
 %     ylim([-90 90])
 %     for k = 1:numel(compilation(p).evolutions)
-%         %         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+%         % for ii = 1:numel(compilation(p).evolutions(k).trajectories) 
 %         %         terminal_lat(ii) =  compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle(end);
 %         %                    lons(ii) =  compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle(end);
 %         %
@@ -143,17 +144,17 @@ for p = 1:numel(compilation)
     xlim([-180 180])
     ylim([-90 90])
     
-    %for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
     for k = 1:numel(compilation(p).evolutions)
-        % for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-           %              if( sum(compilation(p).evolutions(k).trajectories(ii).individual.bank_angle_reversal_trigger) > 2 )
-
-            plot(...
+           if  compilation(1).validation == 1
+                plot(...
+                compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
+                compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle,'g','LineWidth',2)
+           else  
+               plot(...
                 compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
                 compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle)
-            legendtext(k) = cellstr(strcat(strrep(convertCharsToStrings(compilation(p).set),'_',' '),' - Evolution:_{ } ', num2str(k-1)));
-      %                   end
+           end
         end
     end
     
@@ -181,65 +182,70 @@ compilation(p).mainpath,...
     % close(fig_num);
     
 end
-%
-% %% Trajectories on 2D Map - Zoom - per Set
-% %close all
-% for p = 1:numel(compilation)
-%     fig_num = p + 310;
-%     figure(fig_num)
-%     hold on
-%     title(strcat('Trajectories - Zoom - per Set ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-%     set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
-%     xlabel('\tau (deg)') % x-axis label
-%     ylabel('\delta (deg)') % y-axis label
-%     img = imread('img.jpg');
-%     imagesc([-180 180], [-90 90], (flipud(img)));
-%     set (gca,'Fontsize',20)
-%     set(gca,'YTick', -90:1:90);
-%     set(gca,'XTick', -180:1:180);
-%     xlim([(lon_f_deg - 10) (lon_f_deg + 10)])
-%     ylim([(lat_f_deg - 5) (lat_f_deg + 5)])
-%
-%     if compilation(1).validation == 1
-%         xlim([-72 -52])
-%         ylim([-3 7])
-%
-%     end
-%
-%     for k = 1:numel(compilation(p).evolutions)
-%         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-%             plot(...
-%                 compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
-%                 compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle)
-%             legendtext(k) = cellstr(strcat(strrep(convertCharsToStrings(compilation(p).set),'_',' '),' - Evolution:_{ } ', num2str(k-1)));
-%         end
-%     end
-%
-%     plot(lon_f_deg,lat_f_deg,'MarkerSize',20)
-%     plot(lon_f_deg*[1 1],90*[-1 1],'k','LineWidth',2)
-%     plot(180*[-1 1],lat_f_deg*[1 1],'k','LineWidth',2)
-%     plot(xunit, yunit,'k','LineWidth',2);
-%     scatter(lon_f_deg,lat_f_deg,100,'r','x')
-%     axP = get(gca,'Position');
-%     % legend(legendtext,'Location','southeastoutside')
-%     set(gca, 'Position', axP)
-%
-%     clear legendtext
-%     %xlim([(lon_IAD_deg - 20) (lon_IAD_deg + 20)])
-%     %ylim([(lat_IAD_deg - 10) (lat_IAD_deg + 10)])
-%     hold off
-%     saveas...
-%         (figure(fig_num),...
-%         strcat(...
-% compilation(p).mainpath,...
-%         '/figures/Trajectories_2D_Map_Zoom_Set',...
-%         convertCharsToStrings(compilation(p).set),...
-%         '.png'),...
-%         'png');
-%     close(fig_num);
-%
-% end
-%
+
+%% Trajectories on 2D Map - Zoom - per Set
+%close all
+for p = 1:numel(compilation)
+    fig_num = p + 310;
+    figure(fig_num)
+    hold on
+    title(strcat('Trajectories - Zoom - per Set ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+    set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
+    xlabel('\tau (deg)') % x-axis label
+    ylabel('\delta (deg)') % y-axis label
+    img = imread('img.jpg');
+    imagesc([-180 180], [-90 90], (flipud(img)));
+    set (gca,'Fontsize',20)
+    set(gca,'YTick', -90:2:90);
+    set(gca,'XTick', -180:2:180);
+    xlim([(lon_f_deg - 2) (lon_f_deg + 30)])
+    ylim([(lat_f_deg - 2) (lat_f_deg + 14)])
+
+    if compilation(1).validation == 1
+        xlim([-82 -42])
+        ylim([-8 12])
+        
+    end
+    
+    for k = 1:numel(compilation(p).evolutions)
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+           if  compilation(1).validation == 1
+                plot(...
+                compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
+                compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle,'g','LineWidth',2)
+           else  
+               plot(...
+                compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
+                compilation(p).evolutions(k).trajectories(ii).individual.latitude_angle)
+           end
+        end
+    end
+    
+    plot(lon_f_deg,lat_f_deg,'MarkerSize',20)
+    plot(lon_f_deg*[1 1],90*[-1 1],'k','LineWidth',2)
+    plot(180*[-1 1],lat_f_deg*[1 1],'k','LineWidth',2)
+    plot(xunit, yunit,'k','LineWidth',2);
+    scatter(lon_f_deg,lat_f_deg,100,'r','x')
+    axP = get(gca,'Position');
+    % legend(legendtext,'Location','southeastoutside')
+    set(gca, 'Position', axP)
+
+    clear legendtext
+    %xlim([(lon_IAD_deg - 20) (lon_IAD_deg + 20)])
+    %ylim([(lat_IAD_deg - 10) (lat_IAD_deg + 10)])
+    hold off
+    saveas(...
+        figure(fig_num),...
+        strcat(...
+compilation(p).mainpath,...
+        '/figures/Trajectories_2D_Map_Zoom_Set',...
+        convertCharsToStrings(compilation(p).set)',...
+        '.png'),...
+        'png');
+    % close(fig_num);
+    
+end
+
 %
 % %% Trajectory on 2D Map - Zoom - per Evolution
 % %close all
@@ -269,7 +275,7 @@ end
 %
 %         end
 %
-%         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+% for ii = 1:numel(compilation(p).evolutions(k).trajectories) 
 %
 %             plot(...
 %                 compilation(p).evolutions(k).trajectories(ii).individual.longitude_angle,...
@@ -332,7 +338,7 @@ for p = 1:numel(compilation)
     
     for k = 1:numel(compilation(p).evolutions)
     %for k = 7
-        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+for ii = 1:numel(compilation(p).evolutions(k).trajectories) 
      %   for ii = 53
                  if ( compilation(p).evolutions(k).trajectories(ii).individual.time_vector(end) < 2000 )
 
@@ -364,7 +370,8 @@ for p = 1:numel(compilation)
     
 end
 pp = pp + 1;
-% %%
+
+%%
 % for p = 1:numel(compilation)
 %
 % figure(234234)

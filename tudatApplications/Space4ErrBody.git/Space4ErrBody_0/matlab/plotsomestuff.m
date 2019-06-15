@@ -7,7 +7,7 @@ lon_f_deg = -77.4558333333;
 
 
 % Coordinates for Validation case: Re-entry towards Kourou
-%if compilation(1).validation == 1
+if compilation(1).validation == 1
     
     lon_i_deg = -106.7;
     lon_i_rad = deg2rad(-22.37);
@@ -15,7 +15,13 @@ lon_f_deg = -77.4558333333;
     lat_f_deg = 5;
     lon_f_deg = -53;
     validation = 1;
- %  end
+end
+
+
+
+
+%%
+plotDecisionVector( compilation );
 
 %%
 plotTrajectories( compilation );
@@ -56,7 +62,7 @@ for p = 1:numel(compilation)
         title(strcat('Airspeed through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
         %ylim([0 5])
         max_tof = max([compilation(p).evolutions.max_tof]);
-        max_tof =1400;
+        %max_tof =1400;
         xlim([0 max_tof])
         xlabel('Propagation Time (s)') % x-axis label
         ylabel('Airspeed (m/s)') % y-axis label
@@ -64,8 +70,7 @@ for p = 1:numel(compilation)
         set(gca,'XTick', 0:200:max_tof);
         hold on
         grid on
-        for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
-            % for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+for ii = 1:numel(compilation(p).evolutions(k).trajectories)   
             plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
                 compilation(p).evolutions(k).trajectories(ii).individual.airspeed);
         end
@@ -98,7 +103,7 @@ for p = 1:numel(compilation)
         title(strcat('Mach through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
         ylim([0 30])
         max_tof = max([compilation(p).evolutions.max_tof]);
-        max_tof = 1400;
+        %max_tof = 1400;
         xlim([0 max_tof])
         xlabel('Propagation Time (s)') % x-axis label
         ylabel('Mach (-)') % y-axis label
@@ -106,12 +111,17 @@ for p = 1:numel(compilation)
         set(gca,'XTick', 0:200:max_tof);
         hold on
         grid on
-        % for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
-        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                compilation(p).evolutions(k).trajectories(ii).individual.mach);
-        end
         
+        
+        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
+            if  compilation(1).validation == 1
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.mach,'k','LineWidth',2);
+            else
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.mach);
+            end
+        end
         %plot([0 max_tof],(10)*[0 1],'k','LineWidth',2)
         hold off
         saveas(...
@@ -124,50 +134,10 @@ for p = 1:numel(compilation)
             convertCharsToStrings(compilation(p).set),...
             '.png'),...
             'png');
-        close(fig_num);
+        % close(fig_num);
     end
 end
 
-%% Time History: Mass rate - per Evolution
-for p = 1:numel(compilation)
-    
-    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
-        fig_num = p*100 + 3476000 + k*1;
-        figure(fig_num)
-        set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
-        set (gca,'Fontsize',15)
-        title(strcat('Mass rate through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-        %ylim([0 5])
-        max_tof = max([compilation(p).evolutions.max_tof]);
-                max_tof = 1400;
-xlim([0 max_tof])
-        xlabel('Propagation Time (s)') % x-axis label
-        ylabel('Mass Rate (kg/s)') % y-axis label
-        %set(gca,'YTick', 0:1:10);
-        set(gca,'XTick', 0:200:max_tof);
-        hold on
-        grid on
-        for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
-            % for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                compilation(p).evolutions(k).trajectories(ii).individual.mass_rate);
-        end
-        
-        %plot([0 max_tof],(10)*[0 1],'k','LineWidth',2)
-        hold off
-        saveas(...
-            figure(fig_num),...
-            strcat(...
-            compilation(p).mainpath,...
-            '/figures/massRate_v_T_Evolution_',...
-            num2str(k - 1),...
-            '_Set',...
-            convertCharsToStrings(compilation(p).set),...
-            '.png'),...
-            'png');
-        %    close(fig_num);
-    end
-end
 
 
 %% Time History: Specific Energy - per Evolution
@@ -188,21 +158,24 @@ for p = 1:numel(compilation)
         % set(gca,'YTick', 0:2e5:2e6);
         set(gca,'XTick', 0:200:max_tof);
         hold on
-        
+  
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            % for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
-                plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.E);
+            if  compilation(1).validation == 1
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.specificEnergy,'k','LineWidth',2);
+            else
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.specificEnergy);
             end
         end
+
         %plot([0 max_tof],(10)*[0 1],'k','LineWidth',2)
         hold off
         saveas(...
             figure(fig_num),...
             strcat(...
             compilation(p).mainpath,...
-            '/figures/E_v_T_Evolution_',...
+            '/figures/specificEnergy_v_T_Evolution_',...
             num2str(k - 1),...
             '_Set',...
             convertCharsToStrings(compilation(p).set),...
@@ -216,19 +189,19 @@ end
 %% Time History: Normalized Specific Energy - per Evolution
 for p = 1:numel(compilation)
     
-%     
-%     a = 301.7;
-%     R_E = 6.378137e6;
-%     h_UP = 122000;
-%     mu = 3.986004418e14;
-%     omega_E = 7.292115e-5;
-%     % double V_i = a * Mach_i;
-%     V_f = 0.99 * sqrt( mu / ( R_E + h_UP ) );
-%     %double E_min = g0 * h_i + 0.5 * V_i * V_i;
-%     E_max = 9.80665 * h_UP + 0.5 * V_f * V_f;
+    %
+    %     a = 301.7;
+    %     R_E = 6.378137e6;
+    %     h_UP = 122000;
+    %     mu = 3.986004418e14;
+    %     omega_E = 7.292115e-5;
+    %     % double V_i = a * Mach_i;
+    %     V_f = 0.99 * sqrt( mu / ( R_E + h_UP ) );
+    %     %double E_min = g0 * h_i + 0.5 * V_i * V_i;
+    %     E_max = 9.80665 * h_UP + 0.5 * V_f * V_f;
     
     for k = 1:numel(compilation(p).evolutions)
-
+        
         fig_num = p*100 + 3458000 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
@@ -236,28 +209,33 @@ for p = 1:numel(compilation)
         title(strcat('Normalized Specific Energy through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
         ylim([0 1])
         max_tof = max([compilation(p).evolutions.max_tof]);
-                max_tof = 1400;
-xlim([0 max_tof])
+        %     max_tof = 1400;
+        xlim([0 max_tof])
         xlabel('Propagation Time (s)') % x-axis label
         ylabel('Normalized Specific Energy') % y-axis label
         set(gca,'YTick', 0:.1:1);
         set(gca,'XTick', 0:200:max_tof);
         hold on
         grid on
-        
+ 
         for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-            if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
-                plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.E_hat);
+            if  compilation(1).validation == 1
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy,'k','LineWidth',2);
+            else
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.normalizedSpecificEnergy);
             end
         end
+
+        
         %plot([0 max_tof],(10)*[0 1],'k','LineWidth',2)
         hold off
         saveas(...
             figure(fig_num),...
             strcat(...
             compilation(p).mainpath,...
-            '/figures/E_hat_v_T_Evolution_',...
+            '/figures/normalizedSpecificEnergy_v_T_Evolution_',...
             num2str(k - 1),...
             '_Set',...
             convertCharsToStrings(compilation(p).set),...
@@ -272,28 +250,25 @@ end
 for p = 1:numel(compilation)
     
     for k = 1:numel(compilation(p).evolutions)
-    %for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
         fig_num = p*100 + 723000 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
         title(strcat('Mass through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-        ylim([25 175])
+%         ylim([25 175])
         max_tof = max([compilation(p).evolutions.max_tof]);
         xlim([0 max_tof])
         xlabel('Propagation Time (s)') % x-axis label
         ylabel('Mass (x10^3 kg)') % y-axis label
-        set(gca,'YTick', 25:25:175);
+%         set(gca,'YTick', 25:25:175);
         set(gca,'XTick', 0:200:max_tof);
         hold on
+        grid on
         
-        %for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
-             for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-                       if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
- plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                compilation(p).evolutions(k).trajectories(ii).individual.mass/1e3);
+for ii = 1:numel(compilation(p).evolutions(k).trajectories)   
+                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                    compilation(p).evolutions(k).trajectories(ii).individual.mass/1e3);
         end
-             end
         %plot([0 max_tof],(25)*[1 1],'k','LineWidth',2)
         hold off
         saveas(...
@@ -310,57 +285,46 @@ for p = 1:numel(compilation)
     end
 end
 
-%% Time History: Skip Suppresion Limit
+
+%% Time History: Mass rate - per Evolution
 for p = 1:numel(compilation)
     
-    % for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
-    for k = 1
-        fig_num = p*100 + 723000 + k*1;
+    for k = numel(compilation(p).evolutions):numel(compilation(p).evolutions)
+        fig_num = p*100 + 3476000 + k*1;
         figure(fig_num)
         set(figure(fig_num),'units','pixels','position',[0,0,1200,600])
         set (gca,'Fontsize',15)
-        title(strcat('Skip Suppression Limit through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
-        %ylim(rad2deg([0 pi/2]))
-        max_tof = 4000;
+        title(strcat('Mass rate through Time - Evolution:_{ }',num2str(k - 1),' - ',strrep(convertCharsToStrings(compilation(p).set),'_',' ')))
+        %ylim([0 5])
+        max_tof = max([compilation(p).evolutions.max_tof]);
+        max_tof = 1400;
         xlim([0 max_tof])
         xlabel('Propagation Time (s)') % x-axis label
-        ylabel('Skip Suppression Limit (deg)') % y-axis label
-      %  set(gca,'YTick', 0:15:90);
+        ylabel('Mass Rate (kg/s)') % y-axis label
+        %set(gca,'YTick', 0:1:10);
         set(gca,'XTick', 0:200:max_tof);
         hold on
-        
-        % for ii = (numel(compilation(p).evolutions(k).trajectories)-10):numel(compilation(p).evolutions(k).trajectories)
-        for ii = 1:numel(compilation(p).evolutions(k).trajectories)
-           % if ( compilation(p).evolutions(k).trajectories(ii).individual.distance_to_go(end) < 30 )
-                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                    abs(compilation(p).evolutions(k).trajectories(ii).individual.skip_suppression_limit));
-                
-                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.bank_angle);
-                
-                stairs(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
-                    compilation(p).evolutions(k).trajectories(ii).individual.evaluated_bank_angle)
-                
-          %  end
+        grid on
+     for ii = 1:numel(compilation(p).evolutions(k).trajectories)   
+            plot(compilation(p).evolutions(k).trajectories(ii).individual.time_vector,...
+                compilation(p).evolutions(k).trajectories(ii).individual.mass_rate);
         end
         
-        %plot([0 max_tof],(25)*[1 1],'k','LineWidth',2)
+        %plot([0 max_tof],(10)*[0 1],'k','LineWidth',2)
         hold off
         saveas(...
             figure(fig_num),...
             strcat(...
             compilation(p).mainpath,...
-            '/figures/skip_suppresion_limit_v_T_Evolution_',...
+            '/figures/massRate_v_T_Evolution_',...
             num2str(k - 1),...
             '_Set',...
             convertCharsToStrings(compilation(p).set),...
             '.png'),...
             'png');
-        %  close(fig_num);
+        %    close(fig_num);
     end
 end
-
-
 
 
 %

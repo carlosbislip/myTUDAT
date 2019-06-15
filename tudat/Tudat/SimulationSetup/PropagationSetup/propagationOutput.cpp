@@ -488,6 +488,25 @@ int getDependentVariableSize(
     case adiabatic_wall_temperature:
         variableSize = 1;
         break;
+    case freestream_temperature:
+        variableSize = 1;
+        break;
+    case current_drag_magnitude:
+        variableSize = 1;
+        break;
+    case estimated_flight_path_angle:
+        variableSize = 1;
+        break;
+    case aerodynamic_frame_aerodynamic_load_vector:
+        variableSize = 3;
+        break;
+    case aerodynamic_frame_total_load_vector:
+        variableSize = 3;
+        break;
+    case trajectory_phase:
+        variableSize = 1;
+        break;
+
 
     default:
         std::string errorMessage = "Error, did not recognize dependent variable size of type: " +

@@ -1,0 +1,8 @@
+Minimum Flight Time   [ s   ]
+Heading Error         [ deg ]
+Distance To Go        [ deg ]
+Norm. Specific Energy [ -   ]
+Dynamic Pressure      [N/m^2]
+Bending Moment        [Pa-rad]
+Heat Flux             [W/m^2]
+Mechanical Load       [ g   ]
