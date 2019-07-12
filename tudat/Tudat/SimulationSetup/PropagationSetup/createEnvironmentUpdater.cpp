@@ -255,7 +255,6 @@ createRotationalEquationsOfMotionEnvironmentUpdaterSettings(
                 }
             }
 
-            checkValidityOfRequiredEnvironmentUpdates( singleTorqueUpdateNeeds, bodyMap );
             addEnvironmentUpdates( environmentModelsToUpdate, singleTorqueUpdateNeeds );
         }
     }
@@ -472,9 +471,6 @@ createTranslationalEquationsOfMotionEnvironmentUpdaterSettings(
 
             }
 
-            // Check whether requested updates are possible.
-            checkValidityOfRequiredEnvironmentUpdates( singleAccelerationUpdateNeeds, bodyMap );
-
             // Add requested updates of current acceleration model to
             // full list of environment updates.
             addEnvironmentUpdates( environmentModelsToUpdate, singleAccelerationUpdateNeeds );
@@ -520,9 +516,6 @@ createMassPropagationEnvironmentUpdaterSettings(
                                           std::to_string( currentAccelerationModelType ) );
 
             }
-
-            // Check whether requested updates are possible.
-            checkValidityOfRequiredEnvironmentUpdates( singleRateModelUpdateNeeds, bodyMap );
 
             // Add requested updates of current acceleration model to
             // full list of environment updates.
@@ -604,20 +597,44 @@ std::vector< std::string > > createEnvironmentUpdaterSettingsForDependentVariabl
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
     case relative_speed_dependent_variable:
-        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
-        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        if( dependentVariableSaveSettings->associatedBody_ != "SSB" )
+        {
+            variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        }
+        if( dependentVariableSaveSettings->secondaryBody_ != "SSB" )
+        {
+            variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        }
         break;
     case relative_position_dependent_variable:
-        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
-        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        if( dependentVariableSaveSettings->associatedBody_ != "SSB" )
+        {
+            variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        }
+        if( dependentVariableSaveSettings->secondaryBody_ != "SSB" )
+        {
+            variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        }
         break;
     case relative_distance_dependent_variable:
-        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
-        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        if( dependentVariableSaveSettings->associatedBody_ != "SSB" )
+        {
+            variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        }
+        if( dependentVariableSaveSettings->secondaryBody_ != "SSB" )
+        {
+            variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        }
         break;
     case relative_velocity_dependent_variable:
-        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
-        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        if( dependentVariableSaveSettings->associatedBody_ != "SSB" )
+        {
+            variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        }
+        if( dependentVariableSaveSettings->secondaryBody_ != "SSB" )
+        {
+            variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        }
         break;
     case total_acceleration_norm_dependent_variable:
         break;
@@ -750,7 +767,6 @@ std::vector< std::string > > createEnvironmentUpdaterSettingsForDependentVariabl
     case periapsis_altitude_dependent_variable:
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
-        break;
     case total_gravity_field_variation_acceleration:
         break;
     case single_gravity_field_variation_acceleration:
@@ -759,7 +775,10 @@ std::vector< std::string > > createEnvironmentUpdaterSettingsForDependentVariabl
         break;
     case acceleration_partial_wrt_body_translational_state:
         break;
-    case specific_energy:
+    case current_body_mass_dependent_variable:
+        variablesToUpdate[ body_mass_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        break;
+case specific_energy:
         variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
@@ -832,18 +851,22 @@ std::vector< std::string > > createEnvironmentUpdaterSettingsForDependentVariabl
     case angular_distance_traveled:
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
     case angular_distance_to_go:
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
     case heading_to_target:
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
     case heading_error:
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
     case heat_flux_tauber:
         variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
@@ -864,6 +887,7 @@ std::vector< std::string > > createEnvironmentUpdaterSettingsForDependentVariabl
         variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
     case skip_suppression_limit:
         variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
@@ -962,11 +986,13 @@ std::vector< std::string > > createEnvironmentUpdaterSettingsForDependentVariabl
         break;
     case cumulative_angular_distance_travelled:
         variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
     case groundtrack_difference:
         variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
@@ -984,6 +1010,7 @@ std::vector< std::string > > createEnvironmentUpdaterSettingsForDependentVariabl
         variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
     case thrust_force_magnitude:
         variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
@@ -1025,16 +1052,45 @@ std::vector< std::string > > createEnvironmentUpdaterSettingsForDependentVariabl
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
+    case aerodynamic_frame_total_acceleration_vector:
+        variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        break;
+    case passenger_frame_total_load_vector:
+        variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        break;
+    case passenger_frame_total_acceleration_vector:
+        variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        break;
+    case passenger_frame_jerk_vector:
+        variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        break;
     case trajectory_phase:
         variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
         break;
+    case height_dependent_variable:
+        variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        break;
+    case angular_distance_covered_ratio:
+        variablesToUpdate[ vehicle_flight_conditions_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_rotational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        variablesToUpdate[ body_translational_state_update ].push_back( dependentVariableSaveSettings->secondaryBody_ );
+        break;
 
-
-
-
-
+        
     default:
         throw std::runtime_error( "Error when getting environment updates for dependent variables, parameter " +
                                   std::to_string( dependentVariableSaveSettings->dependentVariableType_ ) + " not found." );
@@ -1194,7 +1250,8 @@ template std::shared_ptr< propagators::EnvironmentUpdater< double, double > > cr
 
 template std::map< propagators::EnvironmentModelsToUpdate, std::vector< std::string > > createEnvironmentUpdaterSettings< double >(
         const std::shared_ptr< SingleArcPropagatorSettings< double > > propagatorSettings,
-        const simulation_setup::NamedBodyMap& bodyMap );
+        const simulation_setup::NamedBodyMap& bodyMap,
+        const bool isPartOfMultiTypePropagation );
 
 #if( BUILD_EXTENDED_PRECISION_PROPAGATION_TOOLS )
 template std::shared_ptr< propagators::EnvironmentUpdater< double, Time > > createEnvironmentUpdaterForDynamicalEquations< double, Time >(
@@ -1208,7 +1265,8 @@ template std::shared_ptr< propagators::EnvironmentUpdater< long double, Time > >
         const simulation_setup::NamedBodyMap& bodyMap );
 template std::map< propagators::EnvironmentModelsToUpdate, std::vector< std::string > > createEnvironmentUpdaterSettings< long double >(
         const std::shared_ptr< SingleArcPropagatorSettings< long double > > propagatorSettings,
-        const simulation_setup::NamedBodyMap& bodyMap );
+        const simulation_setup::NamedBodyMap& bodyMap,
+        const bool isPartOfMultiTypePropagation );
 #endif
 } // namespace propagators
 

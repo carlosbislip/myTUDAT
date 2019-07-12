@@ -9,7 +9,6 @@
  */
 
 #include "Tudat/SimulationSetup/PropagationSetup/propagationTermination.h"
-#include "Tudat/Bislip/bislipVariables.h"
 
 namespace tudat
 {
@@ -54,6 +53,7 @@ bool SingleVariableLimitPropagationTerminationCondition::checkStopCondition( con
     {
         stopPropagation = true;
     }
+
     return stopPropagation;
 }
 

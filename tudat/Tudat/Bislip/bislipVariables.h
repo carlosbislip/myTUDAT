@@ -1,7 +1,9 @@
 #ifndef BISLIPVARIABLES_H
 #define BISLIPVARIABLES_H
 
-#include <Tudat/Bislip/bislipVehicleSystems.h>
+#include "Tudat/Bislip/bislipVehicleSystems.h"
+#include <Tudat/Bislip/bislipProblemInput.h>
+
 #include "Tudat/SimulationSetup/EnvironmentSetup/body.h"
 #include "Tudat/Mathematics/RootFinders/rootFinder.h"
 #include "Tudat/Mathematics/RootFinders/secantRootFinder.h"
@@ -14,6 +16,18 @@ namespace bislip {
 namespace Variables
 {
 
+//! Evaluate parameter vector
+//std::pair< Eigen::MatrixXd, int > decisionVectorEvaluation( const std::vector< double > &x ) const;
+void decisionVectorEvaluation( const std::vector< double > &x,
+                               const std::shared_ptr< bislip::ProblemInput > &problemInput,
+                               const tudat::simulation_setup::NamedBodyMap& bodyMap,
+                               Eigen::MatrixXd &depVarTimeHistoryMatrix,
+                               int &rowsAscent );
+
+
+void reruns( const std::shared_ptr< bislip::ProblemInput > &problemInput,
+             const tudat::simulation_setup::NamedBodyMap& bodyMap,
+             const int &topIndividuals );
 /*
  std::string getOutputPath(
         const std::string& extraDirectory = "" );
@@ -25,6 +39,13 @@ void printEigenMatrixXdToFile( const Eigen::MatrixXd &matrixToPrint,
                                const std::string &fileName,
                                const std::string &outputSubFolder );
 
+void eraseAllSubStr(
+        std::string & mainStr,
+        const std::string & toErase);
+
+void eraseSubStrings(
+        std::string & mainStr,
+        const std::vector<std::string> & strList);
 
 unsigned int millis_since_midnight ( );
 
@@ -80,6 +101,10 @@ double computeNormalizedSpecificEnergy (
         const double &airspeed,
         const double &E_max);
 
+double getCurrentAltitude (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
 std::vector< double > HermiteDerivatives (
         const Eigen::VectorXd &xValues,
         const Eigen::VectorXd &yValues);
@@ -129,7 +154,7 @@ bool determineEngineStatus (
         const double &currentMass,
         const double &landingMass );
 
-Eigen::Vector2d computeLocalGravity (
+Eigen::Vector3d computeLocalGravity (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName,
         const std::string &centralBodyName );
@@ -261,6 +286,10 @@ double computeCumulativeAngularDistanceTravelledDifference (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName );
 
+double computeAngularDistanceCoveredRatio (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
 double computeTimeOfFlight (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName );
@@ -358,7 +387,15 @@ Eigen::Matrix3d computeRotationMatrixONE( const double phi );
 
 Eigen::Matrix3d computeRotationMatrixTHREE( const double psi );
 
+Eigen::Vector3d computePassengerFrameTotalLoad (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
 Eigen::Vector3d computePassengerFrameTotal_g_Load_Vector (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
+Eigen::Vector3d computePassengerFrameTotalAcceleration (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName );
 
@@ -385,8 +422,11 @@ double convertRadiansToDegrees (
 double convertDegreesToRadians (
         const double &angleInDegrees );
 
-double convertNegativeAnglesToPositive (
+double convertNegativeAnglesInRadiansToPositive (
         const double &angleInRadians );
+
+double convertNegativeAnglesInDegreesToPositive (
+        const double &angleInDegrees );
 
 double determineAbsoluteValue (
         const double &value );
@@ -466,16 +506,41 @@ double estimatedFlightPathAngle (
         const Eigen::Vector3d &aerodynamicFrameTotalLoad,
         const double &currentMass );
 
-Eigen::Vector3d computeAerodynamicFrameAerodynamicLoad(
+Eigen::Vector3d computeAerodynamicFrameAerodynamicLoad (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName );
 
-Eigen::Vector3d computeAerodynamicFrameTotalLoad(
+Eigen::Vector3d computeAerodynamicFrameTotalLoad (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName );
 
+Eigen::Vector3d computeAerodynamicFrameTotalAcceleration (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
 
-bool customTermination_FlightPathAngleCombination_Ascent(
+Eigen::Vector3d computePassengerFrameJerk (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const std::function< double() > massRateFunction);//const double massRate )
+//        const std::map< std::string, std::shared_ptr< tudat::basic_astrodynamics::MassRateModel > > &nBodyModel )
+double computeDensityRate (
+        const double &height,
+        const double &heightRate,
+        const std::map < int, Eigen::VectorXd > &densityParameterMap );
+
+double computeAirspeedRate (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
+Eigen::Matrix3d getLocalVerticalToBodyFrameTransformationMatrix (
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName );
+
+Eigen::VectorXd computeNumericalDerivativeOfVector (
+        const Eigen::VectorXd &f,
+        const Eigen::VectorXd &x );
+
+bool customTermination_FlightPathAngleCombination_Ascent (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName,
         const std::string &centralBodyName );

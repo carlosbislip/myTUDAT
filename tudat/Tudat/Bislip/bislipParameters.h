@@ -1,7 +1,8 @@
 #ifndef BISLIPPARAMETERS_H
 #define BISLIPPARAMETERS_H
 
-#include <Tudat/Bislip/bislipHeaders.h>
+//#include <Tudat/Bislip/bislipHeaders.h>
+#include "bislipHeaders.h"
 
 
 namespace bislip {

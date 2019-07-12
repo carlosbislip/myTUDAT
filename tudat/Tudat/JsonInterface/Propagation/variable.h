@@ -146,13 +146,14 @@ static std::map< PropagationDependentVariables, std::string > dependentVariableT
     { cumulative_cartesian_distance_travelled, "cumulativeCartesianDistanceTravelled" },
     { thrust_force_magnitude, "thrustForceMagnitude" },
     { aerodynamic_frame_aerodynamic_load_vector, "aerodynamicLoadVector" },
-    { aerodynamic_frame_total_load_vector, "totalLoadAerofynamicFrameVector" },
-    { trajectory_phase, "trajectoryPhase" }
-
-
-
-
-
+    { aerodynamic_frame_total_load_vector, "totalLoadAerodynamicFrameVector" },
+    { aerodynamic_frame_total_acceleration_vector, "totalAccelerationAerodynamicFrameVector" },
+    { passenger_frame_total_load_vector, "totalLoadPassengerFrameVector" },
+    { passenger_frame_total_acceleration_vector, "totalAccelerationPassengerFrameVector" },
+    { passenger_frame_jerk_vector, "passengerFrameJerkVector" },
+    { trajectory_phase, "trajectoryPhase" },
+    { height_dependent_variable, "height" },
+    { angular_distance_covered_ratio, "angularDistanceCoveredRatio" }
 
 
 

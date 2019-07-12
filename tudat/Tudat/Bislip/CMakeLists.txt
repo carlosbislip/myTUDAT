@@ -11,6 +11,9 @@
 # Set the source files.
 set(BISLIP_SOURCES
   "${SRCROOT}${BISLIPDIR}/bislipVariables.cpp"
+  "${SRCROOT}${BISLIPDIR}/bislipDecisionVectorEvaluation.cpp"
+  "${SRCROOT}${BISLIPDIR}/updateGuidance.cpp"
+
 )
 
 # Set the header files.
@@ -21,8 +24,23 @@ set(BISLIP_HEADERS
     "${SRCROOT}${BISLIPDIR}/bislipParameters.h"
     "${SRCROOT}${BISLIPDIR}/bislipVehicleSystems.h"
     "${SRCROOT}${BISLIPDIR}/bislipProblemInput.h"
+    "${SRCROOT}${BISLIPDIR}/updateGuidance.h"
 
   )
+# Find PaGMO library on local system.
+if( USE_PAGMO )
+    find_package(PaGMO2)
+
+    # Include PaGMO directories.
+    if(NOT APPLE OR APPLE_INCLUDE_FORCE)
+        include_directories(SYSTEM AFTER "${PAGMO_INCLUDE_DIR}")
+    else( )
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${PAGMO_INCLUDE_DIR}\"")
+    endif( )
+
+    list(APPEND TUDAT_APPLICATION_EXTERNAL_LIBRARIES pthread)
+
+endif( )
 
 # Add static libraries.
 add_library(bislip STATIC ${BISLIP_SOURCES} ${BISLIP_HEADERS})

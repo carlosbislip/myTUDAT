@@ -346,7 +346,24 @@ public:
     {
         return printedFitness_;
     }
+    void setIndividualNumber( const int individualNumber )
+    {
+        individualNumber_ = individualNumber;
+    }
 
+    int getIndividualNumber( )
+    {
+        return individualNumber_;
+    }
+    void setObjectiveFunctionCase( const char objectiveFunctionCase )
+    {
+        objectiveFunctionCase_ = objectiveFunctionCase;
+    }
+
+    char getObjectiveFunctionCase( )
+    {
+        return objectiveFunctionCase_;
+    }
 
 
 /*
@@ -370,12 +387,37 @@ public:
         return atmosphericModel_NRLMSISE00_;
     }
 */
+    void setEvolutionEvaluationFlag( const bool evolutionEvaluationFlag )
+    {
+        evolutionEvaluationFlag_ = evolutionEvaluationFlag;
+    }
+
+    bool getEvolutionEvaluationFlag( )
+    {
+        return evolutionEvaluationFlag_;
+    }
+    void setRerunFileNameSuffix( const std::string rerunFileNameSuffix )
+    {
+        rerunFileNameSuffix_ = rerunFileNameSuffix;
+    }
+
+    std::string getRerunFileNameSuffix( )
+    {
+        return rerunFileNameSuffix_;
+    }
+
+
+
+
 
 private:
     //tudat::aerodynamics::NRLMSISE00Atmosphere atmosphericModel_NRLMSISE00_;
     //tudat::aerodynamics::TabulatedAtmosphere atmosphericModel_US76_;
 
-
+    std::string rerunFileNameSuffix_;
+    bool evolutionEvaluationFlag_;
+    char objectiveFunctionCase_;
+    int individualNumber_;
     std::map < std::string, Eigen::VectorXd > population_;
     std::map < std::string, Eigen::VectorXd > fitness_;
     std::map < std::string, Eigen::VectorXd > printedPopulation_;

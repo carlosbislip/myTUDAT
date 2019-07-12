@@ -6,11 +6,13 @@
 #include <iomanip>
 #include <utility>
 #include <cmath>
+#include <limits>
 #include <fstream>
 #include <iostream>
 #include <stdio.h>      // for sprintf()
 #include <string>       // for std::string
 #include <boost/date_time/posix_time/posix_time.hpp>
+//#include "../../../boost/boost/date_time/posix_time/posix_time.hpp"
 
 #include <Tudat/Astrodynamics/Aerodynamics/flightConditions.h>
 #include <Tudat/Mathematics/Interpolators/createInterpolator.h>
@@ -31,7 +33,10 @@
 #include <Tudat/Astrodynamics/BasicAstrodynamics/accelerationModel.h>
 #include <Tudat/SimulationSetup/PropagationSetup/propagationOutputSettings.h>
 #include <Tudat/SimulationSetup/PropagationSetup/propagationTerminationSettings.h>
+#include <Tudat/Mathematics/NumericalIntegrators/numericalIntegrator.h>
+#include <Tudat/External/SpiceInterface/spiceInterface.h>
 
+#include <Tudat/Astrodynamics/BasicAstrodynamics/sphericalStateConversions.h>
 //#include <iostream>
 
 #include <boost/filesystem.hpp>

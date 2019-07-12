@@ -10,7 +10,6 @@
 
 #include "Tudat/Astrodynamics/Aerodynamics/aerodynamics.h"
 #include "Tudat/SimulationSetup/PropagationSetup/propagationOutput.h"
-#include "Tudat/Bislip/bislipVariables.h"
 
 namespace tudat
 {
@@ -289,7 +288,6 @@ int getDependentVariableSize(
     case keplerian_state_dependent_variable:
         variableSize = 6;
         break;
-
     case spherical_harmonic_acceleration_terms_dependent_variable:
     {
         if( std::dynamic_pointer_cast< SphericalHarmonicAccelerationTermsDependentVariableSaveSettings >(
@@ -340,6 +338,9 @@ int getDependentVariableSize(
     }
     case acceleration_partial_wrt_body_translational_state:
         variableSize = 18;
+        break;
+    case current_body_mass_dependent_variable:
+        variableSize = 1;
         break;
     case specific_energy:
         variableSize = 1;
@@ -405,7 +406,7 @@ int getDependentVariableSize(
         variableSize = 1;
         break;
     case local_gravity:
-        variableSize = 2;
+        variableSize = 3;
         break;
     case skip_suppression_limit:
         variableSize = 1;
@@ -503,7 +504,25 @@ int getDependentVariableSize(
     case aerodynamic_frame_total_load_vector:
         variableSize = 3;
         break;
+    case aerodynamic_frame_total_acceleration_vector:
+        variableSize = 3;
+        break;
+    case passenger_frame_total_load_vector:
+        variableSize = 3;
+        break;
+    case passenger_frame_total_acceleration_vector:
+        variableSize = 3;
+        break;
+    case passenger_frame_jerk_vector:
+        variableSize = 3;
+        break;
     case trajectory_phase:
+        variableSize = 1;
+        break;
+    case height_dependent_variable:
+        variableSize = 1;
+        break;
+    case angular_distance_covered_ratio:
         variableSize = 1;
         break;
 

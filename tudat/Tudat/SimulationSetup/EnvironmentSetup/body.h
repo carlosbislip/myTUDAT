@@ -1007,7 +1007,6 @@ public:
     {
         return bislipSystems_;
     }
-
     //! Function to set container object with hardware systems present on/in body
     /*!
      * Function to set container object with hardware systems present on/in body (typically only non-nullptr for a vehicle).
@@ -1021,7 +1020,6 @@ public:
     {
         bislipSystems_ = bislipSystems;
     }
-
     //! Function to set the function returning body mass as a function of time
     /*!
      * Function to set the function returning body mass as a function of time

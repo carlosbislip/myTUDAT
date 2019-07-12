@@ -471,13 +471,11 @@ createOneDimensionalInterpolator(
     switch( interpolatorSettings->getInterpolatorType( ) )
     {
     case linear_interpolator:
-    {
         createdInterpolator = std::make_shared< LinearInterpolator
                 < IndependentVariableType, DependentVariableType > >(
                     dataToInterpolate, interpolatorSettings->getSelectedLookupScheme( ),
                     interpolatorSettings->getBoundaryHandling( ).at( 0 ), defaultExtrapolationValue );
         break;
-    }
     case cubic_spline_interpolator:
     {
         if( !interpolatorSettings->getUseLongDoubleTimeStep( ) )
@@ -534,13 +532,6 @@ createOneDimensionalInterpolator(
     {
         if( firstDerivativeOfDependentVariables.size( ) != dataToInterpolate.size( ) )
         {
-          /*  for(auto elem : dataToInterpolate)
-            {
-               std::cout << elem.first << " " << elem.second << std::endl;;
-            }
-            std::cout << "firstDerivativeOfDependentVariables.size( ): " << firstDerivativeOfDependentVariables.size( ) << std::endl;
-            std::cout << "dataToInterpolate.size( ): " << dataToInterpolate.size( ) << std::endl;
-            */
             throw std::runtime_error(
                         "Error when creating hermite spline interpolator, derivative size is inconsistent" );
         }
@@ -630,9 +621,6 @@ createMultiDimensionalInterpolator(
     // Check size of boundary handling methods
     else if ( boundaryHandlingVector.size( ) != NumberOfDimensions )
     {
-
-        std::cout << "boundaryHandlingVector.size( ) = " << boundaryHandlingVector.size( ) << std::endl;
-        std::cout << "NumberOfDimensions             = " << NumberOfDimensions << std::endl;
         throw std::runtime_error( "Error while creating multi-dimensional interpolator. The number of boundary handling methods does not "
                                   "match the number of dimensions." );
     }

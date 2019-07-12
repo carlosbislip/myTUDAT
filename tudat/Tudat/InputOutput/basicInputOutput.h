@@ -191,13 +191,8 @@ void writeValueToStream( OutputStream& stream, const Eigen::Matrix< ScalarType,
 {
     for ( int i = 0; i < value.rows( ); i++ )
     {
-        //std::cout << " row: " << i << std::endl;
-
         for ( int j = 0; j < value.cols( ); j++ )
         {
-
-           // std::cout << "         column: " << j << std::endl;
-           // std::cout << "         value( i, j ): " << value( i, j ) << std::endl;
             stream << delimiter << " "
                    << std::setprecision( precision ) << std::left
                    << std::setw( precision + 1 )

@@ -130,7 +130,7 @@ OutputType evaluateHexavariateReferenceFunction(
  *  \param secondInput Function returning second input to functionToEvaluate.
  *  \return Output from functionToEvaluate, using functions firstInput and secondInput as input.
  */
-/*template< typename OutputType, typename InputType >
+template< typename OutputType, typename InputType >
 OutputType evaluateBivariateFunction(
         const std::function< OutputType( const InputType, const InputType ) > functionToEvaluate,
         const std::function< InputType( ) > firstInput,
@@ -138,7 +138,7 @@ OutputType evaluateBivariateFunction(
 {
     return functionToEvaluate( firstInput( ), secondInput( ) );
 }
-*/
+
 template< typename OutputType, typename FirstInputType, typename SecondInputType>
 OutputType evaluateBivariateFunction(
         const std::function< OutputType( const FirstInputType, const SecondInputType ) > functionToEvaluate,
@@ -202,7 +202,6 @@ OutputType evaluateHexavariateFunction(
 {
     return functionToEvaluate( firstInput( ), secondInput( ), thirdInput( ), fourthInput( ), fifthInput( ), sixthInput( ) );
 }
-
 
 //! Funtion to get the size of a dependent variable save settings
 /*!
@@ -423,9 +422,20 @@ std::pair< std::function< Eigen::VectorXd( ) >, int > getVectorDependentVariable
                 std::bind( &linear_algebra::computeVectorDifference< 3 >, std::placeholders::_1, std::placeholders::_2 );
         std::function< Eigen::Vector3d( ) > firstInput =
                 std::bind( &simulation_setup::Body::getPosition, bodyMap.at( bodyWithProperty ) );
-        std::function< Eigen::Vector3d( ) > secondInput =
-                std::bind( &simulation_setup::Body::getPosition, bodyMap.at( secondaryBody ) );
 
+        std::function< Eigen::Vector3d( ) > secondInput;
+        if( secondaryBody != "SSB" )
+        {
+            secondInput = std::bind( &simulation_setup::Body::getPosition, bodyMap.at( secondaryBody ) );
+        }
+        else if( simulation_setup::getGlobalFrameOrigin( bodyMap ) == "SSB" )
+        {
+            secondInput = []( ){ return Eigen::Vector3d::Zero( ); };
+        }
+        else
+        {
+            throw std::runtime_error( "Error, requested state of " + bodyWithProperty + " w.r.t. SSB, but SSB is not frame origin" );
+        }
         variableFunction = std::bind(
                     &evaluateBivariateReferenceFunction< Eigen::Vector3d, Eigen::Vector3d >,
                     functionToEvaluate, firstInput, secondInput );
@@ -439,8 +449,20 @@ std::pair< std::function< Eigen::VectorXd( ) >, int > getVectorDependentVariable
                 std::bind( &linear_algebra::computeVectorDifference< 3 >, std::placeholders::_1, std::placeholders::_2 );
         std::function< Eigen::Vector3d( ) > firstInput =
                 std::bind( &simulation_setup::Body::getVelocity, bodyMap.at( bodyWithProperty ) );
-        std::function< Eigen::Vector3d( ) > secondInput =
-                std::bind( &simulation_setup::Body::getVelocity, bodyMap.at( secondaryBody ) );
+
+        std::function< Eigen::Vector3d( ) > secondInput;
+        if( secondaryBody != "SSB" )
+        {
+            secondInput = std::bind( &simulation_setup::Body::getVelocity, bodyMap.at( secondaryBody ) );
+        }
+        else if( simulation_setup::getGlobalFrameOrigin( bodyMap ) == "SSB" )
+        {
+            secondInput = []( ){ return Eigen::Vector3d::Zero( ); };
+        }
+        else
+        {
+            throw std::runtime_error( "Error, requested state of " + bodyWithProperty + " w.r.t. SSB, but SSB is not frame origin" );
+        }
 
         variableFunction = std::bind(
                     &evaluateBivariateReferenceFunction< Eigen::Vector3d, Eigen::Vector3d >,
@@ -500,7 +522,7 @@ std::pair< std::function< Eigen::VectorXd( ) >, int > getVectorDependentVariable
                         accelerationDependentVariableSettings->secondaryBody_ + " of type " +
                         std::to_string(
                             accelerationDependentVariableSettings->accelerationModelType_ ) +
-                        ", no such acceleration found VECTOR";
+                        ", no such acceleration found";
                 throw std::runtime_error( errorMessage );
             }
             else
@@ -1032,6 +1054,49 @@ std::pair< std::function< Eigen::VectorXd( ) >, int > getVectorDependentVariable
         parameterSize = 3;
         break;
     }
+#if( BUILD_WITH_ESTIMATION_TOOLS )
+    case acceleration_partial_wrt_body_translational_state:
+    {
+        std::shared_ptr< AccelerationPartialWrtStateSaveSettings > accelerationPartialVariableSettings =
+                std::dynamic_pointer_cast< AccelerationPartialWrtStateSaveSettings >( dependentVariableSettings );
+        if( accelerationPartialVariableSettings == nullptr )
+        {
+            std::string errorMessage= "Error, inconsistent inout when creating dependent variable function of type acceleration_partial_wrt_body_translational_state";
+            throw std::runtime_error( errorMessage );
+        }
+        else
+        {
+            if( stateDerivativePartials.count( translational_state ) == 0 )
+            {
+                throw std::runtime_error( "Error when requesting acceleration_partial_wrt_body_translational_state dependent variable, no translational state partials found." );
+            }
+
+            std::shared_ptr< acceleration_partials::AccelerationPartial > partialToUse =
+                    getAccelerationPartialForBody(
+                        stateDerivativePartials.at( translational_state ), accelerationPartialVariableSettings->accelerationModelType_,
+                        accelerationPartialVariableSettings->associatedBody_,
+                        accelerationPartialVariableSettings->secondaryBody_,
+                        accelerationPartialVariableSettings->thirdBody_ );
+
+            std::pair< std::function< void( Eigen::Block< Eigen::MatrixXd > ) >, int > partialFunction =
+                    partialToUse->getDerivativeFunctionWrtStateOfIntegratedBody(
+                        std::make_pair( accelerationPartialVariableSettings->derivativeWrtBody_, "" ),
+                        propagators::translational_state );
+
+            if( partialFunction.second == 0 )
+            {
+                variableFunction = [ = ]( ){ return Eigen::VectorXd::Zero( 18 ); };
+            }
+            else
+            {
+                variableFunction = std::bind( &getVectorFunctionFromBlockFunction, partialFunction.first, 3, 6 );
+            }
+
+            parameterSize = 18;
+        }
+        break;
+    }
+#endif
     case body_fixed_thrust_vector:
     {
 
@@ -1124,7 +1189,7 @@ std::pair< std::function< Eigen::VectorXd( ) >, int > getVectorDependentVariable
 
         variableFunction = std::bind( &bislip::Variables::computeLocalGravity, bodyMap, bodyWithProperty, secondaryBody );
 
-        parameterSize = 2;
+        parameterSize = 3;
         break;
     }
     case body_fixed_total_load_vector:
@@ -1189,52 +1254,37 @@ std::pair< std::function< Eigen::VectorXd( ) >, int > getVectorDependentVariable
         parameterSize = 3;
         break;
     }
-
-
-
-#if( BUILD_WITH_ESTIMATION_TOOLS )
-    case acceleration_partial_wrt_body_translational_state:
+    case aerodynamic_frame_total_acceleration_vector:
     {
-        std::shared_ptr< AccelerationPartialWrtStateSaveSettings > accelerationPartialVariableSettings =
-                std::dynamic_pointer_cast< AccelerationPartialWrtStateSaveSettings >( dependentVariableSettings );
-        if( accelerationPartialVariableSettings == nullptr )
-        {
-            std::string errorMessage= "Error, inconsistent inout when creating dependent variable function of type acceleration_partial_wrt_body_translational_state";
-            throw std::runtime_error( errorMessage );
-        }
-        else
-        {
-            if( stateDerivativePartials.count( translational_state ) == 0 )
-            {
-                throw std::runtime_error( "Error when requesting acceleration_partial_wrt_body_translational_state dependent variable, no translational state partials found." );
-            }
-
-            std::shared_ptr< acceleration_partials::AccelerationPartial > partialToUse =
-                    getAccelerationPartialForBody(
-                        stateDerivativePartials.at( translational_state ), accelerationPartialVariableSettings->accelerationModelType_,
-                        accelerationPartialVariableSettings->associatedBody_,
-                        accelerationPartialVariableSettings->secondaryBody_,
-                        accelerationPartialVariableSettings->thirdBody_ );
-
-            std::pair< std::function< void( Eigen::Block< Eigen::MatrixXd > ) >, int > partialFunction =
-                    partialToUse->getDerivativeFunctionWrtStateOfIntegratedBody(
-                        std::make_pair( accelerationPartialVariableSettings->derivativeWrtBody_, "" ),
-                        propagators::translational_state );
-
-            if( partialFunction.second == 0 )
-            {
-                variableFunction = [ = ]( ){ return Eigen::VectorXd::Zero( 18 ); };
-            }
-            else
-            {
-                variableFunction = std::bind( &getVectorFunctionFromBlockFunction, partialFunction.first, 3, 6 );
-            }
-
-            parameterSize = 18;
-        }
+        variableFunction = std::bind( &bislip::Variables::computeAerodynamicFrameTotalAcceleration, bodyMap, bodyWithProperty );
+        parameterSize = 3;
         break;
     }
-#endif
+    case passenger_frame_total_load_vector:
+    {
+        variableFunction = std::bind( &bislip::Variables::computePassengerFrameTotalLoad, bodyMap, bodyWithProperty );
+        parameterSize = 3;
+        break;
+    }
+    case passenger_frame_total_acceleration_vector:
+    {
+        variableFunction = std::bind( &bislip::Variables::computePassengerFrameTotalAcceleration, bodyMap, bodyWithProperty );
+        parameterSize = 3;
+        break;
+    }
+    case passenger_frame_jerk_vector:
+    {
+
+        // Retrieve model responsible for computing mass rate of requested bodies.
+        std::shared_ptr< BodyMassStateDerivative< StateScalarType, TimeType > > nBodyModel =
+                getBodyMassStateDerivativeModelForBody( bodyWithProperty, stateDerivativeModels );
+
+        std::function< double() > massRateFunction = std::bind( &BodyMassStateDerivative< StateScalarType, TimeType >::getTotalMassRateForBody, nBodyModel, bodyWithProperty );
+
+        variableFunction = std::bind( &bislip::Variables::computePassengerFrameJerk, bodyMap, bodyWithProperty, massRateFunction );
+        parameterSize = 3;
+        break;
+    }
     default:
         std::string errorMessage =
                 "Error, did not recognize vector dependent variable type when making variable function: " +
@@ -1328,24 +1378,34 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                                    bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
 
 
-            variableFunction = std::bind( &evaluateBivariateFunction< double, double, double >,
+            variableFunction = std::bind( &evaluateBivariateFunction< double, double >,
                                           functionToEvaluate, firstInput, secondInput );
             break;
         }
         case altitude_dependent_variable:
-        {
             if( bodyMap.at( bodyWithProperty )->getFlightConditions( ) == nullptr )
             {
                 std::string errorMessage = "Error, no flight conditions available when requesting altitude output of " +
                         bodyWithProperty + "w.r.t." + secondaryBody;
                 throw std::runtime_error( errorMessage );
             }
+            //variableFunction = std::bind( &aerodynamics::FlightConditions::getCurrentAltitude,
+            //                              bodyMap.at( bodyWithProperty )->getFlightConditions( ) );
+
+            variableFunction = std::bind( &bislip::Variables::getCurrentAltitude, bodyMap, bodyWithProperty );
+
+            break;
+        case height_dependent_variable:
+            if( bodyMap.at( bodyWithProperty )->getFlightConditions( ) == nullptr )
+            {
+                std::string errorMessage = "Error, no flight conditions available when requesting height output of " +
+                        bodyWithProperty + "w.r.t." + secondaryBody;
+                throw std::runtime_error( errorMessage );
+            }
             variableFunction = std::bind( &aerodynamics::FlightConditions::getCurrentAltitude,
                                           bodyMap.at( bodyWithProperty )->getFlightConditions( ) );
             break;
-        }
         case airspeed_dependent_variable:
-        {
             if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                         bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
             {
@@ -1357,9 +1417,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                                           std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                                               bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
             break;
-        }
         case local_density_dependent_variable:
-        {
             if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                         bodyMap.at( bodyWithProperty )->getFlightConditions( ) )== nullptr )
             {
@@ -1371,9 +1429,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                                           std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
                                               bodyMap.at( bodyWithProperty )->getFlightConditions( ) ) );
             break;
-        }
         case radiation_pressure_dependent_variable:
-        {
             if( bodyMap.at( bodyWithProperty )->getRadiationPressureInterfaces( ).count( secondaryBody ) == 0 )
             {
                 std::string errorMessage = "Error, no radiation pressure interfaces when requesting radiation pressure output of " +
@@ -1383,7 +1439,6 @@ std::function< double( ) > getDoubleDependentVariableFunction(
             variableFunction = std::bind( &electro_magnetism::RadiationPressureInterface::getCurrentRadiationPressure,
                                           bodyMap.at( bodyWithProperty )->getRadiationPressureInterfaces( ).at( secondaryBody ) );
             break;
-        }
         case relative_distance_dependent_variable:
         {
             // Retrieve functions for positions of two bodies.
@@ -1391,8 +1446,20 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                     std::bind( &linear_algebra::computeNormOfVectorDifference, std::placeholders::_1, std::placeholders::_2 );
             std::function< Eigen::Vector3d( ) > firstInput =
                     std::bind( &simulation_setup::Body::getPosition, bodyMap.at( bodyWithProperty ) );
-            std::function< Eigen::Vector3d( ) > secondInput =
-                    std::bind( &simulation_setup::Body::getPosition, bodyMap.at( secondaryBody ) );
+
+            std::function< Eigen::Vector3d( ) > secondInput;
+            if( secondaryBody != "SSB" )
+            {
+                secondInput = std::bind( &simulation_setup::Body::getPosition, bodyMap.at( secondaryBody ) );
+            }
+            else if( simulation_setup::getGlobalFrameOrigin( bodyMap ) == "SSB" )
+            {
+                secondInput = []( ){ return Eigen::Vector3d::Zero( ); };
+            }
+            else
+            {
+                throw std::runtime_error( "Error, requested state of " + bodyWithProperty + " w.r.t. SSB, but SSB is not frame origin" );
+            }
 
             variableFunction = std::bind(
                         &evaluateBivariateReferenceFunction< double, Eigen::Vector3d >, functionToEvaluate, firstInput, secondInput );
@@ -1405,8 +1472,21 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                     std::bind( &linear_algebra::computeNormOfVectorDifference, std::placeholders::_1, std::placeholders::_2 );
             std::function< Eigen::Vector3d( ) > firstInput =
                     std::bind( &simulation_setup::Body::getVelocity, bodyMap.at( bodyWithProperty ) );
-            std::function< Eigen::Vector3d( ) > secondInput =
-                    std::bind( &simulation_setup::Body::getVelocity, bodyMap.at( secondaryBody ) );
+
+            std::function< Eigen::Vector3d( ) > secondInput;
+            if( secondaryBody != "SSB" )
+            {
+                secondInput = std::bind( &simulation_setup::Body::getVelocity, bodyMap.at( secondaryBody ) );
+            }
+            else if( simulation_setup::getGlobalFrameOrigin( bodyMap ) == "SSB" )
+            {
+                secondInput = []( ){ return Eigen::Vector3d::Zero( ); };
+            }
+            else
+            {
+                throw std::runtime_error( "Error, requested state of " + bodyWithProperty + " w.r.t. SSB, but SSB is not frame origin" );
+            }
+
 
             variableFunction = std::bind(
                         &evaluateBivariateReferenceFunction< double, Eigen::Vector3d >, functionToEvaluate, firstInput, secondInput );
@@ -1451,7 +1531,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                             accelerationDependentVariableSettings->secondaryBody_ + " of type " +
                             std::to_string(
                                 accelerationDependentVariableSettings->accelerationModelType_ ) +
-                            ", no such acceleration found NORM";
+                            ", no such acceleration found";
                     throw std::runtime_error( errorMessage );
                 }
                 else
@@ -1689,13 +1769,10 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                                                                     bodyMap.at( bodyWithProperty )->getVehicleSystems( ),
                                                                     dependentVariableSettings->secondaryBody_ );
 
-
             std::function< double( const double& ) > rad2deg_Def =
                     std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
 
             variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, deflectionAngle );
-
-
             break;
         }
         case total_mass_rate_dependent_variables:
@@ -1742,6 +1819,13 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                                           functionToEvaluate, firstInput, secondInput, thirdInput );
             break;
         }
+        case current_body_mass_dependent_variable:
+        {
+            variableFunction = std::bind(
+                        &simulation_setup::Body::getBodyMass, bodyMap.at( bodyWithProperty ) );
+            break;
+        }
+
         case specific_energy:
         {
             if( std::dynamic_pointer_cast< aerodynamics::AtmosphericFlightConditions >(
@@ -2188,7 +2272,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
                                tudat::reference_frames::heading_angle );
 
             std::function< double( const double& ) > neg2pos_Def =
-                    std::bind( &bislip::Variables::convertNegativeAnglesToPositive, std::placeholders::_1 );
+                    std::bind( &bislip::Variables::convertNegativeAnglesInRadiansToPositive, std::placeholders::_1 );
 
             std::function< double( ) > headingAngle_radPos =
                     std::bind( &evaluateReferenceFunction< double, double >, neg2pos_Def, headingAngle_rad );
@@ -2856,7 +2940,7 @@ std::function< double( ) > getDoubleDependentVariableFunction(
             std::function< double( ) > flightPathAngle_rad  = std::bind( &bislip::Variables::computeFlightPathAngleRate, bodyMap, bodyWithProperty, secondaryBody );
 
             std::function< double( const double& ) > rad2deg_Def =
-                  std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
+                    std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
 
             variableFunction = std::bind( &evaluateReferenceFunction< double, double >, rad2deg_Def, flightPathAngle_rad );
             //variableFunction = std::bind( &bislip::BislipVehicleSystems::getCurrentFlightPathAngleRate, bodyMap.at( bodyWithProperty )->getBislipSystems() );
@@ -2930,11 +3014,11 @@ std::function< double( ) > getDoubleDependentVariableFunction(
             std::function< Eigen::Vector3d( ) > firstInput =
                     std::bind( &bislip::Variables::computeAerodynamicFrameTotalLoad, bodyMap, bodyWithProperty );
             std::function< double( ) > secondInput =
-                   std::bind( &simulation_setup::Body::getBodyMass, bodyMap.at( bodyWithProperty ) );
+                    std::bind( &simulation_setup::Body::getBodyMass, bodyMap.at( bodyWithProperty ) );
 
             std::function< double( ) > estimated_flight_path_angle_rad =
                     std::bind( &evaluateBivariateReferenceFunction< double, Eigen::Vector3d, double >,
-                                          estimated_flight_path_angle_def_rad, firstInput, secondInput );
+                               estimated_flight_path_angle_def_rad, firstInput, secondInput );
 
             std::function< double( const double& ) > rad2deg_Def =
                     std::bind( &bislip::Variables::convertRadiansToDegrees, std::placeholders::_1 );
@@ -2943,13 +3027,20 @@ std::function< double( ) > getDoubleDependentVariableFunction(
 
             break;
         }
-
         case trajectory_phase:
         {
             variableFunction = std::bind( &bislip::Variables::convertTrajectoryPhaseToBoolean, bodyMap, bodyWithProperty );
 
             break;
         }
+        case angular_distance_covered_ratio:
+        {
+            variableFunction = std::bind( &bislip::Variables::computeAngularDistanceCoveredRatio, bodyMap, bodyWithProperty );
+
+            break;
+        }
+
+
 
 
 

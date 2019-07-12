@@ -1,4 +1,5 @@
 #include <Tudat/Bislip/bislipVariables.h>
+#include <Tudat/Astrodynamics/Propagators/bodyMassStateDerivative.h>
 
 namespace bislip { namespace Variables {
 
@@ -42,6 +43,33 @@ Eigen::MatrixXd convertVectorOfVectorsDoubleToEigenMatrixXd( const std::vector< 
     }
 
     return matrix;
+}
+
+
+
+//! https://thispointer.com/how-to-remove-substrings-from-a-string-in-c/
+void eraseAllSubStr(
+        std::string & mainStr,
+        const std::string & toErase)
+{
+    size_t pos = std::string::npos;
+
+    // Search for the substring in string in a loop untill nothing is found
+    while ((pos  = mainStr.find(toErase) )!= std::string::npos)
+    {
+        // If found then erase it from string
+        mainStr.erase(pos, toErase.length());
+    }
+}
+
+//! https://thispointer.com/how-to-remove-substrings-from-a-string-in-c/
+void eraseSubStrings(
+        std::string & mainStr,
+        const std::vector<std::string> & strList)
+{
+    // Iterate over the given list of substrings. For each substring call eraseAllSubStr() to
+    // remove its all occurrences from main string.
+    std::for_each(strList.begin(), strList.end(), std::bind(eraseAllSubStr, std::ref(mainStr), std::placeholders::_1));
 }
 
 
@@ -404,6 +432,19 @@ double computeNormalizedSpecificEnergy (
     return computeSpecificEnergy( height, airspeed ) / E_max;
 }
 
+double getCurrentAltitude(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName )
+{
+    //! Extract flight conditions pointer.
+    std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions = std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >(
+                bodyMap.at( vehicleName )->getFlightConditions( ) );
+
+    const double currentAltitude = flightConditions->getCurrentBodyCenteredBodyFixedState( ).segment( 0, 3 ).norm( );
+
+    return currentAltitude;
+}
+
 //! https://doi.org/10.1016/j.cam.2017.09.049
 std::vector< double > HermiteDerivatives(
         const Eigen::VectorXd &xValues,
@@ -585,8 +626,8 @@ Eigen::Vector3d computeBodyFixedThrustDirection (
     Eigen::Vector3d bodyFixedThrustDirection;
     bodyFixedThrustDirection( 0 ) = std::cos( thrustElevationAngle ) * std::cos( thrustAzimuthAngle );
     bodyFixedThrustDirection( 1 ) = std::cos( thrustElevationAngle ) * std::sin( thrustAzimuthAngle );
-    bodyFixedThrustDirection( 2 ) = std::sin( thrustElevationAngle );
-    if( debugInfo == 1 ){ std::cout << "               Body-Fixed Thrust Direction       = [ " << bodyFixedThrustDirection(0) << " , " << bodyFixedThrustDirection(1) << " , " << bodyFixedThrustDirection(2) << " ]" << std::endl; }
+    bodyFixedThrustDirection( 2 ) = -std::sin( thrustElevationAngle );
+    if( debugInfo == 1 ){ std::cout << "               Body-Fixed Thrust Direction       = [ " << bodyFixedThrustDirection( 0 ) << " , " << bodyFixedThrustDirection( 1 ) << " , " << bodyFixedThrustDirection( 2 ) << " ]" << std::endl; }
     if( debugInfo == 1 ){ std::cout << "            Ending Computation of Body-Fixed Total Load" << std::endl; }
 
     if( debugInfo == 1 ){ std::cout << "            --------------------------------" << std::endl; }
@@ -684,7 +725,7 @@ bool determineEngineStatus (
     return currentEngineStatus;
 }
 
-Eigen::Vector2d computeLocalGravity (
+Eigen::Vector3d computeLocalGravity (
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName,
         const std::string &centralBodyName )
@@ -733,20 +774,20 @@ Eigen::Vector2d computeLocalGravity (
     const double s_latitude_sq = s_latitude * s_latitude;
     const double c_latitude    = std::cos( currentLatitude );
 
-    const double g_n_pre = -3 * ( gravitationalParameter / ( currentAltitude * currentAltitude ) ) * pow( earthRadius / currentAltitude , 2 ) * s_latitude * c_latitude;
+    const double g_n_pre = -3.0 * ( gravitationalParameter / ( currentAltitude * currentAltitude ) ) * pow( earthRadius / currentAltitude , 2.0 ) * s_latitude * c_latitude;
     const double g_n_sub_1 = J2;
-    const double g_n_sub_2 = ( J3 / 2 ) * ( earthRadius / currentAltitude ) * ( 1 / s_latitude ) * ( 5 * s_latitude_sq - 1 );
-    const double g_n_sub_3 = ( 5 * J4 / 6 ) * pow( earthRadius / currentAltitude , 2) * ( 7 * s_latitude_sq - 3 );
+    const double g_n_sub_2 = ( J3 / 2.0 ) * ( earthRadius / currentAltitude ) * ( 1.0 / s_latitude ) * ( 5.0 * s_latitude_sq - 1.0 );
+    const double g_n_sub_3 = ( 5.0 * J4 / 6.0 ) * pow( earthRadius / currentAltitude , 2.0 ) * ( 7.0 * s_latitude_sq - 3.0 );
     const double g_n = g_n_pre * ( g_n_sub_1 + g_n_sub_2 + g_n_sub_3 );
 
     const double g_d_pre = ( gravitationalParameter / ( currentAltitude * currentAltitude ) );
-    const double g_d_sub_1 = ( 3 * J2 / 2 ) * pow( earthRadius / currentAltitude , 2 ) * ( 3 * s_latitude_sq - 1 );
-    const double g_d_sub_2 = 2 * J3  * pow( earthRadius / currentAltitude , 3 ) * ( s_latitude ) * ( 5 * s_latitude_sq - 3 );
-    const double g_d_sub_3 = ( 5 * J4 / 8 ) * pow( earthRadius / currentAltitude , 4 ) * ( 35 * s_latitude_sq * s_latitude_sq - 30 * s_latitude_sq + 3 );
-    const double g_d = g_d_pre * ( 1 - g_d_sub_1 - g_d_sub_2 - g_d_sub_3 );
+    const double g_d_sub_1 = ( 3.0 * J2 / 2.0 ) * pow( earthRadius / currentAltitude , 2.0 ) * ( 3.0 * s_latitude_sq - 1.0 );
+    const double g_d_sub_2 = 2.0 * J3  * pow( earthRadius / currentAltitude , 3.0 ) * ( s_latitude ) * ( 5.0 * s_latitude_sq - 3.0 );
+    const double g_d_sub_3 = ( 5.0 * J4 / 8.0 ) * pow( earthRadius / currentAltitude , 4.0 ) * ( 35.0 * s_latitude_sq * s_latitude_sq - 30.0 * s_latitude_sq + 3.0 );
+    const double g_d = g_d_pre * ( 1.0 - g_d_sub_1 - g_d_sub_2 - g_d_sub_3 );
 
-    Eigen::Vector2d localGravity ( 2 );
-    localGravity << g_n, g_d;
+    Eigen::Vector3d localGravity ( 3 );
+    localGravity << g_n, 0, g_d;
 
 
     //bislipSystems->setCurrentLocalGravityVector( localGravity );
@@ -1258,7 +1299,7 @@ double throttleSettingEvaluationFunction(
         currentFlightPathAngle = bislipSystems->getInitialFlightPathAngle();
         currentBankAngle       = bislipSystems->getCurrentBankAngle();
         currentLatitude        = bislipSystems->getInitialLat();
-        currentHeading         = bislipSystems->getInitialHeading();
+        currentHeading         = bislipSystems->getInitialHeadingAngle();
         currentAltitude        = bislipSystems->getInitialAltitude();
         currentAirspeed        = bislipSystems->getInitialAirspeed();
         currentDynamicPressure = bislipSystems->getInitialDynamicPressure();
@@ -1490,7 +1531,7 @@ double determineThrustElevationAngle(
 
         currentFlightPathAngle      = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialFlightPathAngle() );
         currentLatitude             = bislipSystems->getInitialLat();
-        currentHeading              = bislipSystems->getInitialHeading();
+        currentHeading              = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialHeadingAngle() );
         currentAltitude             = bislipSystems->getInitialAltitude();
         currentAirspeed             = bislipSystems->getInitialAirspeed();
         currentDynamicPressure      = bislipSystems->getInitialDynamicPressure();
@@ -1521,7 +1562,7 @@ double determineThrustElevationAngle(
     const double currentThrustAzimuthAngle  = bislipSystems->getCurrentThrustAzimuthAngle();
     const double currentLiftForce           = bislipSystems->getCurrentLiftForce();
     const double currentDragForce           = bislipSystems->getCurrentDragForce();
-    const Eigen::Vector2d gravs             = bislipSystems->getCurrentLocalGravityVector();
+    const Eigen::Vector3d gravs             = bislipSystems->getCurrentLocalGravityVector();
     const Eigen::Vector3d COM               = bislipSystems->getMassReferenceCenter();
     const Eigen::Vector3d COT               = bislipSystems->getThrustReferenceCenter();
     const Eigen::Vector3d MRC               = bislipSystems->getMomentReferenceCenter();
@@ -1551,7 +1592,7 @@ double determineThrustElevationAngle(
     if( debugInfo == 2 ){ std::cout << "                Current Thrust Magnitude           = " << currentThrustMagnitude << std::endl; }
     if( debugInfo == 2 ){ std::cout << "                Current Body-Fixed Total g-Load    = " << bislip::Variables::computeBodyFixedTotal_g_Load_Magnitude( bodyMap, vehicleName ) << std::endl; }
     if( debugInfo == 2 ){ std::cout << "                Current Bank Angle                 = " << currentBankAngle << std::endl; }
-    if( debugInfo == 2 ){ std::cout << "                Local Gravity Vector               = [ " << gravs( 0 ) << ", " << gravs( 1 ) << " ]" << std::endl; }
+    if( debugInfo == 2 ){ std::cout << "                Local Gravity Vector               = [ " << gravs( 0 ) << ", " << gravs( 1 ) << ", " << gravs( 2 ) << " ]" << std::endl; }
 
     const double thrustElevationLowerBound = tudat::unit_conversions::convertDegreesToRadians( ( bislipSystems->getThrustElevationLimits() ).first );
     const double thrustElevationUpperBound = tudat::unit_conversions::convertDegreesToRadians( ( bislipSystems->getThrustElevationLimits() ).second );
@@ -1823,9 +1864,9 @@ double computeSkipSuppressionLimit(
     {
         if( debugInfo == 1 ){ std::cout << "            Selecting Initial Values" << std::endl; }
 
-        currentFlightPathAngle = bislipSystems->getInitialFlightPathAngle();
+        currentFlightPathAngle = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialFlightPathAngle() );
         currentLatitude        = bislipSystems->getInitialLat();
-        currentHeading         = bislipSystems->getInitialHeading();
+        currentHeading         = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialHeadingAngle() );
         currentAltitude        = bislipSystems->getInitialAltitude();
         currentAirspeed        = bislipSystems->getInitialAirspeed();
         currentDynamicPressure = bislipSystems->getInitialDynamicPressure();
@@ -1857,8 +1898,8 @@ double computeSkipSuppressionLimit(
     if( debugInfo == 1 ){ std::cout << "                Current Lift                 = " << currentLift << std::endl; }
 
     //const Eigen::Vector2d gravs = bislip::Variables::computeLocalGravity( bodyMap, vehicleName, centralBodyName );
-    const Eigen::Vector2d gravs = bislipSystems->getCurrentLocalGravityVector();
-    if( debugInfo == 1 ){ std::cout << "                Current Local Gravity Vector = [ " << gravs( 0 ) << ", " << gravs( 1 ) << " ]" << std::endl; }
+    const Eigen::Vector3d gravs = bislipSystems->getCurrentLocalGravityVector();
+    if( debugInfo == 1 ){ std::cout << "                Current Local Gravity Vector = [ " << gravs( 0 ) << ", " << gravs( 1 ) << ", " << gravs( 2 ) << " ]" << std::endl; }
 
 
 
@@ -1901,12 +1942,13 @@ double computeSkipSuppressionLimit(
     const double A = A1 + A2 + A3;
     const double B = currentThrustMagnitude * s_thrustAzimuthAngle * c_thrustElevationAngle;
     const double C = currentLift + currentThrustMagnitude * ( s_alpha * c_thrustAzimuthAngle * c_thrustElevationAngle + c_alpha * s_thrustElevationAngle );
-    const double D = ( gravs( 0 ) * s_gamma * c_chi - gravs( 1 ) * c_gamma );
+    const double D = ( gravs( 0 ) * s_gamma * c_chi - gravs( 2 ) * c_gamma );
     const double E = std::sqrt( ( B * B ) + ( C * C ) );
     const double arccosArgument = -( D + A ) * ( currentMass / E );
     double cosArgument = 0;
 
-    if( std::abs( arccosArgument ) >= 1.0 ) { cosArgument = 0; }
+    if( arccosArgument >= 1.0 ) { cosArgument = 0; }
+    else if( arccosArgument <= -1.0 ) { cosArgument = tudat::mathematical_constants::PI; }
     else { cosArgument = std::acos( arccosArgument ); }
 
     //const double argument = -( currentMass / c ) * ( term1 + term2 + term3 - term4 + term5 );
@@ -1914,6 +1956,7 @@ double computeSkipSuppressionLimit(
 
     //if( limit < 0.0 ) { limit = std::abs( limit ); }
     if( limit > tudat::mathematical_constants::PI / 2 ) { limit = tudat::mathematical_constants::PI / 2; }
+    if( limit < -tudat::mathematical_constants::PI / 2 ) { limit = -tudat::mathematical_constants::PI / 2; }
 
 
     if( debugInfo == 1 ){ std::cout << "                Skip Suppression Limit = " << limit << std::endl; }
@@ -1959,7 +2002,7 @@ double computeSkipSuppressionLimit(
    std::cout << "limit:                  " << limit << std::endl;
 
 */
-    return limit;
+    return std::abs( limit );
 }
 
 
@@ -1997,7 +2040,7 @@ double computeFlightPathAngleRate(
 
         currentFlightPathAngle = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialFlightPathAngle() );
         currentLatitude        = bislipSystems->getInitialLat();
-        currentHeading         = bislipSystems->getInitialHeading();
+        currentHeading         = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialHeadingAngle() );
         currentAltitude        = bislipSystems->getInitialAltitude();
         currentAirspeed        = bislipSystems->getInitialAirspeed();
         currentDynamicPressure = bislipSystems->getInitialDynamicPressure();
@@ -2028,7 +2071,7 @@ double computeFlightPathAngleRate(
     const double currentLift = bislipSystems->getCurrentLiftForce();
 
     //const Eigen::Vector2d gravs = bislip::Variables::computeLocalGravity( bodyMap, vehicleName, centralBodyName );
-    const Eigen::Vector2d gravs = bislipSystems->getCurrentLocalGravityVector();
+    const Eigen::Vector3d gravs = bislipSystems->getCurrentLocalGravityVector();
 
     const double currentAngleOfAttack        = bislipSystems->getCurrentAngleOfAttack();
     const double currentBankAngle            = bislipSystems->getCurrentBankAngle();
@@ -2069,7 +2112,7 @@ double computeFlightPathAngleRate(
 
     const double F_gamma_1 = currentThrustMagnitude * ( s_thrustAzimuthAngle * c_thrustElevationAngle ) * s_sigma;
     const double F_gamma_2 = ( currentLift + currentThrustMagnitude * ( s_alpha * c_thrustAzimuthAngle * c_thrustElevationAngle  + c_alpha * s_thrustElevationAngle ) ) * c_sigma;
-    const double F_gamma_3 = currentMass * ( gravs( 0 ) * s_gamma * c_chi - gravs( 1 ) * c_gamma );
+    const double F_gamma_3 = currentMass * ( gravs( 0 ) * s_gamma * c_chi - gravs( 2 ) * c_gamma );
 
     const double F_gamma = F_gamma_1 + F_gamma_2 + F_gamma_3;
 
@@ -2087,7 +2130,7 @@ double computeFlightPathAngleRate(
 
 
 
-double computeCumulativeCartesianDistanceTravelled (
+double computeCumulativeCartesianDistanceTravelled(
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName )
 {
@@ -2122,7 +2165,7 @@ double computeCumulativeCartesianDistanceTravelled (
 
 
 
-double computeCumulativeAngularDistanceTravelled (
+double computeCumulativeAngularDistanceTravelled(
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName )
 {
@@ -2161,7 +2204,7 @@ double computeCumulativeAngularDistanceTravelled (
 }
 
 
-double computeCumulativeAngularDistanceTravelledDifference (
+double computeCumulativeAngularDistanceTravelledDifference(
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName )
 {
@@ -2191,6 +2234,36 @@ double computeCumulativeAngularDistanceTravelledDifference (
 
     return groundtrackDifference;
 }
+
+double computeAngularDistanceCoveredRatio(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName )
+{
+    //! Extract flight conditions pointer.
+    std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions = std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >(
+                bodyMap.at( vehicleName )->getFlightConditions( ) );
+
+    //! Extract Bislip Systems pointer.
+    std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
+
+    int debugInfo = bislipSystems->getDebugInfo();
+
+    const double currentLatitude  = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::latitude_angle );
+    const double currentLongitude = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::longitude_angle );
+
+    double netAngularDisplacement = bislip::Variables::computeAngularDistance( bislipSystems->getInitialLat(), bislipSystems->getInitialLon(),
+                                                                               currentLatitude, currentLongitude );
+
+    double angularDistanceCoveredRatio = netAngularDisplacement / bislipSystems->getInitialDistanceToTarget() ;
+
+    if( debugInfo == 1 ){ std::cout << "Angular Distance Covered       = " << netAngularDisplacement << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "Angular Distance Covered Ratio = " << angularDistanceCoveredRatio << std::endl; }
+
+    return angularDistanceCoveredRatio;
+}
+
+
+
 
 double computeTimeOfFlight(
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
@@ -2774,7 +2847,7 @@ Eigen::Vector3d computeAerodynamicFrameAerodynamicLoad(
     if( debugInfo == 1 ){ std::cout << "                Calculate Aerodynamic Load in the Aerodynamic Frame" << std::endl; }
     if( debugInfo == 1 ){ std::cout << "                ---------------------------------------------------" << std::endl; }
     Eigen::Vector3d aerodynamicLoad = -currentDynamicPressure * referenceArea * ( bislip::Variables::computeFullCurrentCoefficients( bodyMap, vehicleName ) ).segment( 0, 3 ) ;
-    if( debugInfo == 1 ){ std::cout << "                    Aerodynamic Load in the Aerodynamic Frame = [ " << aerodynamicLoad(0) << " , " << aerodynamicLoad(1) << " , " << aerodynamicLoad(2) << " ]" << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                    Aerodynamic Load in the Aerodynamic Frame = [ " << aerodynamicLoad( 0 ) << " , " << aerodynamicLoad( 1 ) << " , " << aerodynamicLoad( 2 ) << " ]" << std::endl; }
     if( debugInfo == 1 ){ std::cout << "                ---------------------------------------------------" << std::endl; }
 
     return aerodynamicLoad ;
@@ -2808,7 +2881,6 @@ Eigen::Vector3d computeAerodynamicFrameTotalLoad(
     if( debugInfo == 1 ){ std::cout << "                Extracting current data" << std::endl; }
     const double currentAngleOfAttack   = bislipSystems->getCurrentAngleOfAttack();
 
-
     Eigen::Vector3d aerodynamicFrameTotalLoad =  tudat::reference_frames::getBodyToAirspeedBasedAerodynamicFrameTransformationMatrix( currentAngleOfAttack, 0.0 ) * ( bislip::Variables::computeBodyFixedTotalLoad( bodyMap, vehicleName ) );
 
 
@@ -2817,12 +2889,528 @@ Eigen::Vector3d computeAerodynamicFrameTotalLoad(
 }
 
 
+Eigen::Vector3d computeAerodynamicFrameTotalAcceleration(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName )
+{
+    //! Extract flight conditions pointer.
+    std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions = std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >(
+                bodyMap.at( vehicleName )->getFlightConditions( ) );
+
+    //! Extract Bislip Systems pointer.
+    std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
+
+    int debugInfo = bislipSystems->getDebugInfo();
+
+    //! Extract Vehicle Systems pointer.
+    std::shared_ptr< tudat::system_models::VehicleSystems > vehicleSystems = bodyMap.at( vehicleName )->getVehicleSystems( ) ;
+
+    if( debugInfo == 1 ){ std::cout << "            Starting Computation of Aerodynamic Frame Total Acceleration" << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "            ---------------------------------------------------" << std::endl; }
+
+    if( debugInfo == 1 ){ std::cout << "                Extracting relevant data" << std::endl; }
+    const double currentMass = bodyMap.at( vehicleName )->getBodyMass();
+
+    return bislip::Variables::computeAerodynamicFrameTotalLoad( bodyMap, vehicleName ) / currentMass;
+}
+
+Eigen::Vector3d computePassengerFrameJerk(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName,
+        const std::function< double() > massRateFunction)//const double massRate )
+//        const std::map< std::string, std::shared_ptr< tudat::basic_astrodynamics::MassRateModel > > &nBodyModel )
+{
+    //! Extract flight conditions pointer.
+    std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions = std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >(
+                bodyMap.at( vehicleName )->getFlightConditions( ) );
+
+    //! Extract Bislip Systems pointer.
+    std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
+
+
+    int debugInfo = bislipSystems->getDebugInfo();
+
+
+    //double currentMach                  = flightConditions->getCurrentMachNumber();
+    double currentMass                  = bodyMap.at( vehicleName )->getBodyMass();
+    double sq_currentMass               = currentMass * currentMass;
+    //std::vector< std::string > bodiesToIntegrate;
+    //bodiesToIntegrate.push_back( vehicleName );
+    //tudat::propagators::BodyMassStateDerivative< double, double > massModel( nBodyModel, bodiesToIntegrate );
+
+    //double massRate                     = massModel.getTotalMassRateForBody( vehicleName );
+    double massRate = massRateFunction();
+    double currentAngleOfAttack         = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::angle_of_attack );
+    double currentThrustElevationAngle  = bislipSystems->getCurrentThrustElevationAngle();
+    double currentThrustAzimuthAngle    = bislipSystems->getCurrentThrustAzimuthAngle();
+    double currentThrustMagnitude       = bislipSystems->getCurrentThrustMagnitude();
+    double currentDragCoefficient       = ( bislipSystems->getFullCurrentCoefficients() )( 0 );
+    double currentLiftCoefficient       = ( bislipSystems->getFullCurrentCoefficients() )( 2 );
+    Eigen::Vector3d currentAerodynamicFrameAerodynamicLoad = bislip::Variables::computeAerodynamicFrameAerodynamicLoad( bodyMap, vehicleName );
+    double currentDragForce             = std::abs( currentAerodynamicFrameAerodynamicLoad( 0 ) );
+    double currentLiftForce             = std::abs( currentAerodynamicFrameAerodynamicLoad( 2 ) );
+
+    const double s_alpha                = std::sin( currentAngleOfAttack );
+    const double c_alpha                = std::cos( currentAngleOfAttack );
+
+    const double s_thrustElevationAngle = std::sin( currentThrustElevationAngle );
+    const double c_thrustElevationAngle = std::cos( currentThrustElevationAngle );
+    const double s_thrustAzimuthAngle   = std::sin( currentThrustAzimuthAngle );
+    const double c_thrustAzimuthAngle   = std::cos( currentThrustAzimuthAngle );
+
+    double currentHeight                = flightConditions->getCurrentAltitude();
+    double currentAirspeed              = flightConditions->getCurrentAirspeed();
+    double currentDensity               = flightConditions->getCurrentDensity();
+    double currentFlightPathAngle       = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::flight_path_angle );
+
+    double propagationStepSize          = bislipSystems->getPropagationStepSize();
+    double referenceArea                = bislipSystems->getReferenceArea();
+
+
+    //double heightRate                   = currentAirspeed * std::sin( currentFlightPathAngle );
+    //double machRate                     = ( currentMach - previousMach ) / propagationStepSize;
+    //double angleOfAttackRate            = ( currentAngleOfAttack - previousAngleOfAttack ) / propagationStepSize;
+    //double densityRate                  = bislip::Variables::computeDensityRate( currentHeight, heightRate, bislipSystems->getDensityParameterMapForJerk() );
+    //double airspeedRate                 = bislip::Variables::computeAirspeedRate( bodyMap, vehicleName );
+    //double thrustElevationAngleRate     = ( currentThrustElevationAngle - previousThrustElevationAngle ) / propagationStepSize;
+    //double thrustAzimuthAngleRate       = ( currentThrustAzimuthAngle - previousThrustAzimuthAngle ) / propagationStepSize;
+    //double thrustRate                   = ( currentThrust - previousThrust ) / propagationStepSize;
+    //double dragCoefficientRate          = ( currentDragCoefficient - previousDragCoefficient ) / propagationStepSize;
+    //double liftCoefficientRate          = ( currentLiftCoefficient - previousLiftCoefficient ) / propagationStepSize;
+
+    //double previousMach                 = previousConditions[ bislip::BislipVehicleSystems::PreviousConditionRates::mach_number ];
+    std::map< bislip::BislipVehicleSystems::PreviousConditions, double > previousConditions = bislipSystems->getPreviousConditions( );
+
+
+    double previousHeight               = previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::height ];
+    double previousDensity              = previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::density ];
+    double previousAirspeed             = previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::airspeed ];
+    double previousAngleOfAttack        = previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::angle_of_attack ];
+    double previousThrustElevationAngle = previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::thrust_elevation_angle ];
+    double previousThrustAzimuthAngle   = previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::thrust_azimuth_angle ];
+    double previousThrustMagnitude      = previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::thrust_magnitude ];
+    double previousDragCoefficient      = previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::drag_coefficient ];
+    double previousLiftCoefficient      = previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::lift_coefficient ];
+
+
+    double heightRate               = ( currentHeight - previousHeight ) / propagationStepSize;
+    double densityRate              = ( currentDensity - previousDensity ) / propagationStepSize;
+    double airspeedRate             = ( currentAirspeed - previousAirspeed ) / propagationStepSize;
+    double angleOfAttackRate        = ( currentAngleOfAttack - previousAngleOfAttack ) / propagationStepSize;
+    double thrustElevationAngleRate = ( currentThrustElevationAngle - previousThrustElevationAngle ) / propagationStepSize;
+    double thrustAzimuthAngleRate   = ( currentThrustAzimuthAngle - previousThrustAzimuthAngle ) / propagationStepSize;
+    double thrustRate               = ( currentThrustMagnitude - previousThrustMagnitude ) / propagationStepSize;
+    double dragCoefficientRate      = ( currentDragCoefficient - previousDragCoefficient ) / propagationStepSize;
+    double liftCoefficientRate      = ( currentLiftCoefficient - previousLiftCoefficient ) / propagationStepSize;
+
+
+    previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::height ]                 = currentHeight;
+    previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::density ]                = currentDensity;
+    previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::airspeed ]               = currentAirspeed;
+    previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::angle_of_attack ]        = currentAngleOfAttack;
+    previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::thrust_elevation_angle ] = currentThrustElevationAngle;
+    previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::thrust_azimuth_angle ]   = currentThrustAzimuthAngle;
+    previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::thrust_magnitude ]       = currentThrustMagnitude;
+    previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::drag_coefficient ]       = currentDragCoefficient;
+    previousConditions[ bislip::BislipVehicleSystems::PreviousConditions::lift_coefficient ]       = currentLiftCoefficient;
 
 
 
 
+    bislipSystems->setPreviousConditions( previousConditions );
 
-Eigen::Vector3d computeBodyFixedTotal_g_Load_Vector (
+
+
+
+//    double dragRate = ( 1.0 / 2.0 ) * referenceArea * currentAirspeed * ( currentDensity * ( currentAirspeed * dragCoefficientRate + 2 * currentDragCoefficient * airspeedRate ) + currentDragCoefficient * currentAirspeed * densityRate );
+    double dragRate = ( 1.0 / 2.0 ) * referenceArea * currentAirspeed * ( currentAirspeed * ( currentDensity * dragCoefficientRate + currentDragCoefficient * densityRate ) + 2 * currentDragCoefficient * currentDensity * airspeedRate );
+
+   // double liftRate = ( 1.0 / 2.0 ) * referenceArea * currentAirspeed * ( currentDensity * ( currentAirspeed * liftCoefficientRate + 2 * currentLiftCoefficient * airspeedRate ) + currentLiftCoefficient * currentAirspeed * densityRate );
+    double liftRate = ( 1.0 / 2.0 ) * referenceArea * currentAirspeed * ( currentAirspeed * ( currentDensity * liftCoefficientRate + currentLiftCoefficient * densityRate ) + 2 * currentLiftCoefficient * currentDensity * airspeedRate );
+/*
+    std::cout << "Current Mass                = " << currentMass << std::endl;
+    std::cout << "Mass Rate                   = " << massRate << std::endl;
+    std::cout << "Current Height              = " << currentHeight << std::endl;
+    std::cout << "Height Rate                 = " << heightRate << std::endl;
+    std::cout << "Current Density             = " << currentDensity << std::endl;
+    std::cout << "Density Rate                = " << densityRate << std::endl;
+    std::cout << "Current Airspeed            = " << currentAirspeed << std::endl;
+    std::cout << "Airspeed Rate               = " << airspeedRate << std::endl;
+   // std::cout << "Propagation Step Size       = " << propagationStepSize << std::endl;
+
+    std::cout << "Current Angle Of Attack     = " << currentAngleOfAttack << std::endl;
+   // std::cout << "Previous Angle Of Attack    = " << previousAngleOfAttack << std::endl;
+    std::cout << "Angle Of Attack Rate        = " << angleOfAttackRate << std::endl;
+
+
+    std::cout << "Thrust Elevation Angle Rate = " << thrustElevationAngleRate << std::endl;
+    std::cout << "Thrust Azimuth Angle Rate   = " << thrustAzimuthAngleRate << std::endl;
+    std::cout << "Current Thrust              = " << currentThrustMagnitude << std::endl;
+    //std::cout << "Previous Thrust             = " << previousThrust << std::endl;
+    std::cout << "Thrust Rate                 = " << thrustRate << std::endl;
+    std::cout << "Current Drag Force          = " << currentDragForce << std::endl;
+    std::cout << "Current Lift Force          = " << currentLiftForce << std::endl;
+    std::cout << "Drag Rate                   = " << dragRate << std::endl;
+    std::cout << "Lift Rate                   = " << liftRate << std::endl;
+    std::cout << "Current Drag Coefficient    = " << currentDragCoefficient << std::endl;
+    std::cout << "Current Lift Coefficient    = " << currentLiftCoefficient << std::endl;
+    //std::cout << "Previous Drag Coefficient   = " << previousDragCoefficient << std::endl;
+    //std::cout << "Previous Lift Coefficient   = " << previousLiftCoefficient << std::endl;
+    std::cout << "Drag Coefficient Rate       = " << dragCoefficientRate << std::endl;
+    std::cout << "Lift Coefficient Rate       = " << liftCoefficientRate << std::endl;
+*/
+
+    Eigen::Vector3d passengerFrameJerk;
+    double passengerFrameJerk_x11 = referenceArea * currentAirspeed * currentAirspeed * currentDragCoefficient * densityRate * c_alpha / ( 2 * currentMass );
+    double passengerFrameJerk_x12 = referenceArea * currentDensity * currentAirspeed * currentDragCoefficient * airspeedRate * c_alpha / currentMass;
+    double passengerFrameJerk_x13 = referenceArea * currentDensity * currentAirspeed * currentAirspeed * dragCoefficientRate * c_alpha /  ( 2 * currentMass );
+    double passengerFrameJerk_x14 = -referenceArea * currentDensity * currentAirspeed * currentAirspeed * currentDragCoefficient * s_alpha * angleOfAttackRate /  ( 2 * currentMass );
+    double passengerFrameJerk_x15 = -referenceArea * currentDensity * currentAirspeed * currentAirspeed * currentDragCoefficient * c_alpha * massRate /  ( 2 * currentMass * currentMass );
+
+    double passengerFrameJerk_x21 = referenceArea * currentAirspeed * currentAirspeed * currentLiftCoefficient * densityRate * s_alpha / ( 2 * currentMass );
+    double passengerFrameJerk_x22 = referenceArea * currentDensity * currentAirspeed * currentLiftCoefficient * airspeedRate * s_alpha / currentMass;
+    double passengerFrameJerk_x23 = referenceArea * currentDensity * currentAirspeed * currentAirspeed * liftCoefficientRate * s_alpha /  ( 2 * currentMass );
+    double passengerFrameJerk_x24 = referenceArea * currentDensity * currentAirspeed * currentAirspeed * currentLiftCoefficient * c_alpha * angleOfAttackRate /  ( 2 * currentMass );
+    double passengerFrameJerk_x25 = -referenceArea * currentDensity * currentAirspeed * currentAirspeed * currentLiftCoefficient * s_alpha * massRate /  ( 2 * currentMass * currentMass );
+
+    double passengerFrameJerk_x1 = passengerFrameJerk_x11 + passengerFrameJerk_x12 + passengerFrameJerk_x13 + passengerFrameJerk_x14 + passengerFrameJerk_x15;
+    double passengerFrameJerk_x2 = passengerFrameJerk_x21 + passengerFrameJerk_x22 + passengerFrameJerk_x23 + passengerFrameJerk_x24 + passengerFrameJerk_x25;
+    double passengerFrameJerk_x3 = ( currentThrustMagnitude * massRate * c_thrustElevationAngle * c_thrustAzimuthAngle / sq_currentMass
+                                     - thrustRate * c_thrustElevationAngle * c_thrustAzimuthAngle / currentMass
+                                     + currentThrustMagnitude * thrustElevationAngleRate * s_thrustElevationAngle * c_thrustAzimuthAngle / currentMass
+                                     + currentThrustMagnitude * thrustAzimuthAngleRate * c_thrustElevationAngle * s_thrustAzimuthAngle / currentMass );
+
+
+    double passengerFrameJerk_z11 = referenceArea * currentAirspeed * currentAirspeed * currentDragCoefficient * densityRate * s_alpha / ( 2 * currentMass );
+    double passengerFrameJerk_z12 = referenceArea * currentDensity * currentAirspeed * currentDragCoefficient * airspeedRate * s_alpha / currentMass;
+    double passengerFrameJerk_z13 = referenceArea * currentDensity * currentAirspeed * currentAirspeed * dragCoefficientRate * s_alpha /  ( 2 * currentMass );
+    double passengerFrameJerk_z14 = referenceArea * currentDensity * currentAirspeed * currentAirspeed * currentDragCoefficient * c_alpha * angleOfAttackRate /  ( 2 * currentMass );
+    double passengerFrameJerk_z15 = -referenceArea * currentDensity * currentAirspeed * currentAirspeed * currentDragCoefficient * s_alpha * massRate /  ( 2 * currentMass * currentMass );
+
+    double passengerFrameJerk_z21 = referenceArea * currentAirspeed * currentAirspeed * currentLiftCoefficient * densityRate * c_alpha / ( 2 * currentMass );
+    double passengerFrameJerk_z22 = referenceArea * currentDensity * currentAirspeed * currentLiftCoefficient * airspeedRate * c_alpha / currentMass;
+    double passengerFrameJerk_z23 = referenceArea * currentDensity * currentAirspeed * currentAirspeed * liftCoefficientRate * c_alpha /  ( 2 * currentMass );
+    double passengerFrameJerk_z24 = -referenceArea * currentDensity * currentAirspeed * currentAirspeed * currentLiftCoefficient * s_alpha * angleOfAttackRate /  ( 2 * currentMass );
+    double passengerFrameJerk_z25 = -referenceArea * currentDensity * currentAirspeed * currentAirspeed * currentLiftCoefficient * c_alpha * massRate /  ( 2 * currentMass * currentMass );
+
+    double passengerFrameJerk_z1 = -( passengerFrameJerk_z11 + passengerFrameJerk_z12 + passengerFrameJerk_z13 + passengerFrameJerk_z14 + passengerFrameJerk_z15 );
+    double passengerFrameJerk_z2 = passengerFrameJerk_z21 + passengerFrameJerk_z22 + passengerFrameJerk_z23 + passengerFrameJerk_z24 + passengerFrameJerk_z25;
+    double passengerFrameJerk_z3 = ( currentMass * currentThrustMagnitude * thrustElevationAngleRate * c_thrustElevationAngle - currentThrustMagnitude * s_thrustElevationAngle * massRate + currentMass * s_thrustElevationAngle * thrustRate ) / ( currentMass * currentMass );
+
+    //double passengerFrameJerk_x1 = currentMass * c_alpha * dragRate - currentDragForce * ( currentMass * angleOfAttackRate * s_alpha + massRate * c_alpha ) / sq_currentMass;
+    //double passengerFrameJerk_x2 = currentMass * s_alpha * liftRate + currentLiftForce * ( currentMass * angleOfAttackRate * c_alpha - massRate * s_alpha ) / sq_currentMass;
+    //double passengerFrameJerk_x3 = ( currentThrustMagnitude * massRate * c_thrustElevationAngle * c_thrustAzimuthAngle / sq_currentMass
+    //                                - thrustRate * c_thrustElevationAngle * c_thrustAzimuthAngle / currentMass
+    //                              + currentThrustMagnitude * thrustElevationAngleRate * s_thrustElevationAngle * c_thrustAzimuthAngle / currentMass
+         //                            + currentThrustMagnitude * thrustAzimuthAngleRate * c_thrustElevationAngle * s_thrustAzimuthAngle / currentMass );
+
+//double passengerFrameJerk_x31 = ( currentMass * thrustRate - currentThrustMagnitude * massRate ) / sq_currentMass;
+    //std::cout << "passengerFrameJerk_x1       = " << passengerFrameJerk_x1 << std::endl;
+    //std::cout << "passengerFrameJerk_x2       = " << passengerFrameJerk_x2 << std::endl;
+    //std::cout << "passengerFrameJerk_x3       = " << passengerFrameJerk_x3 << std::endl;
+    //std::cout << "passengerFrameJerk_x31      = " << passengerFrameJerk_x31 << std::endl;
+
+
+
+
+    passengerFrameJerk( 0 ) = passengerFrameJerk_x1 + passengerFrameJerk_x2 + passengerFrameJerk_x3;
+
+
+    passengerFrameJerk( 1 ) =
+            - currentThrustMagnitude * massRate * c_thrustElevationAngle * s_thrustAzimuthAngle / sq_currentMass
+            + thrustRate * c_thrustElevationAngle * s_thrustAzimuthAngle / currentMass
+            - currentThrustMagnitude * thrustElevationAngleRate * s_thrustElevationAngle * c_thrustAzimuthAngle / currentMass
+            + currentThrustMagnitude * thrustAzimuthAngleRate * c_thrustElevationAngle * c_thrustAzimuthAngle / currentMass;
+
+
+    passengerFrameJerk( 2 ) = passengerFrameJerk_z1 + passengerFrameJerk_z2 + passengerFrameJerk_z3;
+
+
+    bislipSystems->setPreviousConditions( previousConditions );
+
+    return passengerFrameJerk;
+}
+
+
+double computeDensityRate(
+        const double &height,
+        const double &heightRate,
+        const std::map < int, Eigen::VectorXd > &densityParameterMap )
+{
+    //! https://en.wikipedia.org/wiki/Barometric_formula#Density_equations
+    double densityRate = 0.0;
+
+    //for( std::map< int, Eigen::VectorXd >::iterator it = densityParameterMap.begin(); it != densityParameterMap.end(); ++it )
+    for( int i = 0; i < 7; i++ )
+    {
+
+        if( i != 6)
+        {
+            if( height >= ( densityParameterMap.at( i ) )( 0 ) && height < ( densityParameterMap.at( i + 1 ) )( 0 ) )
+            {
+                const double h   = ( densityParameterMap.at( i ) )( 0 );
+                const double rho = ( densityParameterMap.at( i ) )( 1 );
+                const double T   = ( densityParameterMap.at( i ) )( 2 );
+                const double L   = ( densityParameterMap.at( i ) )( 3 );
+                const double R   = ( densityParameterMap.at( i ) )( 4 );
+                const double g_0 = ( densityParameterMap.at( i ) )( 5 );
+                const double M   = ( densityParameterMap.at( i ) )( 6 );
+                const double d1  = ( g_0 * M ) / ( R * L );
+                const double d2  = ( g_0 * M ) / ( R * T );
+
+                if( L != 0.0 )
+                {
+                    const double den = T + L * ( height - h );
+
+                    densityRate = -T * rho * L * ( d1 + 1 ) * heightRate * std::pow( T / den , d1 ) / ( den * den );
+                }
+                else
+                {
+                    densityRate = -d2 * rho * heightRate * std::exp( d2 * ( h - height ) );
+                }
+            }
+        }
+        else if( i == 6 )
+        {
+            if( height >= ( densityParameterMap.at( i ) )( 0 ) )
+            {
+                const double h   = ( densityParameterMap.at( i ) )( 0 );
+                const double rho = ( densityParameterMap.at( i ) )( 1 );
+                const double T   = ( densityParameterMap.at( i ) )( 2 );
+                const double L   = ( densityParameterMap.at( i ) )( 3 );
+                const double R   = ( densityParameterMap.at( i ) )( 4 );
+                const double g_0 = ( densityParameterMap.at( i ) )( 5 );
+                const double M   = ( densityParameterMap.at( i ) )( 6 );
+                const double d1  = ( g_0 * M ) / ( R * L );
+                const double den = T + L * ( height - h );
+
+                densityRate = -T * rho * L * ( d1 + 1 ) * heightRate * std::pow( T / den , d1 ) / ( den * den );
+
+            }
+        }
+    }
+
+
+
+    return densityRate;
+}
+
+
+double computeAirspeedRate(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName )
+{
+
+    //! Extract flight conditions pointer.
+    std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions = std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >(
+                bodyMap.at( vehicleName )->getFlightConditions( ) );
+
+    //! Extract coefficient interface pointer.
+    std::shared_ptr< tudat::aerodynamics::AerodynamicCoefficientInterface > coefficientInterface = std::dynamic_pointer_cast< tudat::aerodynamics::AerodynamicCoefficientInterface >(
+                bodyMap.at( vehicleName )->getAerodynamicCoefficientInterface( ) );
+
+    //! Extract Bislip Systems pointer.
+    std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
+
+    int debugInfo = bislipSystems->getDebugInfo();
+    if( debugInfo == 1 ){ std::cout << "        Starting Determination of Airspeed Rate" << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "        ------------------------------------------------" << std::endl; }
+
+    double currentFlightPathAngle;
+    double currentLatitude;
+    double currentHeading;
+    double currentAltitude;
+    double currentAirspeed;
+    double currentDynamicPressure;
+
+    if( bislipSystems->getInitialValueFlag() == true )
+    {
+        if( debugInfo == 1 ){ std::cout << "            Selecting Initial Values" << std::endl; }
+
+        currentFlightPathAngle = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialFlightPathAngle() );
+        currentLatitude        = bislipSystems->getInitialLat();
+        currentHeading         = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialHeadingAngle() );
+        currentAltitude        = bislipSystems->getInitialAltitude();
+        currentAirspeed        = bislipSystems->getInitialAirspeed();
+        currentDynamicPressure = bislipSystems->getInitialDynamicPressure();
+        //currentLift            = bislipSystems->getCurrentLiftForce();
+    }
+
+    else
+    {
+        if( debugInfo == 1 ){ std::cout << "            Selecting Propagated Values" << std::endl; }
+
+        currentFlightPathAngle = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::flight_path_angle );
+        currentLatitude        = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::latitude_angle );
+        currentHeading         = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::heading_angle );
+        currentAltitude        = flightConditions->getCurrentBodyCenteredBodyFixedState( ).segment( 0, 3 ).norm( );
+        currentAirspeed        = flightConditions->getCurrentAirspeed( );
+        currentDynamicPressure = flightConditions->getCurrentDynamicPressure();
+        //currentLift            = bislip::Variables::computeCurrentLiftForce( bodyMap, vehicleName );
+
+    }
+
+    //const double currentDynamicPressure = flightConditions->getCurrentDynamicPressure();
+    const double currentMass       = bodyMap.at( vehicleName )->getBodyMass();
+
+    const double rotationRateEarth = 7.292115*1E-5;
+
+    //const Eigen::Vector6d currentCoefficients = bislip::Variables::computePartialCurrentCoefficients( bodyMap, vehicleName );
+    //const double currentLift = bislip::Variables::computeCurrentLiftForce( bodyMap, vehicleName );
+    //const double currentLift = bislipSystems->getCurrentLiftForce();
+    const double currentDrag = std::abs( ( bislip::Variables::computeAerodynamicFrameAerodynamicLoad( bodyMap, vehicleName ) )( 0 ) );
+
+    //const Eigen::Vector2d gravs = bislip::Variables::computeLocalGravity( bodyMap, vehicleName, centralBodyName );
+    const Eigen::Vector3d gravs = bislipSystems->getCurrentLocalGravityVector();
+
+    const double currentAngleOfAttack        = bislipSystems->getCurrentAngleOfAttack();
+    const double currentBankAngle            = bislipSystems->getCurrentBankAngle();
+    const double currentThrustMagnitude      = bislipSystems->getCurrentThrustMagnitude();
+    const double currentThrustElevationAngle = bislipSystems->getCurrentThrustElevationAngle();
+    const double currentThrustAzimuthAngle   = bislipSystems->getCurrentThrustAzimuthAngle();
+
+    if( debugInfo == 1 ){ std::cout << "                Current Flight-Path Angle      = " << currentFlightPathAngle << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Latitude               = " << tudat::unit_conversions::convertRadiansToDegrees( currentLatitude ) << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Heading                = " << tudat::unit_conversions::convertRadiansToDegrees( currentHeading ) << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Altitude               = " << currentAltitude << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Airspeed               = " << currentAirspeed << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Dynamic Pressure       = " << currentDynamicPressure << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Angle of Attack        = " << tudat::unit_conversions::convertRadiansToDegrees( currentAngleOfAttack ) << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Bank Angle             = " << tudat::unit_conversions::convertRadiansToDegrees( currentBankAngle ) << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Thrust Magnitude       = " << currentThrustMagnitude << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Thrust Elevation Angle = " << tudat::unit_conversions::convertRadiansToDegrees( currentThrustElevationAngle ) << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Thrust Azimuth Angle   = " << tudat::unit_conversions::convertRadiansToDegrees( currentThrustAzimuthAngle ) << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Drag Force             = " << currentDrag << std::endl; }
+    if( debugInfo == 1 ){ std::cout << "                Current Mass                   = " << currentMass << std::endl; }
+
+
+
+    const double s_alpha = std::sin( currentAngleOfAttack );
+    const double c_alpha = std::cos( currentAngleOfAttack );
+    const double s_sigma = std::sin( currentBankAngle );
+    const double c_sigma = std::cos( currentBankAngle );
+    const double s_delta = std::sin( currentLatitude );
+    const double c_delta = std::cos( currentLatitude );
+    const double s_gamma = std::sin( currentFlightPathAngle );
+    const double c_gamma = std::cos( currentFlightPathAngle );
+    const double s_chi = std::sin( currentHeading );
+    const double c_chi = std::cos( currentHeading );
+    const double s_thrustAzimuthAngle = std::sin( currentThrustAzimuthAngle );
+    const double c_thrustAzimuthAngle = std::cos( currentThrustAzimuthAngle );
+    const double s_thrustElevationAngle = std::sin( currentThrustElevationAngle );
+    const double c_thrustElevationAngle = std::cos( currentThrustElevationAngle );
+
+    const double F_V = -currentDrag + currentThrustMagnitude * c_alpha * c_thrustAzimuthAngle * c_thrustElevationAngle
+            - currentThrustMagnitude * s_alpha * s_thrustElevationAngle
+            - currentMass * ( gravs( 0 ) * c_gamma * c_chi - gravs( 2 ) * s_gamma );
+
+    const double A = rotationRateEarth * rotationRateEarth * currentAltitude * c_delta *  ( c_delta * s_gamma - c_gamma * s_delta * c_chi );
+
+    const double airspeedRate = ( ( F_V / currentMass ) + A );
+    if( debugInfo == 1 ){ std::cout << "                Airspeed Rate         = " << airspeedRate << std::endl; }
+
+
+    return airspeedRate;
+}
+
+
+
+Eigen::Matrix3d getLocalVerticalToBodyFrameTransformationMatrix(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName )
+{
+    //! Extract flight conditions pointer.
+    std::shared_ptr< tudat::aerodynamics::AtmosphericFlightConditions > flightConditions = std::dynamic_pointer_cast< tudat::aerodynamics::AtmosphericFlightConditions >(
+                bodyMap.at( vehicleName )->getFlightConditions( ) );
+
+    //! Extract Bislip Systems pointer.
+    std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
+
+    int debugInfo = bislipSystems->getDebugInfo();
+
+    //! Extract current conditions.
+    if( debugInfo == 1 ){ std::cout << "        Selecting source of values" << std::endl; }
+
+    double currentAngleOfAttack;
+    double currentAngleOfSideSlip;
+    double currentBankAngle;
+    double currentFlightPathAngle;
+    double currentHeadingAngle;
+
+    if( bislipSystems->getInitialValueFlag() == true )
+    {
+        if( debugInfo == 1 ){ std::cout << "            Selecting initial values" << std::endl; }
+
+        currentAngleOfAttack   = bislipSystems->getCurrentAngleOfAttack();
+        currentAngleOfSideSlip = 0.0;
+        currentBankAngle       = bislipSystems->getCurrentBankAngle();
+        currentFlightPathAngle = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialFlightPathAngle() );
+        currentHeadingAngle    = tudat::unit_conversions::convertDegreesToRadians( bislipSystems->getInitialHeadingAngle() );
+    }
+    else
+    {
+        if( debugInfo == 1 ){ std::cout << "            Selecting propagated values" << std::endl; }
+
+        currentAngleOfAttack   = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::angle_of_attack );
+        currentAngleOfSideSlip = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::angle_of_sideslip );
+        currentBankAngle       = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::bank_angle );
+        currentFlightPathAngle = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::flight_path_angle );
+        currentHeadingAngle    = flightConditions->getAerodynamicAngleCalculator( )->getAerodynamicAngle( tudat::reference_frames::heading_angle );
+    }
+
+
+    Eigen::Matrix3d localVerticalToBodyFrameTransformationMatrix =
+            tudat::reference_frames::getAirspeedBasedAerodynamicToBodyFrameTransformationMatrix( currentAngleOfAttack, currentAngleOfSideSlip ) *
+            tudat::reference_frames::getTrajectoryToAerodynamicFrameTransformationMatrix( currentBankAngle ) *
+            tudat::reference_frames::getLocalVerticalFrameToTrajectoryTransformationMatrix( currentFlightPathAngle, currentHeadingAngle );
+
+
+    return localVerticalToBodyFrameTransformationMatrix;
+}
+
+Eigen::VectorXd computeNumericalDerivativeOfVector(
+        const Eigen::VectorXd &f,
+        const Eigen::VectorXd &x )
+{
+    Eigen::VectorXd numericalDerivative( f.size() );
+
+    //! Left boundary value
+    double x2minusx1 = ( x( 1 ) - x( 0 ) );
+    double x3minusx1 = ( x( 2 ) - x( 0 ) );
+    double x3minusx2 = ( x( 2 ) - x( 1 ) );
+    double leftBoundaryNUM = -x2minusx1 * x2minusx1 * f( 2 ) + x3minusx1 * x3minusx1 * f( 1 ) - ( x3minusx1 * x3minusx1 - x2minusx1 * x2minusx1 ) * f( 0 );
+    double leftBoundaryDEN =  x2minusx1 * x3minusx1 * x3minusx2;
+    numericalDerivative( 0 ) = leftBoundaryNUM / leftBoundaryDEN;
+
+    //! First point AFTER boundary
+    numericalDerivative( 1 ) = ( f( 2 ) - f( 0 ) ) / ( 2 * ( x( 2 ) - x( 0 ) ) );
+
+    //! Last point BEFORE boundary
+    numericalDerivative( numericalDerivative.size( ) - 2 ) = ( f( f.size() - 1 ) - f( f.size() - 3 ) ) / ( 2 * ( x( x.size() - 1 ) - x( x.size() - 3 ) ) );
+
+    //! Right boundary value
+    double xn1minusxn = ( x( 1 ) - x( 0 ) );
+    double x3n2minusxn = ( x( 2 ) - x( 0 ) );
+    double x3n2minusxn1 = ( x( 2 ) - x( 1 ) );
+    double rightBoundaryNUM = x2minusx1 * x2minusx1 * f( f.size() - 3 ) - x3minusx1 * x3minusx1 * f( f.size() - 2 ) + ( x3minusx1 * x3minusx1 - x2minusx1 * x2minusx1 ) * f( f.size() - 1 );
+    double rightBoundaryDEN =  x3n2minusxn * x3n2minusxn * x3n2minusxn1;
+    numericalDerivative( numericalDerivative.size() - 1 ) = rightBoundaryNUM / rightBoundaryDEN;
+    //numericalDerivative( numericalDerivative.size() - 1 ) = ( f( f.size() - 1 ) - f( f.size() - 2 ) ) / ( x( x.size() - 1 ) - x( x.size() - 2 ) );
+
+
+    //! Central difference for the interior
+    for ( unsigned int i = 2; i < numericalDerivative.size( ) - 2; i++ )
+    {
+        //numericalDerivative( i ) = ( f( i + 1 ) - f( i - 1 ) ) / ( 2 * ( x( i + 1 ) - x( i - 1 ) ) );
+        numericalDerivative( i ) = ( -f( i + 2 ) + 8 * f( i + 1 ) - 8 * f( i - 1 ) + f( i - 2 ) ) / ( 12 * ( x( i + 1 ) - x( i - 1 ) ) );
+
+    }
+
+    return numericalDerivative;
+}
+
+
+Eigen::Vector3d computeBodyFixedTotal_g_Load_Vector(
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName )
 {
@@ -2877,6 +3465,20 @@ Eigen::Matrix3d computeRotationMatrixTHREE( const double psi )
     return  rotationMatrixTHREE;
 }
 
+Eigen::Vector3d computePassengerFrameTotalLoad(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName )
+{
+
+    //! Extract Bislip Systems pointer.
+    std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
+
+    //! Determine the Passenger-Fixed Total Load g-load vector.
+    Eigen::Vector3d passengerFrameTotaLoad = ( bislipSystems->getBodyFrameToPassengerFrameTransformationMatrix() ) * ( bislip::Variables::computeBodyFixedTotalLoad( bodyMap, vehicleName ) );
+
+    return passengerFrameTotaLoad;
+}
+
 Eigen::Vector3d computePassengerFrameTotal_g_Load_Vector(
         const tudat::simulation_setup::NamedBodyMap& bodyMap,
         const std::string &vehicleName )
@@ -2886,9 +3488,23 @@ Eigen::Vector3d computePassengerFrameTotal_g_Load_Vector(
     std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
 
     //! Determine the Passenger-Fixed Total Load g-load vector.
-    Eigen::Vector3d totalLoadPassengerFrame_g_Load_Vector = ( bislipSystems->getBodyFrameToPassengerFrameTransformationMatrix() ) * ( bislip::Variables::computeBodyFixedTotal_g_Load_Vector( bodyMap, vehicleName ) );
+    Eigen::Vector3d totalLoadPassengerFrame_g_Load_Vector = ( bislip::Variables::computePassengerFrameTotalLoad( bodyMap, vehicleName ) ) / ( tudat::physical_constants::SEA_LEVEL_GRAVITATIONAL_ACCELERATION * bodyMap.at( vehicleName )->getBodyMass() );
 
     return totalLoadPassengerFrame_g_Load_Vector;
+}
+
+Eigen::Vector3d computePassengerFrameTotalAcceleration(
+        const tudat::simulation_setup::NamedBodyMap& bodyMap,
+        const std::string &vehicleName )
+{
+
+    //! Extract Bislip Systems pointer.
+    std::shared_ptr< bislip::BislipVehicleSystems > bislipSystems = bodyMap.at( vehicleName )->getBislipSystems( ) ;
+
+    //! Determine the Passenger-Fixed Total Load g-load vector.
+    Eigen::Vector3d passengerFrameTotalAcceleration = bislip::Variables::computePassengerFrameTotalLoad( bodyMap, vehicleName ) / bodyMap.at( vehicleName )->getBodyMass();
+
+    return passengerFrameTotalAcceleration;
 }
 
 double computeBankAngle(
@@ -3116,10 +3732,17 @@ double convertRadiansToDegrees( const double &angleInRadians )
 double convertDegreesToRadians( const double &angleInDegrees )
 { return angleInDegrees * tudat::mathematical_constants::PI / 180.0; }
 
-double convertNegativeAnglesToPositive( const double &angleInRadians )
+double convertNegativeAnglesInRadiansToPositive( const double &angleInRadians )
 {
     double positiveAngle = angleInRadians;
     if( angleInRadians < 0.0 ) { positiveAngle = angleInRadians + 2 * tudat::mathematical_constants::PI; }
+    return positiveAngle;
+}
+
+double convertNegativeAnglesInDegreesToPositive( const double &angleInDegrees )
+{
+    double positiveAngle = angleInDegrees;
+    if( angleInDegrees < 0.0 ) { positiveAngle = angleInDegrees + 360.0; }
     return positiveAngle;
 }
 
@@ -3375,8 +3998,8 @@ void printHeadingErrorDeadBandBounds(
     double domainInterval = headingErrorDeadBandLowDistanceInterpolatorDomainInterval.second - headingErrorDeadBandLowDistanceInterpolatorDomainInterval.first;
     for ( unsigned int i = 0; i < 1001; ++i )
     {
-        headingErrorDeadBandBounds( 0 ) = headingErrorDeadBandLowDistanceInterpolator->interpolate( pp * domainInterval / 1000 );
-        headingErrorDeadBandBounds( 1 ) = -headingErrorDeadBandBounds( 0 ) ;
+        headingErrorDeadBandBounds( 0 ) = -headingErrorDeadBandLowDistanceInterpolator->interpolate( pp * domainInterval / 1000 );
+        headingErrorDeadBandBounds( 1 ) = std::abs( headingErrorDeadBandBounds( 0 ) );
         map_HeadingErrorDeadBandBounds[ pp * domainInterval / 1000 ] = headingErrorDeadBandBounds;
         pp += 1;
     }
@@ -3385,8 +4008,8 @@ void printHeadingErrorDeadBandBounds(
     domainInterval = headingErrorDeadBandCoarseInterpolatorDomainInterval.second - headingErrorDeadBandLowDistanceInterpolatorDomainInterval.second;
     for ( unsigned int i = 0; i < 1001; ++i )
     {
-        headingErrorDeadBandBounds( 0 ) = headingErrorDeadBandCoarseInterpolator->interpolate( headingErrorDeadBandLowDistanceInterpolatorDomainInterval.second + pp * domainInterval / 1000 );
-        headingErrorDeadBandBounds( 1 ) = -headingErrorDeadBandBounds( 0 ) ;
+        headingErrorDeadBandBounds( 0 ) = -headingErrorDeadBandCoarseInterpolator->interpolate( headingErrorDeadBandLowDistanceInterpolatorDomainInterval.second + pp * domainInterval / 1000 );
+        headingErrorDeadBandBounds( 1 ) = std::abs( headingErrorDeadBandBounds( 0 ) );
         map_HeadingErrorDeadBandBounds[ headingErrorDeadBandLowDistanceInterpolatorDomainInterval.second + pp * domainInterval / 1000 ] = headingErrorDeadBandBounds;
         pp += 1;
     }
@@ -3967,10 +4590,11 @@ double computeFlatPlateHeatFlux (
     std::function< double( const double ) > equilibriumWallTemperatureRootFindingFunction =
             std::bind( &bislip::Variables::computeEquilibiumWallTemperatureRootFinder, heatTransferFunction, wallEmissivity, std::placeholders::_1  );
 
-    double a = 0.0; equilibriumWallTemperatureRootFindingFunction( 0.0 );
-    double b = adiabaticWallTemperature;
-    double root = 0.0;
-    double f_a, f_root;
+    //double a = 0.0; equilibriumWallTemperatureRootFindingFunction( 0.0 );
+    //double b = adiabaticWallTemperature;
+    //double root = 0.0;
+    //double f_a, f_root;
+    /*
     if ( equilibriumWallTemperatureRootFindingFunction( a ) * equilibriumWallTemperatureRootFindingFunction( b ) < 0.0 )
     {
         root = ( a + b ) / 2.0;
@@ -3989,9 +4613,30 @@ double computeFlatPlateHeatFlux (
         }
     }
 
-    bislipSystems->setWallTemperature( root );
+    */
 
-    return heatTransferFunction( root );
+    double equilibriumWallTemperature = 0.0;
+    if ( equilibriumWallTemperatureRootFindingFunction( 0.0 ) * equilibriumWallTemperatureRootFindingFunction( adiabaticWallTemperature ) < 0.0 )
+    {
+        if( debugInfo == 1 ){ std::cout << "     Starting Flat Plate Eq. wall temp. search:" << std::endl; }
+
+        if( debugInfo == 1 ){ std::cout << "                Bisection Search" << std::endl; }
+        equilibriumWallTemperature = bislip::Variables::rootFinderBisection( equilibriumWallTemperatureRootFindingFunction, 0.0, adiabaticWallTemperature, 10.0 );
+        if( debugInfo == 1 ){ std::cout << "                Bisection Search Complete" << std::endl; }
+    }
+    else
+    {
+        if( debugInfo == 1 ){ std::cout << "     Starting Flat Plate Eq. wall temp. search:" << std::endl; }
+
+        if( debugInfo == 1 ){ std::cout << "                Golden Ratio Search" << std::endl; }
+        equilibriumWallTemperature = bislip::Variables::goldenSectionSearch( equilibriumWallTemperatureRootFindingFunction, 0.0, adiabaticWallTemperature );
+        if( debugInfo == 1 ){ std::cout << "                Golden Ratio Search Complete" << std::endl; }
+    }
+
+
+    bislipSystems->setWallTemperature( equilibriumWallTemperature );
+
+    return heatTransferFunction( equilibriumWallTemperature );
 
 
     // if( debugInfo == 1 ){ std::cout << "     Determine equilibrium flat plate heat flux" << std::endl; }
@@ -4070,6 +4715,8 @@ double computeEquilibiumWallTemperatureRootFinder(
 
     return heatTransferFunction( wallTemperature ) - bislip::Variables::computeRadiativeHeatFlux( wallEmmisivity, wallTemperature );;
 }
+
+
 
 /*
 double computeEquilibiumWallTemperature(
@@ -4616,7 +5263,7 @@ double computeCompoundViolationPenalty(
 
         Eigen::VectorXd constraintViolations = bislip::Variables::computeConstraintViolations( depVar_TimeHistory, constraint );
 
-        double constraintViolationPenalty = bislip::Variables::computeSumOfEigenVectorXd( constraintViolations ) * ( propagationStepSize / normalizer );
+        double constraintViolationPenalty = ( constraintViolations.sum() ) * ( propagationStepSize / normalizer );
 
         //    std::cout << "constraintViolationPenalty = " << constraintViolationPenalty <<std::endl;
 
@@ -4797,8 +5444,15 @@ bool convertTrajectoryPhaseToBoolean(
     return phaseInBoolean;
 }
 
-}; //namespace Variables
 
+
+
+
+
+
+
+
+}; //namespace Variables
                  } // namespace bislip
 
 

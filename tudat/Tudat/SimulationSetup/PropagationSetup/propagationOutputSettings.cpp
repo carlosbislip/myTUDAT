@@ -194,6 +194,9 @@ std::string getDependentVariableName( const PropagationDependentVariables propag
     case acceleration_partial_wrt_body_translational_state:
         variableName = "Acceleration partial w.r.t body state ";
         break;
+    case current_body_mass_dependent_variable:
+        variableName = "Current body mass ";
+        break;
     case specific_energy:
         variableName = "Specific energy ";
         break;
@@ -356,11 +359,27 @@ std::string getDependentVariableName( const PropagationDependentVariables propag
     case aerodynamic_frame_total_load_vector:
         variableName = "Aerodynamic Frame Total Load Vector ";
         break;
+    case aerodynamic_frame_total_acceleration_vector:
+        variableName = "Aerodynamic Frame Total Acceleration Vector ";
+        break;
+    case passenger_frame_total_load_vector:
+        variableName = "Passenger Frame Total Load Vector ";
+        break;
+    case passenger_frame_total_acceleration_vector:
+        variableName = "Passenger Frame Total Acceleration Vector ";
+        break;
+    case passenger_frame_jerk_vector:
+        variableName = "Passenger Frame Jerk Vector ";
+        break;
     case trajectory_phase:
         variableName = "Trajectory Phase ";
         break;
-
-
+    case height_dependent_variable:
+        variableName = "Height ";
+        break;
+    case angular_distance_covered_ratio:
+        variableName = "Angular Distance Covered Ratio ";
+        break;
 
 
 

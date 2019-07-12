@@ -16,7 +16,7 @@
 
 #include <memory>
 
-#include <Tudat/Astrodynamics/SystemModels/engineModel.h>
+#include "Tudat/Astrodynamics/SystemModels/engineModel.h"
 
 namespace tudat
 {
@@ -82,13 +82,10 @@ public:
     {
         return dryMass_;
     }
-
     void setDryMass( const double dryMass )
     {
         dryMass_ = dryMass;
     }
-
-
     //! Function to set the current deflection of a single control surface
     /*!
      * Function to set the current deflection of a single control surface

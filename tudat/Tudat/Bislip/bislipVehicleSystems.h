@@ -2,6 +2,7 @@
 #define BISLIPVEHICLESYSTEMS_H
 
 #include <Tudat/Bislip/bislipParameters.h>
+//#include <Tudat/Bislip/bislipPreviousConditions.h>
 
 
 namespace bislip {
@@ -13,8 +14,25 @@ namespace bislip {
  */
 class BislipVehicleSystems
 {
+
 public:
 
+
+    enum PreviousConditions
+    {
+        time_point,
+        new_time_point,
+        height,
+        density,
+        airspeed,
+        mach_number,
+        angle_of_attack,
+        thrust_elevation_angle,
+        thrust_azimuth_angle,
+        thrust_magnitude,
+        drag_coefficient,
+        lift_coefficient,
+    };
     //! Constructor
     /*!
      * Constructor
@@ -893,11 +911,11 @@ public:
     {
         return currentDragForce_;
     }
-    void setCurrentLocalGravityVector( const Eigen::Vector2d currentLocalGravityVector )
+    void setCurrentLocalGravityVector( const Eigen::Vector3d currentLocalGravityVector )
     {
         currentLocalGravityVector_ = currentLocalGravityVector;
     }
-    Eigen::Vector2d getCurrentLocalGravityVector( )
+    Eigen::Vector3d getCurrentLocalGravityVector( )
     {
         return currentLocalGravityVector_;
     }
@@ -945,13 +963,13 @@ public:
         return initialValueFlag_;
     }
 
-    void setInitialHeading( const double initialHeading )
+    void setInitialHeadingAngle( const double initialHeadingAngle )
     {
-        initialHeading_ = initialHeading;
+        initialHeadingAngle_ = initialHeadingAngle;
     }
-    double getInitialHeading( )
+    double getInitialHeadingAngle( )
     {
-        return initialHeading_;
+        return initialHeadingAngle_;
     }
 
     void setInitialDensity( const double initialDensity )
@@ -971,18 +989,40 @@ public:
     {
         return lowDistanceReversalCompleted_;
     }
+    void setDensityParameterMapForJerk( const  std::map < int, Eigen::VectorXd > densityParameterMapForJerk )
+    {
+        densityParameterMapForJerk_ = densityParameterMapForJerk;
+    }
+
+    std::map < int, Eigen::VectorXd > getDensityParameterMapForJerk( )
+    {
+        return densityParameterMapForJerk_;
+    }
+    void setPreviousConditions( const std::map< bislip::BislipVehicleSystems::PreviousConditions, double > previousConditions )
+    {
+        previousConditions_ = previousConditions;
+    }
+
+    std::map< bislip::BislipVehicleSystems::PreviousConditions, double > getPreviousConditions( )
+    {
+        return previousConditions_;
+    }
+
+
 
 private:
+    std::map< bislip::BislipVehicleSystems::PreviousConditions, double > previousConditions_;
+    std::map < int, Eigen::VectorXd > densityParameterMapForJerk_;
     bool lowDistanceReversalCompleted_;
     double initialHeight_;
     double initialDensity_;
-    double initialHeading_;
+    double initialHeadingAngle_;
     bool initialValueFlag_;
     double initialMachNumber_;
     double initialSpeedOfSound_;
     double initialDynamicPressure_;
     double initialFlightPathAngle_;
-    Eigen::Vector2d currentLocalGravityVector_;
+    Eigen::Vector3d currentLocalGravityVector_;
     Eigen::Vector6d fullCurrentCoefficients_;
     double currentLiftForce_;
     double currentDragForce_;
